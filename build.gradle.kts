@@ -3,6 +3,7 @@ import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 plugins {
     kotlin("multiplatform")
     id("org.jetbrains.compose")
+    id("com.diffplug.spotless") version "6.19.0"
 }
 
 group = "com.proguard.visualizer"
@@ -26,6 +27,12 @@ kotlin {
             }
         }
         val jvmTest by getting
+    }
+}
+
+spotless {
+    kotlin {
+        ktlint("0.50.0")
     }
 }
 
