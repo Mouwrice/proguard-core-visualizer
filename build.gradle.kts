@@ -6,6 +6,10 @@ plugins {
     id("com.diffplug.spotless") version "6.19.0"
 }
 
+dependencies {
+    commonMainImplementation("com.darkrockstudios:mpfilepicker:1.2.0")
+}
+
 group = "com.proguard.visualizer"
 version = "1.0.0"
 
