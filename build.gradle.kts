@@ -1,12 +1,10 @@
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
-import org.jlleitschuh.gradle.ktlint.reporter.ReporterType
 
 plugins {
     kotlin("multiplatform")
     id("org.jetbrains.compose") version "1.4.1"
     id("org.jlleitschuh.gradle.ktlint") version "11.5.0"
 }
-
 
 group = "com.proguard.visualizer"
 version = "1.0.0"
@@ -44,8 +42,6 @@ compose.desktop {
         }
     }
 }
-
-
 
 configure<org.jlleitschuh.gradle.ktlint.KtlintExtension> {
     version.set("0.50.0")

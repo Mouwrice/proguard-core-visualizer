@@ -17,7 +17,6 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun FileView(fileName: String, lines: List<String>, onFilePickerClick: () -> Unit) {
-
     Column(Modifier.fillMaxHeight().fillMaxWidth(0.5f)) {
         Column(Modifier.fillMaxSize()) {
             Button(onClick = onFilePickerClick) {
@@ -28,8 +27,9 @@ fun FileView(fileName: String, lines: List<String>, onFilePickerClick: () -> Uni
             LazyColumn(
                 Modifier.fillMaxSize().border(
                     border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
-                    shape = MaterialTheme.shapes.medium
-                ), contentPadding = PaddingValues(8.dp)
+                    shape = MaterialTheme.shapes.medium,
+                ),
+                contentPadding = PaddingValues(8.dp),
             ) {
                 items(lines) {
                     Text(it)

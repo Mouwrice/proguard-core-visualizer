@@ -20,7 +20,6 @@ import java.io.InputStream
 @Composable
 @Preview
 fun App() {
-
     var showFilePicker by remember { mutableStateOf(false) }
     var selectedFile by remember { mutableStateOf("No file open") }
     var lines by remember { mutableStateOf(listOf<String>()) }
@@ -45,7 +44,6 @@ fun App() {
         }
     }
 }
-
 
 fun main() = application {
     Window(title = "Proguard CORE Visualizer", onCloseRequest = ::exitApplication) {

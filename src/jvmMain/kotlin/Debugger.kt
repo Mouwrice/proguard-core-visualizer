@@ -4,7 +4,6 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -20,8 +19,9 @@ fun Debugger() {
             LazyColumn(
                 Modifier.fillMaxSize().border(
                     border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
-                    shape = MaterialTheme.shapes.medium
-                ), contentPadding = PaddingValues(8.dp)
+                    shape = MaterialTheme.shapes.medium,
+                ),
+                contentPadding = PaddingValues(8.dp),
             ) {
                 item {
                     Text("Variables go here...")
@@ -33,8 +33,9 @@ fun Debugger() {
             LazyColumn(
                 Modifier.fillMaxSize().border(
                     border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
-                    shape = MaterialTheme.shapes.medium
-                ), contentPadding = PaddingValues(8.dp)
+                    shape = MaterialTheme.shapes.medium,
+                ),
+                contentPadding = PaddingValues(8.dp),
             ) {
                 item {
                     Text("Items on the stack go here...")
