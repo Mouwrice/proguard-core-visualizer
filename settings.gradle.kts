@@ -26,13 +26,7 @@ gitHooks {
         // So we need to append to it.
         // Run `./gradlew check` before every commit:
         from(File(".git/hooks/pre-commit"))
-        appendScript {
-            """
-                set -e
-                ./gradlew check
-                set +e
-            """.trimIndent()
-        }
+        tasks("check")
     }
     createHooks(true)
 }
