@@ -14,8 +14,6 @@ pluginManagement {
 
 plugins {
     id("org.danilopianini.gradle-pre-commit-git-hooks") version "1.1.9"
-
-
 }
 
 gitHooks {
@@ -25,8 +23,7 @@ gitHooks {
     preCommit {
         tasks("check", requireSuccess = true)
     }
-    createHooks(true)
+    createHooks(false)
 }
-
 
 rootProject.name = "proguard-core-visualizer"
