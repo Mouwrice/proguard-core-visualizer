@@ -23,12 +23,14 @@ gitHooks {
     preCommit {
         // Ktlint already has a task that creates a `pre-commit` hook:
         // https://github.com/JLLeitschuh/ktlint-gradle#main-tasks
-        // So we need to append to it.
-        // Run `./gradlew check` before every commit:
-        from(File(".git/hooks/pre-commit"))
-        tasks("check")
+        // So we need to manually append to it.
+        // Append
+        // set -e
+        // ./gradlew check
+        // set +e
+        // to the pre-commit hook.
     }
-    createHooks(true)
+    createHooks()
 }
 
 rootProject.name = "proguard-core-visualizer"
