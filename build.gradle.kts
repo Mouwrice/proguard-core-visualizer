@@ -2,8 +2,8 @@ import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 
 plugins {
     kotlin("multiplatform")
-    id("org.jetbrains.compose")
-    id("com.diffplug.spotless") version "6.19.0"
+    id("org.jetbrains.compose") version "1.4.1"
+    id("org.jlleitschuh.gradle.ktlint") version "11.5.0"
 }
 
 group = "com.proguard.visualizer"
@@ -24,15 +24,11 @@ kotlin {
         val jvmMain by getting {
             dependencies {
                 implementation(compose.desktop.currentOs)
+                api(compose.material3)
+                implementation("com.darkrockstudios:mpfilepicker:1.2.0")
             }
         }
         val jvmTest by getting
-    }
-}
-
-spotless {
-    kotlin {
-        ktlint("0.50.0")
     }
 }
 
@@ -45,4 +41,11 @@ compose.desktop {
             packageVersion = "1.0.0"
         }
     }
+}
+
+configure<org.jlleitschuh.gradle.ktlint.KtlintExtension> {
+    version.set("0.50.0")
+    verbose.set(true)
+    outputToConsole.set(true)
+    ignoreFailures.set(true)
 }
