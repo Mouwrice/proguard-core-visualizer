@@ -22,7 +22,7 @@ gitHooks {
     }
     preCommit {
         from(File(".git-hooks/pre-commit.sh"))
-        tasks("check")
+        tasks("check", requireSuccess = true)
     }
     createHooks(true)
 }
