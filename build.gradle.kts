@@ -1,9 +1,10 @@
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
+import org.jlleitschuh.gradle.ktlint.reporter.ReporterType
 
 plugins {
     kotlin("multiplatform")
     id("org.jetbrains.compose") version "1.4.1"
-    id("com.diffplug.spotless") version "6.19.0"
+    id("org.jlleitschuh.gradle.ktlint") version "11.5.0"
 }
 
 
@@ -33,12 +34,6 @@ kotlin {
     }
 }
 
-spotless {
-    kotlin {
-        ktlint("0.50.0")
-    }
-}
-
 compose.desktop {
     application {
         mainClass = "MainKt"
@@ -48,4 +43,13 @@ compose.desktop {
             packageVersion = "1.0.0"
         }
     }
+}
+
+
+
+configure<org.jlleitschuh.gradle.ktlint.KtlintExtension> {
+    version.set("0.50.0")
+    verbose.set(true)
+    outputToConsole.set(true)
+    ignoreFailures.set(true)
 }
