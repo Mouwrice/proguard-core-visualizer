@@ -24,7 +24,7 @@ gitHooks {
         from(File(".git-hooks/pre-commit.sh"))
         tasks("check")
     }
-    createHooks()
+    createHooks(true)
 }
 
 
