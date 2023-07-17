@@ -20,16 +20,14 @@ gitHooks {
     commitMsg {
         conventionalCommits()
     }
-    preCommit {
-        // Ktlint already has a task that creates a `pre-commit` hook:
-        // https://github.com/JLLeitschuh/ktlint-gradle#main-tasks
-        // So we need to manually append to it.
-        // Append
-        // set -e
-        // ./gradlew check
-        // set +e
-        // to the pre-commit hook.
-    }
+    // Ktlint already has a task that creates a `pre-commit` hook:
+    // https://github.com/JLLeitschuh/ktlint-gradle#main-tasks
+    // So we need to manually append to it.
+    // Append
+    // set -e
+    // ./gradlew check
+    // set +e
+    // to the pre-commit hook.
     createHooks()
 }
 
