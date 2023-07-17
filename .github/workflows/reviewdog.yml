@@ -4,6 +4,9 @@ jobs:
   ktlint:
     name: Check Code Quality
     runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+      checks: write
 
     steps:
       - name: Clone repo
