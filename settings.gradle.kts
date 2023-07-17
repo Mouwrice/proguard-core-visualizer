@@ -13,4 +13,3 @@ pluginManagement {
 }
 
 rootProject.name = "proguard-core-visualizer"
-

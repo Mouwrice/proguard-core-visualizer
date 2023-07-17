@@ -2,13 +2,10 @@ import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 
 plugins {
     kotlin("multiplatform")
-    id("org.jetbrains.compose")
+    id("org.jetbrains.compose") version "1.4.1"
     id("com.diffplug.spotless") version "6.19.0"
 }
 
-dependencies {
-    commonMainImplementation("com.darkrockstudios:mpfilepicker:1.2.0")
-}
 
 group = "com.proguard.visualizer"
 version = "1.0.0"
@@ -28,6 +25,8 @@ kotlin {
         val jvmMain by getting {
             dependencies {
                 implementation(compose.desktop.currentOs)
+                api(compose.material3)
+                implementation("com.darkrockstudios:mpfilepicker:1.2.0")
             }
         }
         val jvmTest by getting
