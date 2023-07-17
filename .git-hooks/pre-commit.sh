@@ -1,3 +1,5 @@
+#!/usr/bin/bash
+
 echo "Running pre-commit hook..."
 
 if [[ -z "$(git diff --name-only --staged)" ]]; then
@@ -13,7 +15,7 @@ if [[ -z "$staged_files" ]]; then
 fi
 
 # Format only the staged files
-./gradlew spotlessApply $staged_files
+./gradlew spotlessApply
 
 # Add the formatted files to the staging area
 git add "$staged_files"
