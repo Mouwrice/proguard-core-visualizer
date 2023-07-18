@@ -1,4 +1,5 @@
-import androidx.compose.desktop.ui.tooling.preview.Preview
+package ui
+
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Column
@@ -14,20 +15,22 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import data.DebuggerViewModel
 
 @Composable
-fun Debugger(onNext: () -> Unit, onPrevious: () -> Unit) {
+fun Debugger(viewModel: DebuggerViewModel) {
     Column(Modifier.fillMaxSize()) {
         Row {
-            OutlinedButton(onClick = onNext) {
-                Text("Next instruction")
+            OutlinedButton(onClick = { viewModel.previousEvaluation() }) {
+                Text("Previous")
             }
             Spacer(Modifier.padding(horizontal = 8.dp))
-            OutlinedButton(onClick = onPrevious) {
-                Text("Previous instruction")
+            OutlinedButton(onClick = { viewModel.nextEvaluation() }) {
+                Text("Next")
             }
         }
 
+        Text("Instruction: ${viewModel.currentInstruction}", Modifier.padding(all = 8.dp))
         Category("Variables", maxHeight = 0.3F) {
             LazyColumn(
                 Modifier.fillMaxSize().border(
@@ -37,7 +40,7 @@ fun Debugger(onNext: () -> Unit, onPrevious: () -> Unit) {
                 contentPadding = PaddingValues(8.dp),
             ) {
                 item {
-                    Text("Variables go here...")
+                    Text(viewModel.variables)
                 }
             }
         }
@@ -51,18 +54,9 @@ fun Debugger(onNext: () -> Unit, onPrevious: () -> Unit) {
                 contentPadding = PaddingValues(8.dp),
             ) {
                 item {
-                    Text("Items on the stack go here...")
-                }
-                item {
-                    Text("Another item on the stack goes here...")
+                    Text(viewModel.stack)
                 }
             }
         }
     }
-}
-
-@Composable
-@Preview
-fun DebuggerPreview() {
-    Debugger({}, {})
 }

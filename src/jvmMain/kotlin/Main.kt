@@ -1,4 +1,3 @@
-import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -14,59 +13,37 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import com.darkrockstudios.libraries.mpfilepicker.FilePicker
-import data.MachineParser
-import java.io.File
-import java.io.InputStream
-import kotlin.streams.toList
+import data.DebuggerViewModel
+import ui.Debugger
+import ui.StateTrackerViewer
 
 @Composable
-fun App() {
+fun App(viewModel: DebuggerViewModel) {
     var showFilePicker by remember { mutableStateOf(false) }
-    var selectedFile by remember { mutableStateOf("No file open") }
-    var lines by remember { mutableStateOf(listOf<String>()) }
-    var currentLine by remember { mutableStateOf(0) }
-    var currentInstruction by remember { mutableStateOf(0) }
 
     Box(Modifier.fillMaxSize()) {
         Row(Modifier.fillMaxSize().padding(all = 16.dp)) {
-            FileView(selectedFile, lines, currentLine) {
+            StateTrackerViewer(viewModel) {
                 showFilePicker = true
             }
+
             Spacer(Modifier.padding(horizontal = 8.dp))
-            Debugger(onNext = {
-                currentInstruction++
-                if (currentLine < lines.size) {
-                    currentLine++
-                }
-            }, onPrevious = {
-                currentInstruction--
-                if (currentLine > 0) {
-                    currentLine--
-                }
-            })
+            Debugger(viewModel)
         }
 
-        FilePicker(showFilePicker, fileExtensions = listOf("jbc")) { path ->
+        // Accept json files
+        FilePicker(showFilePicker, fileExtensions = listOf("json")) { path ->
             showFilePicker = false
             if (path != null) {
-                val file = File(path.path)
-                selectedFile = file.name
-                val inputStream: InputStream = file.inputStream()
-                lines = inputStream.bufferedReader().lines().toList()
+                viewModel.loadJson(path.path)
             }
         }
     }
 }
 
 fun main() = application {
-    MachineParser().parsejson()
+    val viewModel = DebuggerViewModel()
     Window(title = "Proguard CORE Visualizer", onCloseRequest = ::exitApplication) {
-        App()
+        App(viewModel)
     }
-}
-
-@Composable
-@Preview
-fun AppPreview() {
-    App()
 }
