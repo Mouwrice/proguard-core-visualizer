@@ -18,19 +18,30 @@ import java.io.File
 import java.io.InputStream
 
 @Composable
-@Preview
 fun App() {
     var showFilePicker by remember { mutableStateOf(false) }
     var selectedFile by remember { mutableStateOf("No file open") }
     var lines by remember { mutableStateOf(listOf<String>()) }
+    var currentLine by remember { mutableStateOf(0) }
+    var currentInstruction by remember { mutableStateOf(0) }
 
     Box(Modifier.fillMaxSize()) {
         Row(Modifier.fillMaxSize().padding(all = 16.dp)) {
-            FileView(selectedFile, lines) {
+            FileView(selectedFile, lines, currentLine) {
                 showFilePicker = true
             }
             Spacer(Modifier.padding(horizontal = 8.dp))
-            Debugger()
+            Debugger(onNext = {
+                currentInstruction++
+                if (currentLine < lines.size) {
+                    currentLine++
+                }
+            }, onPrevious = {
+                currentInstruction--
+                if (currentLine > 0) {
+                    currentLine--
+                }
+            })
         }
 
         FilePicker(showFilePicker, fileExtensions = listOf("jbc")) { path ->
@@ -49,4 +60,10 @@ fun main() = application {
     Window(title = "Proguard CORE Visualizer", onCloseRequest = ::exitApplication) {
         App()
     }
+}
+
+@Composable
+@Preview
+fun AppPreview() {
+    App()
 }
