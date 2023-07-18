@@ -14,8 +14,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import com.darkrockstudios.libraries.mpfilepicker.FilePicker
+import data.MachineParser
 import java.io.File
 import java.io.InputStream
+import kotlin.streams.toList
 
 @Composable
 fun App() {
@@ -57,6 +59,7 @@ fun App() {
 }
 
 fun main() = application {
+    MachineParser().parsejson()
     Window(title = "Proguard CORE Visualizer", onCloseRequest = ::exitApplication) {
         App()
     }

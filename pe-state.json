@@ -1,0 +1,60 @@
+{
+  "codeAttributes": [
+    {
+      "clazz": "PartialEvaluatorDummy",
+      "method": "test()Ljava/lang/Object;",
+      "instructions": [
+        {
+          "offset": 0,
+          "instruction": "ldc #7"
+        },
+        {
+          "offset": 2,
+          "instruction": "astore_0 v0"
+        },
+        {
+          "offset": 3,
+          "instruction": "aload_1 v1"
+        },
+        {
+          "offset": 4,
+          "instruction": "areturn"
+        }
+      ],
+      "parameters": "[P0:a][empty:empty]",
+      "blockEvaluations": [
+        {
+          "evaluations": [
+            {
+              "instruction": "ldc #7",
+              "instructionOffset": 0,
+              "variablesBefore": "[P0:a][empty:empty]",
+              "stackBefore": ""
+            },
+            {
+              "instruction": "astore_0 v0",
+              "instructionOffset": 2,
+              "variablesBefore": "[P0:a][empty:empty]",
+              "stackBefore": "[0:a]"
+            },
+            {
+              "instruction": "aload_1 v1",
+              "instructionOffset": 3,
+              "variablesBefore": "[2:a][empty:empty]",
+              "stackBefore": ""
+            }
+          ],
+          "startVariables": "[P0:a][empty:empty]",
+          "startStack": "",
+          "startOffset": 0
+        }
+      ]
+    }
+  ],
+  "error": {
+    "clazz": "PartialEvaluatorDummy",
+    "method": "test()Ljava/lang/Object;",
+    "instructionOffset": 3,
+    "message": "Value in slot 1 is empty"
+  }
+}

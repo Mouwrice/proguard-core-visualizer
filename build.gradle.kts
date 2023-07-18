@@ -17,7 +17,7 @@ repositories {
 
 kotlin {
     jvm {
-        jvmToolchain(17)
+        // jvmToolchain(17)
     }
     sourceSets {
         val jvmMain by getting {
@@ -25,6 +25,7 @@ kotlin {
                 implementation(compose.desktop.currentOs)
                 api(compose.material3)
                 implementation("com.darkrockstudios:mpfilepicker:1.2.0")
+                implementation("com.google.code.gson:gson:2.10.1")
             }
         }
         val jvmTest by getting
