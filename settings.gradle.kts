@@ -27,7 +27,7 @@ gitHooks {
     // set -e
     // ./gradlew check
     // set +e
-    // to the pre-commit hook.
+    // to .git/hooks/pre-commit.
     createHooks()
 }
 
