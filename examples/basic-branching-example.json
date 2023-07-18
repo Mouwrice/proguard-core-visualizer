@@ -1,0 +1,483 @@
+{
+  "codeAttributes": [
+    {
+      "clazz": "PartialEvaluatorDummy",
+      "method": "test()I",
+      "instructions": [
+        {
+          "offset": 0,
+          "instruction": "bipush 50"
+        },
+        {
+          "offset": 2,
+          "instruction": "dup"
+        },
+        {
+          "offset": 3,
+          "instruction": "iconst_5"
+        },
+        {
+          "offset": 4,
+          "instruction": "if_icmple +8"
+        },
+        {
+          "offset": 7,
+          "instruction": "iconst_5"
+        },
+        {
+          "offset": 8,
+          "instruction": "isub"
+        },
+        {
+          "offset": 9,
+          "instruction": "goto -7"
+        },
+        {
+          "offset": 12,
+          "instruction": "ireturn"
+        }
+      ],
+      "parameters": "[P0:LPartialEvaluatorDummy;!#0]",
+      "blockEvaluations": [
+        {
+          "evaluations": [
+            {
+              "instruction": "bipush 50",
+              "instructionOffset": 0,
+              "variablesBefore": "[P0:LPartialEvaluatorDummy;!#0]",
+              "stackBefore": ""
+            },
+            {
+              "instruction": "dup",
+              "instructionOffset": 2,
+              "variablesBefore": "[P0:LPartialEvaluatorDummy;!#0]",
+              "stackBefore": "[0:50]"
+            },
+            {
+              "instruction": "iconst_5",
+              "instructionOffset": 3,
+              "variablesBefore": "[P0:LPartialEvaluatorDummy;!#0]",
+              "stackBefore": "[2:0:50][2:0:50]"
+            },
+            {
+              "instruction": "if_icmple +8",
+              "instructionOffset": 4,
+              "updatedEvaluationStack": [
+                {
+                  "variables": "[P0:LPartialEvaluatorDummy;!#0]",
+                  "stack": "[2:0:50]",
+                  "startOffset": 7
+                },
+                {
+                  "variables": "[P0:LPartialEvaluatorDummy;!#0]",
+                  "stack": "[2:0:50]",
+                  "startOffset": 12
+                }
+              ],
+              "variablesBefore": "[P0:LPartialEvaluatorDummy;!#0]",
+              "stackBefore": "[2:0:50][2:0:50][3:5]"
+            }
+          ],
+          "startVariables": "[P0:LPartialEvaluatorDummy;!#0]",
+          "startStack": "",
+          "startOffset": 0
+        },
+        {
+          "evaluations": [
+            {
+              "instruction": "ireturn",
+              "instructionOffset": 12,
+              "variablesBefore": "[P0:LPartialEvaluatorDummy;!#0]",
+              "stackBefore": "[2:0:50]"
+            }
+          ],
+          "startVariables": "[P0:LPartialEvaluatorDummy;!#0]",
+          "startStack": "[2:0:50]",
+          "startOffset": 12
+        },
+        {
+          "evaluations": [
+            {
+              "instruction": "iconst_5",
+              "instructionOffset": 7,
+              "variablesBefore": "[P0:LPartialEvaluatorDummy;!#0]",
+              "stackBefore": "[2:0:50]"
+            },
+            {
+              "instruction": "isub",
+              "instructionOffset": 8,
+              "variablesBefore": "[P0:LPartialEvaluatorDummy;!#0]",
+              "stackBefore": "[2:0:50][7:5]"
+            },
+            {
+              "instruction": "goto -7",
+              "instructionOffset": 9,
+              "variablesBefore": "[P0:LPartialEvaluatorDummy;!#0]",
+              "stackBefore": "[8:45]"
+            },
+            {
+              "instruction": "dup",
+              "instructionOffset": 2,
+              "variablesBefore": "[P0:LPartialEvaluatorDummy;!#0]",
+              "stackBefore": "[8:45]"
+            },
+            {
+              "instruction": "iconst_5",
+              "instructionOffset": 3,
+              "variablesBefore": "[P0:LPartialEvaluatorDummy;!#0]",
+              "stackBefore": "[2:8:45][2:8:45]"
+            },
+            {
+              "instruction": "if_icmple +8",
+              "instructionOffset": 4,
+              "updatedEvaluationStack": [
+                {
+                  "variables": "[P0:LPartialEvaluatorDummy;!#0]",
+                  "stack": "[2:8:45]",
+                  "startOffset": 7
+                },
+                {
+                  "variables": "[P0:LPartialEvaluatorDummy;!#0]",
+                  "stack": "[2:8:45]",
+                  "startOffset": 12
+                }
+              ],
+              "variablesBefore": "[P0:LPartialEvaluatorDummy;!#0]",
+              "stackBefore": "[2:8:45][2:8:45][3:5]"
+            }
+          ],
+          "startVariables": "[P0:LPartialEvaluatorDummy;!#0]",
+          "startStack": "[2:0:50]",
+          "startOffset": 7
+        },
+        {
+          "evaluations": [
+            {
+              "instruction": "ireturn",
+              "instructionOffset": 12,
+              "variablesBefore": "[P0:LPartialEvaluatorDummy;!#0]",
+              "stackBefore": "[2:8:45]"
+            }
+          ],
+          "startVariables": "[P0:LPartialEvaluatorDummy;!#0]",
+          "startStack": "[2:8:45]",
+          "startOffset": 12
+        },
+        {
+          "evaluations": [
+            {
+              "instruction": "iconst_5",
+              "instructionOffset": 7,
+              "variablesBefore": "[P0:LPartialEvaluatorDummy;!#0]",
+              "stackBefore": "[2:8:45]"
+            },
+            {
+              "instruction": "isub",
+              "instructionOffset": 8,
+              "variablesBefore": "[P0:LPartialEvaluatorDummy;!#0]",
+              "stackBefore": "[2:8:45][7:5]"
+            },
+            {
+              "instruction": "goto -7",
+              "instructionOffset": 9,
+              "variablesBefore": "[P0:LPartialEvaluatorDummy;!#0]",
+              "stackBefore": "[8:40]"
+            },
+            {
+              "instruction": "dup",
+              "instructionOffset": 2,
+              "variablesBefore": "[P0:LPartialEvaluatorDummy;!#0]",
+              "stackBefore": "[8:40]"
+            },
+            {
+              "instruction": "iconst_5",
+              "instructionOffset": 3,
+              "variablesBefore": "[P0:LPartialEvaluatorDummy;!#0]",
+              "stackBefore": "[2:8:40][2:8:40]"
+            },
+            {
+              "instruction": "if_icmple +8",
+              "instructionOffset": 4,
+              "updatedEvaluationStack": [
+                {
+                  "variables": "[P0:LPartialEvaluatorDummy;!#0]",
+                  "stack": "[2:8:40]",
+                  "startOffset": 7
+                },
+                {
+                  "variables": "[P0:LPartialEvaluatorDummy;!#0]",
+                  "stack": "[2:8:40]",
+                  "startOffset": 12
+                }
+              ],
+              "variablesBefore": "[P0:LPartialEvaluatorDummy;!#0]",
+              "stackBefore": "[2:8:40][2:8:40][3:5]"
+            }
+          ],
+          "startVariables": "[P0:LPartialEvaluatorDummy;!#0]",
+          "startStack": "[2:8:45]",
+          "startOffset": 7
+        },
+        {
+          "evaluations": [
+            {
+              "instruction": "ireturn",
+              "instructionOffset": 12,
+              "variablesBefore": "[P0:LPartialEvaluatorDummy;!#0]",
+              "stackBefore": "[2:8:40]"
+            }
+          ],
+          "startVariables": "[P0:LPartialEvaluatorDummy;!#0]",
+          "startStack": "[2:8:40]",
+          "startOffset": 12
+        },
+        {
+          "evaluations": [
+            {
+              "instruction": "iconst_5",
+              "instructionOffset": 7,
+              "variablesBefore": "[P0:LPartialEvaluatorDummy;!#0]",
+              "stackBefore": "[2:8:40]"
+            },
+            {
+              "instruction": "isub",
+              "instructionOffset": 8,
+              "variablesBefore": "[P0:LPartialEvaluatorDummy;!#0]",
+              "stackBefore": "[2:8:40][7:5]"
+            },
+            {
+              "instruction": "goto -7",
+              "instructionOffset": 9,
+              "variablesBefore": "[P0:LPartialEvaluatorDummy;!#0]",
+              "stackBefore": "[8:35]"
+            },
+            {
+              "instruction": "dup",
+              "instructionOffset": 2,
+              "variablesBefore": "[P0:LPartialEvaluatorDummy;!#0]",
+              "stackBefore": "[8:35]"
+            },
+            {
+              "instruction": "iconst_5",
+              "instructionOffset": 3,
+              "variablesBefore": "[P0:LPartialEvaluatorDummy;!#0]",
+              "stackBefore": "[2:8:35][2:8:35]"
+            },
+            {
+              "instruction": "if_icmple +8",
+              "instructionOffset": 4,
+              "updatedEvaluationStack": [
+                {
+                  "variables": "[P0:LPartialEvaluatorDummy;!#0]",
+                  "stack": "[2:8:35]",
+                  "startOffset": 7
+                },
+                {
+                  "variables": "[P0:LPartialEvaluatorDummy;!#0]",
+                  "stack": "[2:8:35]",
+                  "startOffset": 12
+                }
+              ],
+              "variablesBefore": "[P0:LPartialEvaluatorDummy;!#0]",
+              "stackBefore": "[2:8:35][2:8:35][3:5]"
+            }
+          ],
+          "startVariables": "[P0:LPartialEvaluatorDummy;!#0]",
+          "startStack": "[2:8:40]",
+          "startOffset": 7
+        },
+        {
+          "evaluations": [
+            {
+              "instruction": "ireturn",
+              "instructionOffset": 12,
+              "variablesBefore": "[P0:LPartialEvaluatorDummy;!#0]",
+              "stackBefore": "[2:8:35]"
+            }
+          ],
+          "startVariables": "[P0:LPartialEvaluatorDummy;!#0]",
+          "startStack": "[2:8:35]",
+          "startOffset": 12
+        },
+        {
+          "evaluations": [
+            {
+              "instruction": "iconst_5",
+              "instructionOffset": 7,
+              "variablesBefore": "[P0:LPartialEvaluatorDummy;!#0]",
+              "stackBefore": "[2:8:35]"
+            },
+            {
+              "instruction": "isub",
+              "instructionOffset": 8,
+              "variablesBefore": "[P0:LPartialEvaluatorDummy;!#0]",
+              "stackBefore": "[2:8:35][7:5]"
+            },
+            {
+              "instruction": "goto -7",
+              "instructionOffset": 9,
+              "variablesBefore": "[P0:LPartialEvaluatorDummy;!#0]",
+              "stackBefore": "[8:30]"
+            },
+            {
+              "instruction": "dup",
+              "instructionOffset": 2,
+              "variablesBefore": "[P0:LPartialEvaluatorDummy;!#0]",
+              "stackBefore": "[8:30]"
+            },
+            {
+              "instruction": "iconst_5",
+              "instructionOffset": 3,
+              "variablesBefore": "[P0:LPartialEvaluatorDummy;!#0]",
+              "stackBefore": "[2:8:30][2:8:30]"
+            },
+            {
+              "instruction": "if_icmple +8",
+              "instructionOffset": 4,
+              "updatedEvaluationStack": [
+                {
+                  "variables": "[P0:LPartialEvaluatorDummy;!#0]",
+                  "stack": "[2:8:30]",
+                  "startOffset": 7
+                },
+                {
+                  "variables": "[P0:LPartialEvaluatorDummy;!#0]",
+                  "stack": "[2:8:30]",
+                  "startOffset": 12
+                }
+              ],
+              "variablesBefore": "[P0:LPartialEvaluatorDummy;!#0]",
+              "stackBefore": "[2:8:30][2:8:30][3:5]"
+            }
+          ],
+          "startVariables": "[P0:LPartialEvaluatorDummy;!#0]",
+          "startStack": "[2:8:35]",
+          "startOffset": 7
+        },
+        {
+          "evaluations": [
+            {
+              "instruction": "ireturn",
+              "instructionOffset": 12,
+              "variablesBefore": "[P0:LPartialEvaluatorDummy;!#0]",
+              "stackBefore": "[2:8:30]"
+            }
+          ],
+          "startVariables": "[P0:LPartialEvaluatorDummy;!#0]",
+          "startStack": "[2:8:30]",
+          "startOffset": 12
+        },
+        {
+          "evaluations": [
+            {
+              "instruction": "iconst_5",
+              "instructionOffset": 7,
+              "variablesBefore": "[P0:LPartialEvaluatorDummy;!#0]",
+              "stackBefore": "[2:8:30]"
+            },
+            {
+              "instruction": "isub",
+              "instructionOffset": 8,
+              "variablesBefore": "[P0:LPartialEvaluatorDummy;!#0]",
+              "stackBefore": "[2:8:30][7:5]"
+            },
+            {
+              "instruction": "goto -7",
+              "instructionOffset": 9,
+              "variablesBefore": "[P0:LPartialEvaluatorDummy;!#0]",
+              "stackBefore": "[8:25]"
+            },
+            {
+              "isGeneralization": true,
+              "timesSeen": 5,
+              "instruction": "dup",
+              "instructionOffset": 2,
+              "variablesBefore": "[P0:LPartialEvaluatorDummy;!#0]",
+              "stackBefore": "[0,8:i]"
+            },
+            {
+              "isGeneralization": true,
+              "timesSeen": 5,
+              "instruction": "iconst_5",
+              "instructionOffset": 3,
+              "variablesBefore": "[P0:LPartialEvaluatorDummy;!#0]",
+              "stackBefore": "[2:0,8:i][2:0,8:i]"
+            },
+            {
+              "isGeneralization": true,
+              "timesSeen": 5,
+              "instruction": "if_icmple +8",
+              "instructionOffset": 4,
+              "updatedEvaluationStack": [
+                {
+                  "variables": "[P0:LPartialEvaluatorDummy;!#0]",
+                  "stack": "[2:0,8:i]",
+                  "startOffset": 7
+                },
+                {
+                  "variables": "[P0:LPartialEvaluatorDummy;!#0]",
+                  "stack": "[2:0,8:i]",
+                  "startOffset": 12
+                }
+              ],
+              "variablesBefore": "[P0:LPartialEvaluatorDummy;!#0]",
+              "stackBefore": "[2:0,8:i][2:0,8:i][3:5]"
+            }
+          ],
+          "startVariables": "[P0:LPartialEvaluatorDummy;!#0]",
+          "startStack": "[2:8:30]",
+          "startOffset": 7
+        },
+        {
+          "evaluations": [
+            {
+              "isGeneralization": true,
+              "timesSeen": 5,
+              "instruction": "ireturn",
+              "instructionOffset": 12,
+              "variablesBefore": "[P0:LPartialEvaluatorDummy;!#0]",
+              "stackBefore": "[2:0,8:i]"
+            }
+          ],
+          "startVariables": "[P0:LPartialEvaluatorDummy;!#0]",
+          "startStack": "[2:0,8:i]",
+          "startOffset": 12
+        },
+        {
+          "evaluations": [
+            {
+              "isGeneralization": true,
+              "timesSeen": 5,
+              "instruction": "iconst_5",
+              "instructionOffset": 7,
+              "variablesBefore": "[P0:LPartialEvaluatorDummy;!#0]",
+              "stackBefore": "[2:0,8:i]"
+            },
+            {
+              "isGeneralization": true,
+              "timesSeen": 5,
+              "instruction": "isub",
+              "instructionOffset": 8,
+              "variablesBefore": "[P0:LPartialEvaluatorDummy;!#0]",
+              "stackBefore": "[2:0,8:i][7:5]"
+            },
+            {
+              "isGeneralization": true,
+              "timesSeen": 5,
+              "instruction": "goto -7",
+              "instructionOffset": 9,
+              "variablesBefore": "[P0:LPartialEvaluatorDummy;!#0]",
+              "stackBefore": "[8:i]"
+            },
+            {
+              "isSeenBefore": true
+            }
+          ],
+          "startVariables": "[P0:LPartialEvaluatorDummy;!#0]",
+          "startStack": "[2:0,8:i]",
+          "startOffset": 7
+        }
+      ]
+    }
+  ]
+}

@@ -119,7 +119,7 @@ class MachineParser {
     private val gson = GsonBuilder().setPrettyPrinting().create()
 
     public fun parsejson() {
-        val tracker = gson.fromJson(Files.readString(java.nio.file.Path.of("pe-state.json")), StateTracker::class.java)
+        val tracker = gson.fromJson(Files.readString(java.nio.file.Path.of("examples", "pe-state.json")), StateTracker::class.java)
         print(tracker.lastCodeAttribute?.clazz)
     }
 }
