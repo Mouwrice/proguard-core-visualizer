@@ -30,7 +30,7 @@ fun Debugger(viewModel: DebuggerViewModel) {
             }
         }
 
-        Text("Instruction: ${viewModel.currentInstruction}", Modifier.padding(all = 8.dp))
+        Text("Instruction: ${viewModel.currentInstruction}", Modifier.padding(vertical = 8.dp))
         Category("Variables", maxHeight = 0.3F) {
             LazyColumn(
                 Modifier.fillMaxSize().border(
