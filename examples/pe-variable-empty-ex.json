@@ -21,31 +21,48 @@
           "instruction": "areturn"
         }
       ],
-      "parameters": "[P0:a][empty:empty]",
+      "parameters": [
+        "a",
+        "empty"
+      ],
       "blockEvaluations": [
         {
           "evaluations": [
             {
               "instruction": "ldc #7",
               "instructionOffset": 0,
-              "variablesBefore": "[P0:a][empty:empty]",
-              "stackBefore": ""
+              "variablesBefore": [
+                "a",
+                "empty"
+              ],
+              "stackBefore": []
             },
             {
               "instruction": "astore_0 v0",
               "instructionOffset": 2,
-              "variablesBefore": "[P0:a][empty:empty]",
-              "stackBefore": "[0:a]"
+              "variablesBefore": [
+                "a",
+                "empty"
+              ],
+              "stackBefore": [
+                "a"
+              ]
             },
             {
               "instruction": "aload_1 v1",
               "instructionOffset": 3,
-              "variablesBefore": "[2:a][empty:empty]",
-              "stackBefore": ""
+              "variablesBefore": [
+                "a",
+                "empty"
+              ],
+              "stackBefore": []
             }
           ],
-          "startVariables": "[P0:a][empty:empty]",
-          "startStack": "",
+          "startVariables": [
+            "a",
+            "empty"
+          ],
+          "startStack": [],
           "startOffset": 0
         }
       ]
