@@ -18,10 +18,10 @@ class DebuggerViewModel {
     var currentInstructionOffset by mutableStateOf(0)
         private set
 
-    var variables by mutableStateOf("")
+    var variables by mutableStateOf<List<String>>(emptyList())
         private set
 
-    var stack by mutableStateOf("")
+    var stack by mutableStateOf<List<String>>(emptyList())
         private set
 
     var currentCodeAttribute by mutableStateOf(0)
@@ -31,26 +31,26 @@ class DebuggerViewModel {
     private var currentEvaluation: Int = 0
 
     fun nextEvaluation() {
+        val codeAttributes = stateTracker?.codeAttributes
+        val blockEvaluations = codeAttributes?.get(currentCodeAttribute)?.blockEvaluations
+        val evaluations = blockEvaluations?.get(currentBlockEvaluation)?.evaluations
         if (currentEvaluation < (
                 (
-                    stateTracker?.codeAttributes?.get(currentCodeAttribute)?.blockEvaluations?.get(
-                        currentBlockEvaluation,
-                    )?.evaluations?.size?.minus(1)
-                    ) ?: 0
+                    evaluations?.size?.minus(1)
+                    )
+                    ?: 0
                 )
         ) {
             currentEvaluation++
         } else if (currentBlockEvaluation < (
                 (
-                    stateTracker?.codeAttributes?.get(
-                        currentCodeAttribute,
-                    )?.blockEvaluations?.size?.minus(1)
+                    blockEvaluations?.size?.minus(1)
                     ) ?: 0
                 )
         ) {
             currentBlockEvaluation++
             currentEvaluation = 0
-        } else if (currentCodeAttribute < ((stateTracker?.codeAttributes?.size?.minus(1)) ?: 0)) {
+        } else if (currentCodeAttribute < ((codeAttributes?.size?.minus(1)) ?: 0)) {
             currentCodeAttribute++
             currentBlockEvaluation = 0
             currentEvaluation = 0
@@ -59,12 +59,15 @@ class DebuggerViewModel {
     }
 
     fun previousEvaluation() {
+        val codeAttributes = stateTracker?.codeAttributes
+        val blockEvaluations = codeAttributes?.get(currentCodeAttribute)?.blockEvaluations
+        val evaluations = blockEvaluations?.get(currentBlockEvaluation)?.evaluations
         if (currentEvaluation > 0) {
             currentEvaluation--
         } else if (currentBlockEvaluation > 0) {
             currentBlockEvaluation--
             currentEvaluation = (
-                stateTracker?.codeAttributes?.get(currentCodeAttribute)?.blockEvaluations?.get(
+                codeAttributes?.get(currentCodeAttribute)?.blockEvaluations?.get(
                     currentBlockEvaluation,
                 )?.evaluations?.size?.minus(1) ?: 0
                 )
@@ -72,13 +75,11 @@ class DebuggerViewModel {
             currentCodeAttribute--
             currentBlockEvaluation =
                 (
-                    stateTracker?.codeAttributes?.get(currentCodeAttribute)?.blockEvaluations?.size?.minus(1)
+                    blockEvaluations?.size?.minus(1)
                         ?: 0
                     )
             currentEvaluation = (
-                stateTracker?.codeAttributes?.get(currentCodeAttribute)?.blockEvaluations?.get(
-                    currentBlockEvaluation,
-                )?.evaluations?.size?.minus(1) ?: 0
+                evaluations?.size?.minus(1) ?: 0
                 )
         }
         update()
@@ -91,9 +92,9 @@ class DebuggerViewModel {
         currentInstruction = evaluation?.instruction ?: ""
         currentInstructionOffset = evaluation?.instructionOffset ?: 0
 
-        variables = evaluation?.variablesBefore.toString()
+        variables = evaluation?.variablesBefore ?: emptyList()
 
-        stack = evaluation?.stackBefore.toString()
+        stack = evaluation?.stackBefore ?: emptyList()
     }
 
     /**
@@ -103,5 +104,17 @@ class DebuggerViewModel {
         file = File(path)
         stateTracker = StateTracker.fromJson(path)
         update()
+    }
+
+    fun reset() {
+        currentCodeAttribute = 0
+        currentBlockEvaluation = 0
+        currentEvaluation = 0
+        file = null
+        stateTracker = null
+        currentInstruction = ""
+        currentInstructionOffset = 0
+        variables = emptyList()
+        stack = emptyList()
     }
 }

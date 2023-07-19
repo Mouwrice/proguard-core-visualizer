@@ -17,13 +17,13 @@ repositories {
 
 kotlin {
     jvm {
-        // jvmToolchain(17)
     }
     sourceSets {
         val jvmMain by getting {
             dependencies {
                 implementation(compose.desktop.currentOs)
                 api(compose.material3)
+                api(compose.materialIconsExtended)
                 implementation("com.darkrockstudios:mpfilepicker:1.2.0")
                 implementation("com.google.code.gson:gson:2.10.1")
             }
