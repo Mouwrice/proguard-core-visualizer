@@ -13,6 +13,7 @@ repositories {
     google()
     mavenCentral()
     maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
+    maven("https://jitpack.io")
 }
 
 kotlin {
@@ -26,6 +27,8 @@ kotlin {
                 api(compose.materialIconsExtended)
                 implementation("com.darkrockstudios:mpfilepicker:1.2.0")
                 implementation("com.google.code.gson:gson:2.10.1")
+                implementation("com.materialkolor:material-kolor:1.1.0")
+                implementation("com.github.Dansoftowner:jSystemThemeDetector:3.6")
             }
         }
         val jvmTest by getting
