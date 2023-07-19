@@ -24,6 +24,7 @@ kotlin {
             dependencies {
                 implementation(compose.desktop.currentOs)
                 api(compose.material3)
+                api(compose.materialIconsExtended)
                 implementation("com.darkrockstudios:mpfilepicker:1.2.0")
                 implementation("com.google.code.gson:gson:2.10.1")
             }
