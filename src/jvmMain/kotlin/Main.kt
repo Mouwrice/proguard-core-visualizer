@@ -49,7 +49,6 @@ fun App(viewModel: DebuggerViewModel) {
 
 fun main() = application {
     val viewModel = DebuggerViewModel()
-    viewModel.loadJson("examples/pe-variable-empty-ex.json")
     Window(
         title = "Proguard CORE Visualizer",
         state = WindowState(WindowPlacement.Maximized),
