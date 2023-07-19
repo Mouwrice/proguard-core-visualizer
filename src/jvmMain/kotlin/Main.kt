@@ -15,8 +15,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Window
-import androidx.compose.ui.window.WindowPlacement
-import androidx.compose.ui.window.WindowState
 import androidx.compose.ui.window.application
 import com.darkrockstudios.libraries.mpfilepicker.FilePicker
 import com.jthemedetecor.OsThemeDetector
@@ -56,7 +54,6 @@ fun main() = application {
     val viewModel = DebuggerViewModel()
     Window(
         title = "Proguard CORE Visualizer",
-        state = WindowState(WindowPlacement.Maximized),
         onCloseRequest = ::exitApplication,
     ) {
         AppTheme(
