@@ -25,6 +25,12 @@
         "a",
         "empty"
       ],
+      "error": {
+        "clazz": "PartialEvaluatorDummy",
+        "method": "test()Ljava/lang/Object;",
+        "instructionOffset": 3,
+        "message": "Value in slot 1 is empty"
+      },
       "blockEvaluations": [
         {
           "evaluations": [
@@ -63,15 +69,10 @@
             "empty"
           ],
           "startStack": [],
-          "startOffset": 0
+          "startOffset": 0,
+          "blockEvaluationStack": []
         }
       ]
     }
-  ],
-  "error": {
-    "clazz": "PartialEvaluatorDummy",
-    "method": "test()Ljava/lang/Object;",
-    "instructionOffset": 3,
-    "message": "Value in slot 1 is empty"
-  }
+  ]
 }

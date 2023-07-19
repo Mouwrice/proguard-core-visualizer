@@ -1,0 +1,778 @@
+{
+  "codeAttributes": [
+    {
+      "clazz": "PartialEvaluatorDummy",
+      "method": "initializer()I",
+      "instructions": [
+        {
+          "offset": 0,
+          "instruction": "bipush 50"
+        },
+        {
+          "offset": 2,
+          "instruction": "ireturn"
+        }
+      ],
+      "parameters": [],
+      "blockEvaluations": [
+        {
+          "evaluations": [
+            {
+              "instruction": "bipush 50",
+              "instructionOffset": 0,
+              "variablesBefore": [],
+              "stackBefore": []
+            },
+            {
+              "instruction": "ireturn",
+              "instructionOffset": 2,
+              "variablesBefore": [],
+              "stackBefore": [
+                "50"
+              ]
+            }
+          ],
+          "startVariables": [],
+          "startStack": [],
+          "startOffset": 0,
+          "blockEvaluationStack": []
+        }
+      ]
+    },
+    {
+      "clazz": "PartialEvaluatorDummy",
+      "method": "test()I",
+      "instructions": [
+        {
+          "offset": 0,
+          "instruction": "invokestatic #10"
+        },
+        {
+          "offset": 3,
+          "instruction": "dup"
+        },
+        {
+          "offset": 4,
+          "instruction": "iconst_5"
+        },
+        {
+          "offset": 5,
+          "instruction": "if_icmple +8"
+        },
+        {
+          "offset": 8,
+          "instruction": "iconst_5"
+        },
+        {
+          "offset": 9,
+          "instruction": "isub"
+        },
+        {
+          "offset": 10,
+          "instruction": "goto -7"
+        },
+        {
+          "offset": 13,
+          "instruction": "jsr +4"
+        },
+        {
+          "offset": 16,
+          "instruction": "athrow"
+        },
+        {
+          "offset": 17,
+          "instruction": "astore_1 v1"
+        },
+        {
+          "offset": 18,
+          "instruction": "aload_0 v0"
+        },
+        {
+          "offset": 19,
+          "instruction": "ret v1"
+        },
+        {
+          "offset": 21,
+          "instruction": "iconst_5"
+        },
+        {
+          "offset": 22,
+          "instruction": "ireturn"
+        },
+        {
+          "offset": 23,
+          "instruction": "iconst_1"
+        },
+        {
+          "offset": 24,
+          "instruction": "ireturn"
+        }
+      ],
+      "parameters": [
+        "LPartialEvaluatorDummy;!#0",
+        "empty"
+      ],
+      "blockEvaluations": [
+        {
+          "evaluations": [
+            {
+              "instruction": "invokestatic #10",
+              "instructionOffset": 0,
+              "variablesBefore": [
+                "LPartialEvaluatorDummy;!#0",
+                "empty"
+              ],
+              "stackBefore": []
+            },
+            {
+              "instruction": "dup",
+              "instructionOffset": 3,
+              "variablesBefore": [
+                "LPartialEvaluatorDummy;!#0",
+                "empty"
+              ],
+              "stackBefore": [
+                "i"
+              ]
+            },
+            {
+              "instruction": "iconst_5",
+              "instructionOffset": 4,
+              "variablesBefore": [
+                "LPartialEvaluatorDummy;!#0",
+                "empty"
+              ],
+              "stackBefore": [
+                "i",
+                "i"
+              ]
+            },
+            {
+              "instruction": "if_icmple +8",
+              "instructionOffset": 5,
+              "updatedEvaluationStack": [
+                {
+                  "variables": [
+                    "LPartialEvaluatorDummy;!#0",
+                    "empty"
+                  ],
+                  "stack": [
+                    "i"
+                  ],
+                  "startOffset": 8
+                },
+                {
+                  "variables": [
+                    "LPartialEvaluatorDummy;!#0",
+                    "empty"
+                  ],
+                  "stack": [
+                    "i"
+                  ],
+                  "startOffset": 13
+                }
+              ],
+              "variablesBefore": [
+                "LPartialEvaluatorDummy;!#0",
+                "empty"
+              ],
+              "stackBefore": [
+                "i",
+                "i",
+                "5"
+              ]
+            }
+          ],
+          "startVariables": [
+            "LPartialEvaluatorDummy;!#0",
+            "empty"
+          ],
+          "startStack": [],
+          "startOffset": 0,
+          "blockEvaluationStack": []
+        },
+        {
+          "evaluations": [
+            {
+              "instruction": "jsr +4",
+              "instructionOffset": 13,
+              "variablesBefore": [
+                "LPartialEvaluatorDummy;!#0",
+                "empty"
+              ],
+              "stackBefore": [
+                "i"
+              ],
+              "jsrBlockEvalTracker": [
+                {
+                  "evaluations": [
+                    {
+                      "instruction": "athrow",
+                      "instructionOffset": 16,
+                      "variablesBefore": [
+                        "LPartialEvaluatorDummy;!#0",
+                        "16:"
+                      ],
+                      "stackBefore": [
+                        "i",
+                        "LPartialEvaluatorDummy;!#0"
+                      ]
+                    }
+                  ],
+                  "startVariables": [
+                    "LPartialEvaluatorDummy;!#0",
+                    "16:"
+                  ],
+                  "startStack": [
+                    "i",
+                    "LPartialEvaluatorDummy;!#0"
+                  ],
+                  "startOffset": 16,
+                  "blockEvaluationStack": []
+                },
+                {
+                  "evaluations": [
+                    {
+                      "instruction": "iconst_5",
+                      "instructionOffset": 8,
+                      "variablesBefore": [
+                        "LPartialEvaluatorDummy;!#0",
+                        "empty"
+                      ],
+                      "stackBefore": [
+                        "i"
+                      ]
+                    },
+                    {
+                      "instruction": "isub",
+                      "instructionOffset": 9,
+                      "variablesBefore": [
+                        "LPartialEvaluatorDummy;!#0",
+                        "empty"
+                      ],
+                      "stackBefore": [
+                        "i",
+                        "5"
+                      ]
+                    },
+                    {
+                      "instruction": "goto -7",
+                      "instructionOffset": 10,
+                      "variablesBefore": [
+                        "LPartialEvaluatorDummy;!#0",
+                        "empty"
+                      ],
+                      "stackBefore": [
+                        "i"
+                      ]
+                    },
+                    {
+                      "instruction": "dup",
+                      "instructionOffset": 3,
+                      "variablesBefore": [
+                        "LPartialEvaluatorDummy;!#0",
+                        "empty"
+                      ],
+                      "stackBefore": [
+                        "i"
+                      ]
+                    },
+                    {
+                      "instruction": "iconst_5",
+                      "instructionOffset": 4,
+                      "variablesBefore": [
+                        "LPartialEvaluatorDummy;!#0",
+                        "empty"
+                      ],
+                      "stackBefore": [
+                        "i",
+                        "i"
+                      ]
+                    },
+                    {
+                      "instruction": "if_icmple +8",
+                      "instructionOffset": 5,
+                      "updatedEvaluationStack": [
+                        {
+                          "variables": [
+                            "LPartialEvaluatorDummy;!#0",
+                            "empty"
+                          ],
+                          "stack": [
+                            "i"
+                          ],
+                          "startOffset": 8
+                        },
+                        {
+                          "variables": [
+                            "LPartialEvaluatorDummy;!#0",
+                            "empty"
+                          ],
+                          "stack": [
+                            "i"
+                          ],
+                          "startOffset": 13
+                        }
+                      ],
+                      "variablesBefore": [
+                        "LPartialEvaluatorDummy;!#0",
+                        "empty"
+                      ],
+                      "stackBefore": [
+                        "i",
+                        "i",
+                        "5"
+                      ]
+                    }
+                  ],
+                  "startVariables": [
+                    "LPartialEvaluatorDummy;!#0",
+                    "empty"
+                  ],
+                  "startStack": [
+                    "i"
+                  ],
+                  "startOffset": 8,
+                  "blockEvaluationStack": []
+                },
+                {
+                  "evaluations": [
+                    {
+                      "instruction": "jsr +4",
+                      "instructionOffset": 13,
+                      "variablesBefore": [
+                        "LPartialEvaluatorDummy;!#0",
+                        "empty"
+                      ],
+                      "stackBefore": [
+                        "i"
+                      ],
+                      "jsrBlockEvalTracker": [
+                        {
+                          "evaluations": [
+                            {
+                              "instruction": "athrow",
+                              "instructionOffset": 16,
+                              "variablesBefore": [
+                                "LPartialEvaluatorDummy;!#0",
+                                "16:"
+                              ],
+                              "stackBefore": [
+                                "i",
+                                "LPartialEvaluatorDummy;!#0"
+                              ]
+                            }
+                          ],
+                          "startVariables": [
+                            "LPartialEvaluatorDummy;!#0",
+                            "16:"
+                          ],
+                          "startStack": [
+                            "i",
+                            "LPartialEvaluatorDummy;!#0"
+                          ],
+                          "startOffset": 16,
+                          "blockEvaluationStack": []
+                        },
+                        {
+                          "evaluations": [
+                            {
+                              "instruction": "iconst_5",
+                              "instructionOffset": 8,
+                              "variablesBefore": [
+                                "LPartialEvaluatorDummy;!#0",
+                                "empty"
+                              ],
+                              "stackBefore": [
+                                "i"
+                              ]
+                            },
+                            {
+                              "instruction": "isub",
+                              "instructionOffset": 9,
+                              "variablesBefore": [
+                                "LPartialEvaluatorDummy;!#0",
+                                "empty"
+                              ],
+                              "stackBefore": [
+                                "i",
+                                "5"
+                              ]
+                            },
+                            {
+                              "isSeenBefore": true
+                            }
+                          ],
+                          "exceptionHandlerInfo": {
+                            "catchStartOffset": 3,
+                            "catchEndOffset": 21,
+                            "catchType": "java/lang/Throwable"
+                          },
+                          "startVariables": [
+                            "LPartialEvaluatorDummy;!#0",
+                            "empty"
+                          ],
+                          "startStack": [
+                            "i"
+                          ],
+                          "startOffset": 8,
+                          "blockEvaluationStack": []
+                        },
+                        {
+                          "evaluations": [
+                            {
+                              "instruction": "iconst_5",
+                              "instructionOffset": 21,
+                              "variablesBefore": [
+                                "LPartialEvaluatorDummy;!#0",
+                                "empty"
+                              ],
+                              "stackBefore": [
+                                "Ljava/lang/Throwable;?!#1"
+                              ]
+                            },
+                            {
+                              "instruction": "ireturn",
+                              "instructionOffset": 22,
+                              "variablesBefore": [
+                                "LPartialEvaluatorDummy;!#0",
+                                "empty"
+                              ],
+                              "stackBefore": [
+                                "Ljava/lang/Throwable;?!#1",
+                                "5"
+                              ]
+                            }
+                          ],
+                          "exceptionHandlerInfo": {
+                            "catchStartOffset": 3,
+                            "catchEndOffset": 21,
+                            "catchType": "java/lang/Throwable"
+                          },
+                          "startVariables": [
+                            "LPartialEvaluatorDummy;!#0",
+                            "empty"
+                          ],
+                          "startStack": [
+                            "Ljava/lang/Throwable;?!#1"
+                          ],
+                          "startOffset": 21,
+                          "blockEvaluationStack": []
+                        },
+                        {
+                          "evaluations": [
+                            {
+                              "instruction": "iconst_5",
+                              "instructionOffset": 21,
+                              "variablesBefore": [
+                                "LPartialEvaluatorDummy;!#0",
+                                "empty"
+                              ],
+                              "stackBefore": [
+                                "Ljava/lang/Throwable;?!#2"
+                              ]
+                            },
+                            {
+                              "instruction": "ireturn",
+                              "instructionOffset": 22,
+                              "variablesBefore": [
+                                "LPartialEvaluatorDummy;!#0",
+                                "empty"
+                              ],
+                              "stackBefore": [
+                                "Ljava/lang/Throwable;?!#2",
+                                "5"
+                              ]
+                            }
+                          ],
+                          "exceptionHandlerInfo": {
+                            "catchStartOffset": 3,
+                            "catchEndOffset": 21,
+                            "catchType": "java/lang/Throwable"
+                          },
+                          "startVariables": [
+                            "LPartialEvaluatorDummy;!#0",
+                            "empty"
+                          ],
+                          "startStack": [
+                            "Ljava/lang/Throwable;?!#2"
+                          ],
+                          "startOffset": 21,
+                          "blockEvaluationStack": []
+                        },
+                        {
+                          "evaluations": [
+                            {
+                              "instruction": "iconst_5",
+                              "instructionOffset": 21,
+                              "variablesBefore": [
+                                "LPartialEvaluatorDummy;!#0",
+                                "empty"
+                              ],
+                              "stackBefore": [
+                                "Ljava/lang/Throwable;?!#3"
+                              ]
+                            },
+                            {
+                              "instruction": "ireturn",
+                              "instructionOffset": 22,
+                              "variablesBefore": [
+                                "LPartialEvaluatorDummy;!#0",
+                                "empty"
+                              ],
+                              "stackBefore": [
+                                "Ljava/lang/Throwable;?!#3",
+                                "5"
+                              ]
+                            }
+                          ],
+                          "exceptionHandlerInfo": {
+                            "catchStartOffset": 3,
+                            "catchEndOffset": 21,
+                            "catchType": "java/lang/Throwable"
+                          },
+                          "startVariables": [
+                            "LPartialEvaluatorDummy;!#0",
+                            "empty"
+                          ],
+                          "startStack": [
+                            "Ljava/lang/Throwable;?!#3"
+                          ],
+                          "startOffset": 21,
+                          "blockEvaluationStack": []
+                        },
+                        {
+                          "evaluations": [
+                            {
+                              "instruction": "iconst_5",
+                              "instructionOffset": 21,
+                              "variablesBefore": [
+                                "LPartialEvaluatorDummy;!#0",
+                                "empty"
+                              ],
+                              "stackBefore": [
+                                "Ljava/lang/Throwable;?!#4"
+                              ]
+                            },
+                            {
+                              "instruction": "ireturn",
+                              "instructionOffset": 22,
+                              "variablesBefore": [
+                                "LPartialEvaluatorDummy;!#0",
+                                "empty"
+                              ],
+                              "stackBefore": [
+                                "Ljava/lang/Throwable;?!#4",
+                                "5"
+                              ]
+                            }
+                          ],
+                          "exceptionHandlerInfo": {
+                            "catchStartOffset": 3,
+                            "catchEndOffset": 21,
+                            "catchType": "java/lang/Throwable"
+                          },
+                          "startVariables": [
+                            "LPartialEvaluatorDummy;!#0",
+                            "empty"
+                          ],
+                          "startStack": [
+                            "Ljava/lang/Throwable;?!#4"
+                          ],
+                          "startOffset": 21,
+                          "blockEvaluationStack": []
+                        },
+                        {
+                          "evaluations": [
+                            {
+                              "instruction": "iconst_5",
+                              "instructionOffset": 21,
+                              "variablesBefore": [
+                                "LPartialEvaluatorDummy;!#0",
+                                "empty"
+                              ],
+                              "stackBefore": [
+                                "Ljava/lang/Throwable;?!#5"
+                              ]
+                            },
+                            {
+                              "instruction": "ireturn",
+                              "instructionOffset": 22,
+                              "variablesBefore": [
+                                "LPartialEvaluatorDummy;!#0",
+                                "empty"
+                              ],
+                              "stackBefore": [
+                                "Ljava/lang/Throwable;?!#5",
+                                "5"
+                              ]
+                            }
+                          ],
+                          "exceptionHandlerInfo": {
+                            "catchStartOffset": 3,
+                            "catchEndOffset": 21,
+                            "catchType": "java/lang/Throwable"
+                          },
+                          "startVariables": [
+                            "LPartialEvaluatorDummy;!#0",
+                            "empty"
+                          ],
+                          "startStack": [
+                            "Ljava/lang/Throwable;?!#5"
+                          ],
+                          "startOffset": 21,
+                          "blockEvaluationStack": []
+                        },
+                        {
+                          "evaluations": [
+                            {
+                              "isGeneralization": true,
+                              "timesSeen": 5,
+                              "instruction": "iconst_5",
+                              "instructionOffset": 21,
+                              "variablesBefore": [
+                                "LPartialEvaluatorDummy;!#0",
+                                "empty"
+                              ],
+                              "stackBefore": [
+                                "Ljava/lang/Throwable;?!"
+                              ]
+                            },
+                            {
+                              "isGeneralization": true,
+                              "timesSeen": 5,
+                              "instruction": "ireturn",
+                              "instructionOffset": 22,
+                              "variablesBefore": [
+                                "LPartialEvaluatorDummy;!#0",
+                                "empty"
+                              ],
+                              "stackBefore": [
+                                "Ljava/lang/Throwable;?!",
+                                "5"
+                              ]
+                            }
+                          ],
+                          "exceptionHandlerInfo": {
+                            "catchStartOffset": 3,
+                            "catchEndOffset": 21,
+                            "catchType": "java/lang/Throwable"
+                          },
+                          "startVariables": [
+                            "LPartialEvaluatorDummy;!#0",
+                            "empty"
+                          ],
+                          "startStack": [
+                            "Ljava/lang/Throwable;?!#6"
+                          ],
+                          "startOffset": 21,
+                          "blockEvaluationStack": []
+                        },
+                        {
+                          "evaluations": [
+                            {
+                              "isSeenBefore": true
+                            }
+                          ],
+                          "exceptionHandlerInfo": {
+                            "catchStartOffset": 3,
+                            "catchEndOffset": 21,
+                            "catchType": "java/lang/Throwable"
+                          },
+                          "startVariables": [
+                            "LPartialEvaluatorDummy;!#0",
+                            "empty"
+                          ],
+                          "startStack": [
+                            "Ljava/lang/Throwable;?!#7"
+                          ],
+                          "startOffset": 21,
+                          "blockEvaluationStack": []
+                        }
+                      ]
+                    }
+                  ],
+                  "startVariables": [
+                    "LPartialEvaluatorDummy;!#0",
+                    "empty"
+                  ],
+                  "startStack": [
+                    "i"
+                  ],
+                  "startOffset": 13,
+                  "blockEvaluationStack": [
+                    {
+                      "variables": [
+                        "LPartialEvaluatorDummy;!#0",
+                        "empty"
+                      ],
+                      "stack": [
+                        "i"
+                      ],
+                      "startOffset": 8
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "startVariables": [
+            "LPartialEvaluatorDummy;!#0",
+            "empty"
+          ],
+          "startStack": [
+            "i"
+          ],
+          "startOffset": 13,
+          "blockEvaluationStack": [
+            {
+              "variables": [
+                "LPartialEvaluatorDummy;!#0",
+                "empty"
+              ],
+              "stack": [
+                "i"
+              ],
+              "startOffset": 8
+            }
+          ]
+        },
+        {
+          "evaluations": [],
+          "startOffset": 21,
+          "blockEvaluationStack": []
+        },
+        {
+          "evaluations": [],
+          "startOffset": 21,
+          "blockEvaluationStack": []
+        },
+        {
+          "evaluations": [],
+          "startOffset": 21,
+          "blockEvaluationStack": []
+        },
+        {
+          "evaluations": [],
+          "startOffset": 21,
+          "blockEvaluationStack": []
+        },
+        {
+          "evaluations": [],
+          "startOffset": 21,
+          "blockEvaluationStack": []
+        },
+        {
+          "evaluations": [],
+          "startOffset": 21,
+          "blockEvaluationStack": []
+        },
+        {
+          "evaluations": [],
+          "startOffset": 21,
+          "blockEvaluationStack": []
+        }
+      ]
+    }
+  ]
+}

@@ -109,7 +109,8 @@
             "LPartialEvaluatorDummy;!#0"
           ],
           "startStack": [],
-          "startOffset": 0
+          "startOffset": 0,
+          "blockEvaluationStack": []
         },
         {
           "evaluations": [
@@ -130,7 +131,18 @@
           "startStack": [
             "50"
           ],
-          "startOffset": 12
+          "startOffset": 12,
+          "blockEvaluationStack": [
+            {
+              "variables": [
+                "LPartialEvaluatorDummy;!#0"
+              ],
+              "stack": [
+                "50"
+              ],
+              "startOffset": 7
+            }
+          ]
         },
         {
           "evaluations": [
@@ -225,7 +237,8 @@
           "startStack": [
             "50"
           ],
-          "startOffset": 7
+          "startOffset": 7,
+          "blockEvaluationStack": []
         },
         {
           "evaluations": [
@@ -246,7 +259,18 @@
           "startStack": [
             "45"
           ],
-          "startOffset": 12
+          "startOffset": 12,
+          "blockEvaluationStack": [
+            {
+              "variables": [
+                "LPartialEvaluatorDummy;!#0"
+              ],
+              "stack": [
+                "45"
+              ],
+              "startOffset": 7
+            }
+          ]
         },
         {
           "evaluations": [
@@ -341,7 +365,8 @@
           "startStack": [
             "45"
           ],
-          "startOffset": 7
+          "startOffset": 7,
+          "blockEvaluationStack": []
         },
         {
           "evaluations": [
@@ -362,7 +387,18 @@
           "startStack": [
             "40"
           ],
-          "startOffset": 12
+          "startOffset": 12,
+          "blockEvaluationStack": [
+            {
+              "variables": [
+                "LPartialEvaluatorDummy;!#0"
+              ],
+              "stack": [
+                "40"
+              ],
+              "startOffset": 7
+            }
+          ]
         },
         {
           "evaluations": [
@@ -457,7 +493,8 @@
           "startStack": [
             "40"
           ],
-          "startOffset": 7
+          "startOffset": 7,
+          "blockEvaluationStack": []
         },
         {
           "evaluations": [
@@ -478,7 +515,18 @@
           "startStack": [
             "35"
           ],
-          "startOffset": 12
+          "startOffset": 12,
+          "blockEvaluationStack": [
+            {
+              "variables": [
+                "LPartialEvaluatorDummy;!#0"
+              ],
+              "stack": [
+                "35"
+              ],
+              "startOffset": 7
+            }
+          ]
         },
         {
           "evaluations": [
@@ -573,7 +621,8 @@
           "startStack": [
             "35"
           ],
-          "startOffset": 7
+          "startOffset": 7,
+          "blockEvaluationStack": []
         },
         {
           "evaluations": [
@@ -594,7 +643,18 @@
           "startStack": [
             "30"
           ],
-          "startOffset": 12
+          "startOffset": 12,
+          "blockEvaluationStack": [
+            {
+              "variables": [
+                "LPartialEvaluatorDummy;!#0"
+              ],
+              "stack": [
+                "30"
+              ],
+              "startOffset": 7
+            }
+          ]
         },
         {
           "evaluations": [
@@ -695,7 +755,8 @@
           "startStack": [
             "30"
           ],
-          "startOffset": 7
+          "startOffset": 7,
+          "blockEvaluationStack": []
         },
         {
           "evaluations": [
@@ -718,7 +779,18 @@
           "startStack": [
             "i"
           ],
-          "startOffset": 12
+          "startOffset": 12,
+          "blockEvaluationStack": [
+            {
+              "variables": [
+                "LPartialEvaluatorDummy;!#0"
+              ],
+              "stack": [
+                "i"
+              ],
+              "startOffset": 7
+            }
+          ]
         },
         {
           "evaluations": [
@@ -769,7 +841,8 @@
           "startStack": [
             "i"
           ],
-          "startOffset": 7
+          "startOffset": 7,
+          "blockEvaluationStack": []
         }
       ]
     }
