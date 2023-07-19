@@ -5,75 +5,28 @@ import java.io.BufferedReader
 import java.io.FileReader
 
 class StateTracker {
-    class CodeAttributeTracker(var clazz: String, var method: String, var parameters: String) {
-        class InstructionBlock(var variables: String, var stack: String, var startOffset: Int)
+
+    class CodeAttributeTracker(var clazz: String, var method: String, var parameters: List<String>) {
+        class InstructionBlock(var variables: List<String>, var stack: List<String>, var startOffset: Int)
+        class ExceptionHandlerInfo(var catchStartOffset: Int, var catchEndOffset: Int, var catchType: String)
         class InstructionTracker(var offset: Int, var instruction: String)
         class BlockEvaluationTracker(
-            var startVariables: String,
-            var startStack: String,
+            var startVariables: List<String>,
+            var startStack: List<String>,
             var startOffset: Int,
         ) {
             class InstructionEvaluationTracker(
                 var isSeenBefore: Boolean?,
                 var isGeneralization: Boolean?,
-                timesSeen: Int?,
+                var timesSeen: Int?,
                 var instruction: String?,
                 var instructionOffset: Int?,
                 var updatedEvaluationStack: List<InstructionBlock>?,
-                var variablesBefore: String?,
-                var stackBefore: String?,
-            ) {
-                var timesSeen: Int? = null
-
-                companion object {
-                    fun seenIndicator(): InstructionEvaluationTracker {
-                        return InstructionEvaluationTracker(
-                            true,
-                            null,
-                            null,
-                            null,
-                            null,
-                            null,
-                            null,
-                            null,
-                        )
-                    }
-
-                    fun generalizationIndicator(timesSeen: Int): InstructionEvaluationTracker {
-                        return InstructionEvaluationTracker(
-                            null,
-                            true,
-                            timesSeen,
-                            null,
-                            null,
-                            null,
-                            null,
-                            null,
-                        )
-                    }
-
-                    fun instructionTracker(
-                        instruction: String?,
-                        instructionOffset: Int,
-                        evaluationBlockStack: List<InstructionBlock>?,
-                        variablesBefore: String?,
-                        stackBefore: String?,
-                    ): InstructionEvaluationTracker {
-                        return InstructionEvaluationTracker(
-                            null,
-                            null,
-                            null,
-                            instruction,
-                            instructionOffset,
-                            evaluationBlockStack,
-                            variablesBefore,
-                            stackBefore,
-                        )
-                    }
-                }
-            }
-
+                var variablesBefore: List<String>?,
+                var stackBefore: List<String>?,
+            )
             var evaluations: List<InstructionEvaluationTracker> = ArrayList()
+            var exceptionHandlerInfo: ExceptionHandlerInfo? = null
 
             val lastEvaluation: InstructionEvaluationTracker?
                 get() = if (evaluations.isEmpty()) {
@@ -85,6 +38,7 @@ class StateTracker {
 
         var instructions: List<InstructionTracker> = ArrayList()
         var blockEvaluations: List<BlockEvaluationTracker> = ArrayList()
+        var lastEvaluationStack: List<InstructionBlock> = ArrayList()
 
         val lastBlockEvaluation: BlockEvaluationTracker?
             get() {
@@ -106,14 +60,6 @@ class StateTracker {
 
     val codeAttributes: List<CodeAttributeTracker> = ArrayList()
     var error: ErrorTracker? = null
-    val lastCodeAttribute: CodeAttributeTracker?
-        get() {
-            return if (codeAttributes.isEmpty()) {
-                null
-            } else {
-                codeAttributes.get(codeAttributes.size - 1)
-            }
-        }
 
     companion object {
         /**
