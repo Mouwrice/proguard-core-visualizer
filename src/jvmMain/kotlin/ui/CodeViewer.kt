@@ -82,7 +82,8 @@ fun CodeViewer(viewModel: DebuggerViewModel) {
                 stateTracker?.codeAttributes?.forEachIndexed { index, codeAttribute ->
                     item {
                         Column(
-                            Modifier.fillMaxWidth().padding(bottom = 10.dp).background(Colors.LightGreen.value.copy(alpha = 0.2F)),
+                            Modifier.fillMaxWidth().padding(bottom = 10.dp)
+                                .background(Colors.LightGreen.value.copy(alpha = 0.2F)),
                         ) {
                             Text(
                                 "${codeAttribute.clazz}::${codeAttribute.method}",
@@ -96,7 +97,10 @@ fun CodeViewer(viewModel: DebuggerViewModel) {
                                 fontFamily = FontFamily.Monospace,
                                 modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
                             )
-                            Divider(color = Colors.DarkGreen.value, modifier = Modifier.padding(top = 8.dp).shadow(4.dp))
+                            Divider(
+                                color = Colors.DarkGreen.value,
+                                modifier = Modifier.padding(top = 8.dp).shadow(4.dp),
+                            )
                         }
                     }
                     codeAttribute.instructions.forEach {
@@ -133,25 +137,23 @@ fun CodeViewer(viewModel: DebuggerViewModel) {
                         }
 
                         // There is an error to display at the current instruction
-                        if (isCurrent && viewModel.stateTracker?.error != null) {
-                            val error = viewModel.stateTracker?.error
-                            if (error != null && error.instructionOffset == it.offset && error.clazz == codeAttribute.clazz && error.method == codeAttribute.method) {
-                                item {
-                                    Column(
-                                        Modifier.fillMaxWidth().padding(bottom = 10.dp)
-                                            .background(Colors.Red.value.copy(alpha = 0.2F)),
-                                    ) {
-                                        Divider(
-                                            color = Colors.Red.value,
-                                            modifier = Modifier.shadow(4.dp),
-                                        )
-                                        Text(
-                                            "error: ${error.message}",
-                                            style = MaterialTheme.typography.bodySmall,
-                                            fontFamily = FontFamily.Monospace,
-                                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 6.dp),
-                                        )
-                                    }
+                        val error = codeAttribute.error
+                        if (isCurrent && error != null && error.instructionOffset == it.offset) {
+                            item {
+                                Column(
+                                    Modifier.fillMaxWidth().padding(bottom = 10.dp)
+                                        .background(Colors.Red.value.copy(alpha = 0.2F)),
+                                ) {
+                                    Divider(
+                                        color = Colors.Red.value,
+                                        modifier = Modifier.shadow(4.dp),
+                                    )
+                                    Text(
+                                        "error: ${error.message}",
+                                        style = MaterialTheme.typography.bodySmall,
+                                        fontFamily = FontFamily.Monospace,
+                                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 6.dp),
+                                    )
                                 }
                             }
                         }

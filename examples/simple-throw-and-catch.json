@@ -1,0 +1,311 @@
+{
+  "codeAttributes": [
+    {
+      "clazz": "PartialEvaluatorDummy",
+      "method": "test()I",
+      "instructions": [
+        {
+          "offset": 0,
+          "instruction": "aload_0 v0"
+        },
+        {
+          "offset": 1,
+          "instruction": "athrow"
+        },
+        {
+          "offset": 2,
+          "instruction": "iconst_1"
+        },
+        {
+          "offset": 3,
+          "instruction": "ireturn"
+        }
+      ],
+      "parameters": [
+        "LPartialEvaluatorDummy;!#0"
+      ],
+      "blockEvaluations": [
+        {
+          "evaluations": [
+            {
+              "instruction": "aload_0 v0",
+              "instructionOffset": 0,
+              "variablesBefore": [
+                "LPartialEvaluatorDummy;!#0"
+              ],
+              "stackBefore": []
+            },
+            {
+              "instruction": "athrow",
+              "instructionOffset": 1,
+              "variablesBefore": [
+                "LPartialEvaluatorDummy;!#0"
+              ],
+              "stackBefore": [
+                "LPartialEvaluatorDummy;!#0"
+              ]
+            }
+          ],
+          "startVariables": [
+            "LPartialEvaluatorDummy;!#0"
+          ],
+          "startStack": [],
+          "startOffset": 0,
+          "blockEvaluationStack": []
+        },
+        {
+          "evaluations": [
+            {
+              "instruction": "iconst_1",
+              "instructionOffset": 2,
+              "variablesBefore": [
+                "LPartialEvaluatorDummy;!#0"
+              ],
+              "stackBefore": [
+                "Ljava/lang/Throwable;?!#1"
+              ]
+            },
+            {
+              "instruction": "ireturn",
+              "instructionOffset": 3,
+              "variablesBefore": [
+                "LPartialEvaluatorDummy;!#0"
+              ],
+              "stackBefore": [
+                "Ljava/lang/Throwable;?!#1",
+                "1"
+              ]
+            }
+          ],
+          "exceptionHandlerInfo": {
+            "catchStartOffset": 0,
+            "catchEndOffset": 2,
+            "catchType": "java/lang/Throwable"
+          },
+          "startVariables": [
+            "LPartialEvaluatorDummy;!#0"
+          ],
+          "startStack": [
+            "Ljava/lang/Throwable;?!#1"
+          ],
+          "startOffset": 2,
+          "blockEvaluationStack": []
+        },
+        {
+          "evaluations": [
+            {
+              "instruction": "iconst_1",
+              "instructionOffset": 2,
+              "variablesBefore": [
+                "LPartialEvaluatorDummy;!#0"
+              ],
+              "stackBefore": [
+                "Ljava/lang/Throwable;?!#2"
+              ]
+            },
+            {
+              "instruction": "ireturn",
+              "instructionOffset": 3,
+              "variablesBefore": [
+                "LPartialEvaluatorDummy;!#0"
+              ],
+              "stackBefore": [
+                "Ljava/lang/Throwable;?!#2",
+                "1"
+              ]
+            }
+          ],
+          "exceptionHandlerInfo": {
+            "catchStartOffset": 0,
+            "catchEndOffset": 2,
+            "catchType": "java/lang/Throwable"
+          },
+          "startVariables": [
+            "LPartialEvaluatorDummy;!#0"
+          ],
+          "startStack": [
+            "Ljava/lang/Throwable;?!#2"
+          ],
+          "startOffset": 2,
+          "blockEvaluationStack": []
+        },
+        {
+          "evaluations": [
+            {
+              "instruction": "iconst_1",
+              "instructionOffset": 2,
+              "variablesBefore": [
+                "LPartialEvaluatorDummy;!#0"
+              ],
+              "stackBefore": [
+                "Ljava/lang/Throwable;?!#3"
+              ]
+            },
+            {
+              "instruction": "ireturn",
+              "instructionOffset": 3,
+              "variablesBefore": [
+                "LPartialEvaluatorDummy;!#0"
+              ],
+              "stackBefore": [
+                "Ljava/lang/Throwable;?!#3",
+                "1"
+              ]
+            }
+          ],
+          "exceptionHandlerInfo": {
+            "catchStartOffset": 0,
+            "catchEndOffset": 2,
+            "catchType": "java/lang/Throwable"
+          },
+          "startVariables": [
+            "LPartialEvaluatorDummy;!#0"
+          ],
+          "startStack": [
+            "Ljava/lang/Throwable;?!#3"
+          ],
+          "startOffset": 2,
+          "blockEvaluationStack": []
+        },
+        {
+          "evaluations": [
+            {
+              "instruction": "iconst_1",
+              "instructionOffset": 2,
+              "variablesBefore": [
+                "LPartialEvaluatorDummy;!#0"
+              ],
+              "stackBefore": [
+                "Ljava/lang/Throwable;?!#4"
+              ]
+            },
+            {
+              "instruction": "ireturn",
+              "instructionOffset": 3,
+              "variablesBefore": [
+                "LPartialEvaluatorDummy;!#0"
+              ],
+              "stackBefore": [
+                "Ljava/lang/Throwable;?!#4",
+                "1"
+              ]
+            }
+          ],
+          "exceptionHandlerInfo": {
+            "catchStartOffset": 0,
+            "catchEndOffset": 2,
+            "catchType": "java/lang/Throwable"
+          },
+          "startVariables": [
+            "LPartialEvaluatorDummy;!#0"
+          ],
+          "startStack": [
+            "Ljava/lang/Throwable;?!#4"
+          ],
+          "startOffset": 2,
+          "blockEvaluationStack": []
+        },
+        {
+          "evaluations": [
+            {
+              "instruction": "iconst_1",
+              "instructionOffset": 2,
+              "variablesBefore": [
+                "LPartialEvaluatorDummy;!#0"
+              ],
+              "stackBefore": [
+                "Ljava/lang/Throwable;?!#5"
+              ]
+            },
+            {
+              "instruction": "ireturn",
+              "instructionOffset": 3,
+              "variablesBefore": [
+                "LPartialEvaluatorDummy;!#0"
+              ],
+              "stackBefore": [
+                "Ljava/lang/Throwable;?!#5",
+                "1"
+              ]
+            }
+          ],
+          "exceptionHandlerInfo": {
+            "catchStartOffset": 0,
+            "catchEndOffset": 2,
+            "catchType": "java/lang/Throwable"
+          },
+          "startVariables": [
+            "LPartialEvaluatorDummy;!#0"
+          ],
+          "startStack": [
+            "Ljava/lang/Throwable;?!#5"
+          ],
+          "startOffset": 2,
+          "blockEvaluationStack": []
+        },
+        {
+          "evaluations": [
+            {
+              "isGeneralization": true,
+              "timesSeen": 5,
+              "instruction": "iconst_1",
+              "instructionOffset": 2,
+              "variablesBefore": [
+                "LPartialEvaluatorDummy;!#0"
+              ],
+              "stackBefore": [
+                "Ljava/lang/Throwable;?!"
+              ]
+            },
+            {
+              "isGeneralization": true,
+              "timesSeen": 5,
+              "instruction": "ireturn",
+              "instructionOffset": 3,
+              "variablesBefore": [
+                "LPartialEvaluatorDummy;!#0"
+              ],
+              "stackBefore": [
+                "Ljava/lang/Throwable;?!",
+                "1"
+              ]
+            }
+          ],
+          "exceptionHandlerInfo": {
+            "catchStartOffset": 0,
+            "catchEndOffset": 2,
+            "catchType": "java/lang/Throwable"
+          },
+          "startVariables": [
+            "LPartialEvaluatorDummy;!#0"
+          ],
+          "startStack": [
+            "Ljava/lang/Throwable;?!#6"
+          ],
+          "startOffset": 2,
+          "blockEvaluationStack": []
+        },
+        {
+          "evaluations": [
+            {
+              "isSeenBefore": true
+            }
+          ],
+          "exceptionHandlerInfo": {
+            "catchStartOffset": 0,
+            "catchEndOffset": 2,
+            "catchType": "java/lang/Throwable"
+          },
+          "startVariables": [
+            "LPartialEvaluatorDummy;!#0"
+          ],
+          "startStack": [
+            "Ljava/lang/Throwable;?!#7"
+          ],
+          "startOffset": 2,
+          "blockEvaluationStack": []
+        }
+      ]
+    }
+  ]
+}

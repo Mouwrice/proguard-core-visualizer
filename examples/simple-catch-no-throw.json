@@ -1,0 +1,59 @@
+{
+  "codeAttributes": [
+    {
+      "clazz": "PartialEvaluatorDummy",
+      "method": "test()I",
+      "instructions": [
+        {
+          "offset": 0,
+          "instruction": "iconst_2"
+        },
+        {
+          "offset": 1,
+          "instruction": "ireturn"
+        },
+        {
+          "offset": 2,
+          "instruction": "iconst_1"
+        },
+        {
+          "offset": 3,
+          "instruction": "ireturn"
+        }
+      ],
+      "parameters": [
+        "LPartialEvaluatorDummy;!#0"
+      ],
+      "blockEvaluations": [
+        {
+          "evaluations": [
+            {
+              "instruction": "iconst_2",
+              "instructionOffset": 0,
+              "variablesBefore": [
+                "LPartialEvaluatorDummy;!#0"
+              ],
+              "stackBefore": []
+            },
+            {
+              "instruction": "ireturn",
+              "instructionOffset": 1,
+              "variablesBefore": [
+                "LPartialEvaluatorDummy;!#0"
+              ],
+              "stackBefore": [
+                "2"
+              ]
+            }
+          ],
+          "startVariables": [
+            "LPartialEvaluatorDummy;!#0"
+          ],
+          "startStack": [],
+          "startOffset": 0,
+          "blockEvaluationStack": []
+        }
+      ]
+    }
+  ]
+}
