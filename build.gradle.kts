@@ -28,7 +28,7 @@ kotlin {
                 implementation("com.darkrockstudios:mpfilepicker:1.2.0")
                 implementation("com.google.code.gson:gson:2.10.1")
                 implementation("com.materialkolor:material-kolor:1.1.0")
-                implementation("com.github.Dansoftowner:jSystemThemeDetector:3.6")
+                implementation("com.github.Dansoftowner:jSystemThemeDetector:3.8")
             }
         }
         val jvmTest by getting
