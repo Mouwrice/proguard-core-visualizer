@@ -14,8 +14,8 @@ import androidx.compose.ui.unit.dp
 @Composable
 @Preview
 fun Category(title: String, maxWidth: Float = 1F, maxHeight: Float = 1F, content: @Composable () -> Unit) {
-    Column(Modifier.fillMaxWidth(maxWidth).fillMaxHeight(maxHeight).padding(all = 2.dp)) {
-        Text(title, style = MaterialTheme.typography.titleMedium, modifier = Modifier.padding(bottom = 4.dp))
+    Column(Modifier.fillMaxWidth(maxWidth).fillMaxHeight(maxHeight)) {
+        Text(title, style = MaterialTheme.typography.titleMedium, modifier = Modifier.padding(vertical = 4.dp))
         content()
     }
 }

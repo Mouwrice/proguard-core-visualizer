@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material3.Button
 import androidx.compose.material3.Divider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -23,13 +22,9 @@ import androidx.compose.ui.unit.dp
 import data.DebuggerViewModel
 
 @Composable
-fun StateTrackerViewer(viewModel: DebuggerViewModel, onFilePickerClick: () -> Unit) {
+fun FileViewer(viewModel: DebuggerViewModel) {
     Column(Modifier.fillMaxHeight().fillMaxWidth(0.5f)) {
         Column(Modifier.fillMaxSize()) {
-            Button(onClick = onFilePickerClick) {
-                Text("Open a machine parsed json file")
-            }
-
             val file = viewModel.file
             if (file != null) {
                 Text(
