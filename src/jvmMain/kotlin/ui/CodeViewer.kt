@@ -119,13 +119,13 @@ fun CodeViewer(viewModel: DebuggerViewModel) {
                                     ) {
                                         Divider(
                                             color = Colors.Red.color,
-                                            modifier = Modifier.padding(bottom = 8.dp).shadow(4.dp),
+                                            modifier = Modifier.shadow(4.dp),
                                         )
                                         Text(
                                             "error: ${error.message}",
                                             style = MaterialTheme.typography.bodyLarge,
                                             fontFamily = FontFamily.Monospace,
-                                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
+                                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 6.dp),
                                         )
                                     }
                                 }
