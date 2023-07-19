@@ -101,6 +101,7 @@ class DebuggerViewModel {
      * Loads the json file at the given path into the view model.
      */
     fun loadJson(path: String) {
+        reset()
         file = File(path)
         stateTracker = StateTracker.fromJson(path)
         update()
@@ -110,11 +111,11 @@ class DebuggerViewModel {
         currentCodeAttribute = 0
         currentBlockEvaluation = 0
         currentEvaluation = 0
-        file = null
-        stateTracker = null
         currentInstruction = ""
         currentInstructionOffset = 0
         variables = emptyList()
         stack = emptyList()
+        stateTracker = null
+        file = null
     }
 }
