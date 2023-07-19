@@ -123,7 +123,7 @@ class StateTracker {
             var evaluations: List<InstructionEvaluationTracker> = ArrayList()
 
             /**
-             * Exception handler info. If present, this instructionBlock regards a exception handler
+             * Exception handler info. If present, this instructionBlock regards an exception handler
              */
             var exceptionHandlerInfo: ExceptionHandlerInfo? = null
 
