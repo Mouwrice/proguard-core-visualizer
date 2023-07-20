@@ -6,21 +6,24 @@ import androidx.compose.runtime.setValue
 import java.io.File
 
 class DebuggerViewModel {
+    /**
+     * The file that is currently loaded.
+     */
     var file by mutableStateOf<File?>(null)
         private set
 
+    /**
+     * All the code attributes parsed from the json file.
+     */
     var codeAttributes by mutableStateOf<List<StateTracker.CodeAttributeTracker>>(emptyList())
         private set
 
-    var currentInstruction by mutableStateOf("")
-        private set
-
+    /**
+     * The current instruction that is being evaluated.
+     */
     var evaluation by mutableStateOf<StateTracker.CodeAttributeTracker.BlockEvaluationTracker.InstructionEvaluationTracker?>(
         null,
     )
-        private set
-
-    var currentInstructionOffset by mutableStateOf(0)
         private set
 
     var currentCodeAttribute by mutableStateOf(0)
@@ -94,10 +97,7 @@ class DebuggerViewModel {
         val blockEvaluations = stateTracker?.codeAttributes?.get(currentCodeAttribute)?.blockEvaluations
         val blockEvaluation = blockEvaluations?.get(currentBlockEvaluation)
         evaluation = blockEvaluation?.evaluations?.get(currentEvaluation)
-
         currentBlockEvaluationStack = blockEvaluation?.blockEvaluationStack ?: emptyList()
-        currentInstruction = evaluation?.instruction ?: ""
-        currentInstructionOffset = evaluation?.instructionOffset ?: 0
     }
 
     /**
@@ -116,15 +116,18 @@ class DebuggerViewModel {
         update()
     }
 
+    /**
+     * Resets the view model to its initial state.
+     */
     fun reset() {
-        currentCodeAttribute = 0
-        currentBlockEvaluation = 0
-        currentBlockEvaluationStack = emptyList()
         currentEvaluation = 0
-        currentInstruction = ""
-        currentInstructionOffset = 0
-        evaluation = null
+        currentBlockEvaluation = 0
+        currentCodeAttribute = 0
+
+        currentBlockEvaluationStack = emptyList()
         codeAttributes = emptyList()
+
+        evaluation = null
         stateTracker = null
         file = null
     }

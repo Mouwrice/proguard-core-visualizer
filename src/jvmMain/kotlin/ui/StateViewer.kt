@@ -25,6 +25,10 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import data.DebuggerViewModel
 
+/**
+ * Displays the current state of the PartialEvaluator.
+ * Showing the current instruction, the stack, the variables and the branches that still need to be evaluated.
+ */
 @Composable
 fun StateViewer(viewModel: DebuggerViewModel) {
     Column(Modifier.fillMaxSize()) {
@@ -33,37 +37,40 @@ fun StateViewer(viewModel: DebuggerViewModel) {
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.fillMaxWidth(),
         ) {
-            Text(
-                viewModel.currentInstruction,
-                fontFamily = FontFamily.Monospace,
-                fontSize = MaterialTheme.typography.titleMedium.fontSize,
-                modifier = Modifier
-                    .clip(MaterialTheme.shapes.medium)
-                    .background(Colors.LightGreen.value.copy(alpha = 0.2F))
-                    .border(
-                        border = BorderStroke(1.dp, Colors.DarkGreen.value),
-                        shape = MaterialTheme.shapes.medium,
-                    ).padding(8.dp),
-            )
+            val evaluation = viewModel.evaluation
+            if (evaluation != null) {
+                Text(
+                    evaluation.instruction ?: "",
+                    fontFamily = FontFamily.Monospace,
+                    fontSize = MaterialTheme.typography.titleMedium.fontSize,
+                    modifier = Modifier
+                        .clip(MaterialTheme.shapes.medium)
+                        .background(Colors.LightGreen.value.copy(alpha = 0.2F))
+                        .border(
+                            border = BorderStroke(1.dp, Colors.DarkGreen.value),
+                            shape = MaterialTheme.shapes.medium,
+                        ).padding(8.dp),
+                )
 
-            // Indicators
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                if (viewModel.evaluation?.isGeneralization != null) {
-                    Icon(
-                        Icons.Rounded.Warning,
-                        contentDescription = "Instruction has been generalized",
-                        tint = Colors.Orange.value,
-                    )
-                    Text("Generalized", color = Colors.Orange.value)
-                }
+                // Indicators for generalization and times seen
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    if (viewModel.evaluation?.isGeneralization != null) {
+                        Icon(
+                            Icons.Rounded.Warning,
+                            contentDescription = "Instruction has been generalized",
+                            tint = Colors.Orange.value,
+                        )
+                        Text("Generalized", color = Colors.Orange.value)
+                    }
 
-                if (viewModel.evaluation?.timesSeen != null) {
-                    Icon(
-                        imageVector = Icons.Outlined.Visibility,
-                        contentDescription = "Amount of time instruction has been seen",
+                    if (viewModel.evaluation?.timesSeen != null) {
+                        Icon(
+                            imageVector = Icons.Outlined.Visibility,
+                            contentDescription = "Amount of time instruction has been seen",
 
-                    )
-                    Text(viewModel.evaluation?.timesSeen.toString())
+                        )
+                        Text(viewModel.evaluation?.timesSeen.toString())
+                    }
                 }
             }
         }

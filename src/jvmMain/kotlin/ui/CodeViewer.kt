@@ -104,7 +104,7 @@ fun CodeViewer(viewModel: DebuggerViewModel) {
                     }
                     codeAttribute.instructions.forEach {
                         val isCurrent =
-                            viewModel.currentCodeAttribute == index && viewModel.currentInstructionOffset == it.offset
+                            viewModel.currentCodeAttribute == index && viewModel.evaluation?.instructionOffset == it.offset
                         item {
                             // Highlight the current instruction
                             val color =
