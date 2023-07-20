@@ -19,7 +19,7 @@ import androidx.compose.ui.window.application
 import com.darkrockstudios.libraries.mpfilepicker.FilePicker
 import com.jthemedetecor.OsThemeDetector
 import com.materialkolor.AnimatedDynamicMaterialTheme
-import data.DebuggerViewModel
+import viewModel.DebuggerViewModel
 import ui.CodeViewer
 import ui.Controls
 import ui.StateViewer
