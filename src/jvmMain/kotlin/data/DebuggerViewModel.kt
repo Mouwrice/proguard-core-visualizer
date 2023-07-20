@@ -9,24 +9,29 @@ class DebuggerViewModel {
     var file by mutableStateOf<File?>(null)
         private set
 
-    var stateTracker by mutableStateOf<StateTracker?>(null)
+    var codeAttributes by mutableStateOf<List<StateTracker.CodeAttributeTracker>>(emptyList())
         private set
 
     var currentInstruction by mutableStateOf("")
         private set
 
+    var evaluation by mutableStateOf<StateTracker.CodeAttributeTracker.BlockEvaluationTracker.InstructionEvaluationTracker?>(
+        null,
+    )
+        private set
+
     var currentInstructionOffset by mutableStateOf(0)
-        private set
-
-    var variables by mutableStateOf<List<String>>(emptyList())
-        private set
-
-    var stack by mutableStateOf<List<String>>(emptyList())
         private set
 
     var currentCodeAttribute by mutableStateOf(0)
         private set
 
+    var currentBlockEvaluationStack by mutableStateOf<List<StateTracker.CodeAttributeTracker.InstructionBlock>>(
+        emptyList(),
+    )
+        private set
+
+    private var stateTracker: StateTracker? = null
     private var currentBlockEvaluation: Int = 0
     private var currentEvaluation: Int = 0
 
@@ -86,15 +91,13 @@ class DebuggerViewModel {
     }
 
     private fun update() {
-        val evaluation = stateTracker?.codeAttributes?.get(currentCodeAttribute)?.blockEvaluations?.get(
-            currentBlockEvaluation,
-        )?.evaluations?.get(currentEvaluation)
+        val blockEvaluations = stateTracker?.codeAttributes?.get(currentCodeAttribute)?.blockEvaluations
+        val blockEvaluation = blockEvaluations?.get(currentBlockEvaluation)
+        evaluation = blockEvaluation?.evaluations?.get(currentEvaluation)
+
+        currentBlockEvaluationStack = blockEvaluation?.blockEvaluationStack ?: emptyList()
         currentInstruction = evaluation?.instruction ?: ""
         currentInstructionOffset = evaluation?.instructionOffset ?: 0
-
-        variables = evaluation?.variablesBefore ?: emptyList()
-
-        stack = evaluation?.stackBefore ?: emptyList()
     }
 
     /**
@@ -103,18 +106,25 @@ class DebuggerViewModel {
     fun loadJson(path: String) {
         reset()
         file = File(path)
-        stateTracker = StateTracker.fromJson(path)
+        try {
+            stateTracker = StateTracker.fromJson(path)
+        } catch (e: Exception) {
+            println("Error while parsing json file: $e")
+            return
+        }
+        codeAttributes = stateTracker?.codeAttributes ?: emptyList()
         update()
     }
 
     fun reset() {
         currentCodeAttribute = 0
         currentBlockEvaluation = 0
+        currentBlockEvaluationStack = emptyList()
         currentEvaluation = 0
         currentInstruction = ""
         currentInstructionOffset = 0
-        variables = emptyList()
-        stack = emptyList()
+        evaluation = null
+        codeAttributes = emptyList()
         stateTracker = null
         file = null
     }

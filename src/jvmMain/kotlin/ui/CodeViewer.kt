@@ -77,9 +77,8 @@ fun CodeViewer(viewModel: DebuggerViewModel) {
                 }
             }
 
-            val stateTracker = viewModel.stateTracker
             LazyColumn {
-                stateTracker?.codeAttributes?.forEachIndexed { index, codeAttribute ->
+                viewModel.codeAttributes.forEachIndexed { index, codeAttribute ->
                     item {
                         Column(
                             Modifier.fillMaxWidth().padding(bottom = 10.dp)
