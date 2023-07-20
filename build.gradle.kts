@@ -1,9 +1,9 @@
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 
 plugins {
-    kotlin("multiplatform")
-    id("org.jetbrains.compose")
-    id("org.jlleitschuh.gradle.ktlint") version "11.5.0"
+    kotlin("multiplatform") version libs.versions.kotlin.multiplatform
+    alias(libs.plugins.jetbrains.compose)
+    alias(libs.plugins.jlleitschuh.ktlint)
 }
 
 group = "com.proguard.visualizer"
@@ -20,18 +20,18 @@ kotlin {
     jvm {
     }
     sourceSets {
+
         val jvmMain by getting {
             dependencies {
                 implementation(compose.desktop.currentOs)
                 api(compose.material3)
                 api(compose.materialIconsExtended)
-                implementation("com.darkrockstudios:mpfilepicker:1.2.0")
-                implementation("com.google.code.gson:gson:2.10.1")
-                implementation("com.materialkolor:material-kolor:1.1.0")
-                implementation("com.github.Dansoftowner:jSystemThemeDetector:3.8")
+                implementation(libs.darkrockstudios.mpfilepicker)
+                implementation(libs.google.gson)
+                implementation(libs.materialkolor)
+                implementation(libs.dansoftowner.jthemedetecor)
             }
         }
-        val jvmTest by getting
     }
 }
 
@@ -47,7 +47,7 @@ compose.desktop {
 }
 
 configure<org.jlleitschuh.gradle.ktlint.KtlintExtension> {
-    version.set("0.50.0")
+    version.set(libs.versions.ktlint)
     verbose.set(true)
     outputToConsole.set(true)
     ignoreFailures.set(true)
