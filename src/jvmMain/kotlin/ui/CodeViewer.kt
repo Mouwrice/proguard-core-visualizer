@@ -77,9 +77,8 @@ fun CodeViewer(viewModel: DebuggerViewModel) {
                 }
             }
 
-            val stateTracker = viewModel.stateTracker
             LazyColumn {
-                stateTracker?.codeAttributes?.forEachIndexed { index, codeAttribute ->
+                viewModel.codeAttributes.forEachIndexed { index, codeAttribute ->
                     item {
                         Column(
                             Modifier.fillMaxWidth().padding(bottom = 10.dp)
@@ -105,7 +104,7 @@ fun CodeViewer(viewModel: DebuggerViewModel) {
                     }
                     codeAttribute.instructions.forEach {
                         val isCurrent =
-                            viewModel.currentCodeAttribute == index && viewModel.currentInstructionOffset == it.offset
+                            viewModel.currentCodeAttribute == index && viewModel.evaluation?.instructionOffset == it.offset
                         item {
                             // Highlight the current instruction
                             val color =
@@ -117,7 +116,7 @@ fun CodeViewer(viewModel: DebuggerViewModel) {
                                 Text(
                                     it.offset.toString(),
                                     style = MaterialTheme.typography.bodySmall,
-                                    modifier = Modifier.padding(horizontal = 8.dp).width(16.dp),
+                                    modifier = Modifier.padding(end = 8.dp).width(32.dp),
                                     textAlign = TextAlign.End,
                                 )
                                 Divider(
