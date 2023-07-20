@@ -1,5 +1,12 @@
 [versions]
+mpfilepicker = "1.2.0"
+gson = "2.10.1"
+materialkolor = "1.1.0"
+jthemedetecor = "3.8"
 
 [libraries]
-
+darkrockstudios-mpfilepicker = { module = "com.darkrockstudios:mpfilepicker", version.ref = "mpfilepicker" }
+google-gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
+materialkolor = { module = "com.materialkolor:material-kolor", version.ref = "materialkolor" }
+dansoftowner-jthemedetecor = { module = "com.github.Dansoftowner:jSystemThemeDetector", version.ref = "jthemedetecor" }
 [plugins]
