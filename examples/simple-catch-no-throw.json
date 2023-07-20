@@ -28,6 +28,9 @@
         {
           "evaluations": [
             {
+              "skipEvaluation": false,
+              "isGeneralization": false,
+              "evaluationCount": 0,
               "instruction": "iconst_2",
               "instructionOffset": 0,
               "variablesBefore": [
@@ -36,6 +39,9 @@
               "stackBefore": []
             },
             {
+              "skipEvaluation": false,
+              "isGeneralization": false,
+              "evaluationCount": 0,
               "instruction": "ireturn",
               "instructionOffset": 1,
               "variablesBefore": [
@@ -51,7 +57,7 @@
           ],
           "startStack": [],
           "startOffset": 0,
-          "blockEvaluationStack": []
+          "branchEvaluationStack": []
         }
       ]
     }

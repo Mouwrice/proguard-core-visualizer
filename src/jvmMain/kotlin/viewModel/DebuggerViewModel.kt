@@ -3,6 +3,9 @@ package viewModel
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import data.BranchTargetRecord
+import data.CodeAttributeRecord
+import data.InstructionEvaluationRecord
 import data.StateTracker
 import java.io.File
 
@@ -16,13 +19,13 @@ class DebuggerViewModel {
     /**
      * All the code attributes parsed from the json file.
      */
-    var codeAttributes by mutableStateOf<List<StateTracker.CodeAttributeTracker>>(emptyList())
+    var codeAttributes by mutableStateOf<List<CodeAttributeRecord>>(emptyList())
         private set
 
     /**
      * The current instruction that is being evaluated.
      */
-    var evaluation by mutableStateOf<StateTracker.CodeAttributeTracker.BlockEvaluationTracker.InstructionEvaluationTracker?>(
+    var evaluation by mutableStateOf<InstructionEvaluationRecord?>(
         null,
     )
         private set
@@ -30,7 +33,7 @@ class DebuggerViewModel {
     var currentCodeAttribute by mutableStateOf(0)
         private set
 
-    var currentBlockEvaluationStack by mutableStateOf<List<StateTracker.CodeAttributeTracker.InstructionBlock>>(
+    var currentBlockEvaluationStack by mutableStateOf<List<BranchTargetRecord>>(
         emptyList(),
     )
         private set
@@ -98,7 +101,7 @@ class DebuggerViewModel {
         val blockEvaluations = stateTracker?.codeAttributes?.get(currentCodeAttribute)?.blockEvaluations
         val blockEvaluation = blockEvaluations?.get(currentBlockEvaluation)
         evaluation = blockEvaluation?.evaluations?.get(currentEvaluation)
-        currentBlockEvaluationStack = blockEvaluation?.blockEvaluationStack ?: emptyList()
+        currentBlockEvaluationStack = blockEvaluation?.branchEvaluationStack ?: emptyList()
     }
 
     /**

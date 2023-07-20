@@ -44,6 +44,9 @@
         {
           "evaluations": [
             {
+              "skipEvaluation": false,
+              "isGeneralization": false,
+              "evaluationCount": 0,
               "instruction": "bipush 50",
               "instructionOffset": 0,
               "variablesBefore": [
@@ -52,6 +55,9 @@
               "stackBefore": []
             },
             {
+              "skipEvaluation": false,
+              "isGeneralization": false,
+              "evaluationCount": 0,
               "instruction": "dup",
               "instructionOffset": 2,
               "variablesBefore": [
@@ -62,6 +68,9 @@
               ]
             },
             {
+              "skipEvaluation": false,
+              "isGeneralization": false,
+              "evaluationCount": 0,
               "instruction": "iconst_5",
               "instructionOffset": 3,
               "variablesBefore": [
@@ -73,23 +82,26 @@
               ]
             },
             {
+              "skipEvaluation": false,
+              "isGeneralization": false,
+              "evaluationCount": 0,
               "instruction": "if_icmple +8",
               "instructionOffset": 4,
               "updatedEvaluationStack": [
                 {
-                  "variables": [
+                  "startVariables": [
                     "LPartialEvaluatorDummy;!#0"
                   ],
-                  "stack": [
+                  "startStack": [
                     "50"
                   ],
                   "startOffset": 7
                 },
                 {
-                  "variables": [
+                  "startVariables": [
                     "LPartialEvaluatorDummy;!#0"
                   ],
-                  "stack": [
+                  "startStack": [
                     "50"
                   ],
                   "startOffset": 12
@@ -110,11 +122,14 @@
           ],
           "startStack": [],
           "startOffset": 0,
-          "blockEvaluationStack": []
+          "branchEvaluationStack": []
         },
         {
           "evaluations": [
             {
+              "skipEvaluation": false,
+              "isGeneralization": false,
+              "evaluationCount": 0,
               "instruction": "ireturn",
               "instructionOffset": 12,
               "variablesBefore": [
@@ -132,12 +147,12 @@
             "50"
           ],
           "startOffset": 12,
-          "blockEvaluationStack": [
+          "branchEvaluationStack": [
             {
-              "variables": [
+              "startVariables": [
                 "LPartialEvaluatorDummy;!#0"
               ],
-              "stack": [
+              "startStack": [
                 "50"
               ],
               "startOffset": 7
@@ -147,6 +162,9 @@
         {
           "evaluations": [
             {
+              "skipEvaluation": false,
+              "isGeneralization": false,
+              "evaluationCount": 0,
               "instruction": "iconst_5",
               "instructionOffset": 7,
               "variablesBefore": [
@@ -157,6 +175,9 @@
               ]
             },
             {
+              "skipEvaluation": false,
+              "isGeneralization": false,
+              "evaluationCount": 0,
               "instruction": "isub",
               "instructionOffset": 8,
               "variablesBefore": [
@@ -168,6 +189,9 @@
               ]
             },
             {
+              "skipEvaluation": false,
+              "isGeneralization": false,
+              "evaluationCount": 0,
               "instruction": "goto -7",
               "instructionOffset": 9,
               "variablesBefore": [
@@ -178,6 +202,9 @@
               ]
             },
             {
+              "skipEvaluation": false,
+              "isGeneralization": false,
+              "evaluationCount": 1,
               "instruction": "dup",
               "instructionOffset": 2,
               "variablesBefore": [
@@ -188,6 +215,9 @@
               ]
             },
             {
+              "skipEvaluation": false,
+              "isGeneralization": false,
+              "evaluationCount": 1,
               "instruction": "iconst_5",
               "instructionOffset": 3,
               "variablesBefore": [
@@ -199,23 +229,26 @@
               ]
             },
             {
+              "skipEvaluation": false,
+              "isGeneralization": false,
+              "evaluationCount": 1,
               "instruction": "if_icmple +8",
               "instructionOffset": 4,
               "updatedEvaluationStack": [
                 {
-                  "variables": [
+                  "startVariables": [
                     "LPartialEvaluatorDummy;!#0"
                   ],
-                  "stack": [
+                  "startStack": [
                     "45"
                   ],
                   "startOffset": 7
                 },
                 {
-                  "variables": [
+                  "startVariables": [
                     "LPartialEvaluatorDummy;!#0"
                   ],
-                  "stack": [
+                  "startStack": [
                     "45"
                   ],
                   "startOffset": 12
@@ -238,11 +271,14 @@
             "50"
           ],
           "startOffset": 7,
-          "blockEvaluationStack": []
+          "branchEvaluationStack": []
         },
         {
           "evaluations": [
             {
+              "skipEvaluation": false,
+              "isGeneralization": false,
+              "evaluationCount": 1,
               "instruction": "ireturn",
               "instructionOffset": 12,
               "variablesBefore": [
@@ -260,12 +296,12 @@
             "45"
           ],
           "startOffset": 12,
-          "blockEvaluationStack": [
+          "branchEvaluationStack": [
             {
-              "variables": [
+              "startVariables": [
                 "LPartialEvaluatorDummy;!#0"
               ],
-              "stack": [
+              "startStack": [
                 "45"
               ],
               "startOffset": 7
@@ -275,6 +311,9 @@
         {
           "evaluations": [
             {
+              "skipEvaluation": false,
+              "isGeneralization": false,
+              "evaluationCount": 1,
               "instruction": "iconst_5",
               "instructionOffset": 7,
               "variablesBefore": [
@@ -285,6 +324,9 @@
               ]
             },
             {
+              "skipEvaluation": false,
+              "isGeneralization": false,
+              "evaluationCount": 1,
               "instruction": "isub",
               "instructionOffset": 8,
               "variablesBefore": [
@@ -296,6 +338,9 @@
               ]
             },
             {
+              "skipEvaluation": false,
+              "isGeneralization": false,
+              "evaluationCount": 1,
               "instruction": "goto -7",
               "instructionOffset": 9,
               "variablesBefore": [
@@ -306,6 +351,9 @@
               ]
             },
             {
+              "skipEvaluation": false,
+              "isGeneralization": false,
+              "evaluationCount": 2,
               "instruction": "dup",
               "instructionOffset": 2,
               "variablesBefore": [
@@ -316,6 +364,9 @@
               ]
             },
             {
+              "skipEvaluation": false,
+              "isGeneralization": false,
+              "evaluationCount": 2,
               "instruction": "iconst_5",
               "instructionOffset": 3,
               "variablesBefore": [
@@ -327,23 +378,26 @@
               ]
             },
             {
+              "skipEvaluation": false,
+              "isGeneralization": false,
+              "evaluationCount": 2,
               "instruction": "if_icmple +8",
               "instructionOffset": 4,
               "updatedEvaluationStack": [
                 {
-                  "variables": [
+                  "startVariables": [
                     "LPartialEvaluatorDummy;!#0"
                   ],
-                  "stack": [
+                  "startStack": [
                     "40"
                   ],
                   "startOffset": 7
                 },
                 {
-                  "variables": [
+                  "startVariables": [
                     "LPartialEvaluatorDummy;!#0"
                   ],
-                  "stack": [
+                  "startStack": [
                     "40"
                   ],
                   "startOffset": 12
@@ -366,11 +420,14 @@
             "45"
           ],
           "startOffset": 7,
-          "blockEvaluationStack": []
+          "branchEvaluationStack": []
         },
         {
           "evaluations": [
             {
+              "skipEvaluation": false,
+              "isGeneralization": false,
+              "evaluationCount": 2,
               "instruction": "ireturn",
               "instructionOffset": 12,
               "variablesBefore": [
@@ -388,12 +445,12 @@
             "40"
           ],
           "startOffset": 12,
-          "blockEvaluationStack": [
+          "branchEvaluationStack": [
             {
-              "variables": [
+              "startVariables": [
                 "LPartialEvaluatorDummy;!#0"
               ],
-              "stack": [
+              "startStack": [
                 "40"
               ],
               "startOffset": 7
@@ -403,6 +460,9 @@
         {
           "evaluations": [
             {
+              "skipEvaluation": false,
+              "isGeneralization": false,
+              "evaluationCount": 2,
               "instruction": "iconst_5",
               "instructionOffset": 7,
               "variablesBefore": [
@@ -413,6 +473,9 @@
               ]
             },
             {
+              "skipEvaluation": false,
+              "isGeneralization": false,
+              "evaluationCount": 2,
               "instruction": "isub",
               "instructionOffset": 8,
               "variablesBefore": [
@@ -424,6 +487,9 @@
               ]
             },
             {
+              "skipEvaluation": false,
+              "isGeneralization": false,
+              "evaluationCount": 2,
               "instruction": "goto -7",
               "instructionOffset": 9,
               "variablesBefore": [
@@ -434,6 +500,9 @@
               ]
             },
             {
+              "skipEvaluation": false,
+              "isGeneralization": false,
+              "evaluationCount": 3,
               "instruction": "dup",
               "instructionOffset": 2,
               "variablesBefore": [
@@ -444,6 +513,9 @@
               ]
             },
             {
+              "skipEvaluation": false,
+              "isGeneralization": false,
+              "evaluationCount": 3,
               "instruction": "iconst_5",
               "instructionOffset": 3,
               "variablesBefore": [
@@ -455,23 +527,26 @@
               ]
             },
             {
+              "skipEvaluation": false,
+              "isGeneralization": false,
+              "evaluationCount": 3,
               "instruction": "if_icmple +8",
               "instructionOffset": 4,
               "updatedEvaluationStack": [
                 {
-                  "variables": [
+                  "startVariables": [
                     "LPartialEvaluatorDummy;!#0"
                   ],
-                  "stack": [
+                  "startStack": [
                     "35"
                   ],
                   "startOffset": 7
                 },
                 {
-                  "variables": [
+                  "startVariables": [
                     "LPartialEvaluatorDummy;!#0"
                   ],
-                  "stack": [
+                  "startStack": [
                     "35"
                   ],
                   "startOffset": 12
@@ -494,11 +569,14 @@
             "40"
           ],
           "startOffset": 7,
-          "blockEvaluationStack": []
+          "branchEvaluationStack": []
         },
         {
           "evaluations": [
             {
+              "skipEvaluation": false,
+              "isGeneralization": false,
+              "evaluationCount": 3,
               "instruction": "ireturn",
               "instructionOffset": 12,
               "variablesBefore": [
@@ -516,12 +594,12 @@
             "35"
           ],
           "startOffset": 12,
-          "blockEvaluationStack": [
+          "branchEvaluationStack": [
             {
-              "variables": [
+              "startVariables": [
                 "LPartialEvaluatorDummy;!#0"
               ],
-              "stack": [
+              "startStack": [
                 "35"
               ],
               "startOffset": 7
@@ -531,6 +609,9 @@
         {
           "evaluations": [
             {
+              "skipEvaluation": false,
+              "isGeneralization": false,
+              "evaluationCount": 3,
               "instruction": "iconst_5",
               "instructionOffset": 7,
               "variablesBefore": [
@@ -541,6 +622,9 @@
               ]
             },
             {
+              "skipEvaluation": false,
+              "isGeneralization": false,
+              "evaluationCount": 3,
               "instruction": "isub",
               "instructionOffset": 8,
               "variablesBefore": [
@@ -552,6 +636,9 @@
               ]
             },
             {
+              "skipEvaluation": false,
+              "isGeneralization": false,
+              "evaluationCount": 3,
               "instruction": "goto -7",
               "instructionOffset": 9,
               "variablesBefore": [
@@ -562,6 +649,9 @@
               ]
             },
             {
+              "skipEvaluation": false,
+              "isGeneralization": false,
+              "evaluationCount": 4,
               "instruction": "dup",
               "instructionOffset": 2,
               "variablesBefore": [
@@ -572,6 +662,9 @@
               ]
             },
             {
+              "skipEvaluation": false,
+              "isGeneralization": false,
+              "evaluationCount": 4,
               "instruction": "iconst_5",
               "instructionOffset": 3,
               "variablesBefore": [
@@ -583,23 +676,26 @@
               ]
             },
             {
+              "skipEvaluation": false,
+              "isGeneralization": false,
+              "evaluationCount": 4,
               "instruction": "if_icmple +8",
               "instructionOffset": 4,
               "updatedEvaluationStack": [
                 {
-                  "variables": [
+                  "startVariables": [
                     "LPartialEvaluatorDummy;!#0"
                   ],
-                  "stack": [
+                  "startStack": [
                     "30"
                   ],
                   "startOffset": 7
                 },
                 {
-                  "variables": [
+                  "startVariables": [
                     "LPartialEvaluatorDummy;!#0"
                   ],
-                  "stack": [
+                  "startStack": [
                     "30"
                   ],
                   "startOffset": 12
@@ -622,11 +718,14 @@
             "35"
           ],
           "startOffset": 7,
-          "blockEvaluationStack": []
+          "branchEvaluationStack": []
         },
         {
           "evaluations": [
             {
+              "skipEvaluation": false,
+              "isGeneralization": false,
+              "evaluationCount": 4,
               "instruction": "ireturn",
               "instructionOffset": 12,
               "variablesBefore": [
@@ -644,12 +743,12 @@
             "30"
           ],
           "startOffset": 12,
-          "blockEvaluationStack": [
+          "branchEvaluationStack": [
             {
-              "variables": [
+              "startVariables": [
                 "LPartialEvaluatorDummy;!#0"
               ],
-              "stack": [
+              "startStack": [
                 "30"
               ],
               "startOffset": 7
@@ -659,6 +758,9 @@
         {
           "evaluations": [
             {
+              "skipEvaluation": false,
+              "isGeneralization": false,
+              "evaluationCount": 4,
               "instruction": "iconst_5",
               "instructionOffset": 7,
               "variablesBefore": [
@@ -669,6 +771,9 @@
               ]
             },
             {
+              "skipEvaluation": false,
+              "isGeneralization": false,
+              "evaluationCount": 4,
               "instruction": "isub",
               "instructionOffset": 8,
               "variablesBefore": [
@@ -680,6 +785,9 @@
               ]
             },
             {
+              "skipEvaluation": false,
+              "isGeneralization": false,
+              "evaluationCount": 4,
               "instruction": "goto -7",
               "instructionOffset": 9,
               "variablesBefore": [
@@ -690,20 +798,22 @@
               ]
             },
             {
+              "skipEvaluation": false,
               "isGeneralization": true,
-              "timesSeen": 5,
+              "evaluationCount": 5,
               "instruction": "dup",
               "instructionOffset": 2,
               "variablesBefore": [
                 "LPartialEvaluatorDummy;!#0"
               ],
               "stackBefore": [
-                "i"
+                "25"
               ]
             },
             {
+              "skipEvaluation": false,
               "isGeneralization": true,
-              "timesSeen": 5,
+              "evaluationCount": 5,
               "instruction": "iconst_5",
               "instructionOffset": 3,
               "variablesBefore": [
@@ -715,25 +825,26 @@
               ]
             },
             {
+              "skipEvaluation": false,
               "isGeneralization": true,
-              "timesSeen": 5,
+              "evaluationCount": 5,
               "instruction": "if_icmple +8",
               "instructionOffset": 4,
               "updatedEvaluationStack": [
                 {
-                  "variables": [
+                  "startVariables": [
                     "LPartialEvaluatorDummy;!#0"
                   ],
-                  "stack": [
+                  "startStack": [
                     "i"
                   ],
                   "startOffset": 7
                 },
                 {
-                  "variables": [
+                  "startVariables": [
                     "LPartialEvaluatorDummy;!#0"
                   ],
-                  "stack": [
+                  "startStack": [
                     "i"
                   ],
                   "startOffset": 12
@@ -756,13 +867,14 @@
             "30"
           ],
           "startOffset": 7,
-          "blockEvaluationStack": []
+          "branchEvaluationStack": []
         },
         {
           "evaluations": [
             {
+              "skipEvaluation": false,
               "isGeneralization": true,
-              "timesSeen": 5,
+              "evaluationCount": 5,
               "instruction": "ireturn",
               "instructionOffset": 12,
               "variablesBefore": [
@@ -780,12 +892,12 @@
             "i"
           ],
           "startOffset": 12,
-          "blockEvaluationStack": [
+          "branchEvaluationStack": [
             {
-              "variables": [
+              "startVariables": [
                 "LPartialEvaluatorDummy;!#0"
               ],
-              "stack": [
+              "startStack": [
                 "i"
               ],
               "startOffset": 7
@@ -795,8 +907,9 @@
         {
           "evaluations": [
             {
+              "skipEvaluation": false,
               "isGeneralization": true,
-              "timesSeen": 5,
+              "evaluationCount": 5,
               "instruction": "iconst_5",
               "instructionOffset": 7,
               "variablesBefore": [
@@ -807,8 +920,9 @@
               ]
             },
             {
+              "skipEvaluation": false,
               "isGeneralization": true,
-              "timesSeen": 5,
+              "evaluationCount": 5,
               "instruction": "isub",
               "instructionOffset": 8,
               "variablesBefore": [
@@ -820,8 +934,9 @@
               ]
             },
             {
+              "skipEvaluation": false,
               "isGeneralization": true,
-              "timesSeen": 5,
+              "evaluationCount": 5,
               "instruction": "goto -7",
               "instructionOffset": 9,
               "variablesBefore": [
@@ -832,7 +947,17 @@
               ]
             },
             {
-              "isSeenBefore": true
+              "skipEvaluation": true,
+              "isGeneralization": false,
+              "evaluationCount": 6,
+              "instruction": "dup",
+              "instructionOffset": 2,
+              "variablesBefore": [
+                "LPartialEvaluatorDummy;!#0"
+              ],
+              "stackBefore": [
+                "i"
+              ]
             }
           ],
           "startVariables": [
@@ -842,7 +967,7 @@
             "i"
           ],
           "startOffset": 7,
-          "blockEvaluationStack": []
+          "branchEvaluationStack": []
         }
       ]
     }

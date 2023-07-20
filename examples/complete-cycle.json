@@ -2,45 +2,6 @@
   "codeAttributes": [
     {
       "clazz": "PartialEvaluatorDummy",
-      "method": "initializer()I",
-      "instructions": [
-        {
-          "offset": 0,
-          "instruction": "bipush 50"
-        },
-        {
-          "offset": 2,
-          "instruction": "ireturn"
-        }
-      ],
-      "parameters": [],
-      "blockEvaluations": [
-        {
-          "evaluations": [
-            {
-              "instruction": "bipush 50",
-              "instructionOffset": 0,
-              "variablesBefore": [],
-              "stackBefore": []
-            },
-            {
-              "instruction": "ireturn",
-              "instructionOffset": 2,
-              "variablesBefore": [],
-              "stackBefore": [
-                "50"
-              ]
-            }
-          ],
-          "startVariables": [],
-          "startStack": [],
-          "startOffset": 0,
-          "blockEvaluationStack": []
-        }
-      ]
-    },
-    {
-      "clazz": "PartialEvaluatorDummy",
       "method": "test()I",
       "instructions": [
         {
@@ -116,6 +77,9 @@
         {
           "evaluations": [
             {
+              "skipEvaluation": false,
+              "isGeneralization": false,
+              "evaluationCount": 0,
               "instruction": "invokestatic #10",
               "instructionOffset": 0,
               "variablesBefore": [
@@ -125,6 +89,9 @@
               "stackBefore": []
             },
             {
+              "skipEvaluation": false,
+              "isGeneralization": false,
+              "evaluationCount": 0,
               "instruction": "dup",
               "instructionOffset": 3,
               "variablesBefore": [
@@ -136,6 +103,9 @@
               ]
             },
             {
+              "skipEvaluation": false,
+              "isGeneralization": false,
+              "evaluationCount": 0,
               "instruction": "iconst_5",
               "instructionOffset": 4,
               "variablesBefore": [
@@ -148,25 +118,28 @@
               ]
             },
             {
+              "skipEvaluation": false,
+              "isGeneralization": false,
+              "evaluationCount": 0,
               "instruction": "if_icmple +8",
               "instructionOffset": 5,
               "updatedEvaluationStack": [
                 {
-                  "variables": [
+                  "startVariables": [
                     "LPartialEvaluatorDummy;!#0",
                     "empty"
                   ],
-                  "stack": [
+                  "startStack": [
                     "i"
                   ],
                   "startOffset": 8
                 },
                 {
-                  "variables": [
+                  "startVariables": [
                     "LPartialEvaluatorDummy;!#0",
                     "empty"
                   ],
-                  "stack": [
+                  "startStack": [
                     "i"
                   ],
                   "startOffset": 13
@@ -189,11 +162,14 @@
           ],
           "startStack": [],
           "startOffset": 0,
-          "blockEvaluationStack": []
+          "branchEvaluationStack": []
         },
         {
           "evaluations": [
             {
+              "skipEvaluation": false,
+              "isGeneralization": false,
+              "evaluationCount": 0,
               "instruction": "jsr +4",
               "instructionOffset": 13,
               "variablesBefore": [
@@ -203,10 +179,13 @@
               "stackBefore": [
                 "i"
               ],
-              "jsrBlockEvalTracker": [
+              "jsrBlockEvaluations": [
                 {
                   "evaluations": [
                     {
+                      "skipEvaluation": false,
+                      "isGeneralization": false,
+                      "evaluationCount": 0,
                       "instruction": "athrow",
                       "instructionOffset": 16,
                       "variablesBefore": [
@@ -228,11 +207,14 @@
                     "LPartialEvaluatorDummy;!#0"
                   ],
                   "startOffset": 16,
-                  "blockEvaluationStack": []
+                  "branchEvaluationStack": []
                 },
                 {
                   "evaluations": [
                     {
+                      "skipEvaluation": false,
+                      "isGeneralization": false,
+                      "evaluationCount": 0,
                       "instruction": "iconst_5",
                       "instructionOffset": 8,
                       "variablesBefore": [
@@ -244,6 +226,9 @@
                       ]
                     },
                     {
+                      "skipEvaluation": false,
+                      "isGeneralization": false,
+                      "evaluationCount": 0,
                       "instruction": "isub",
                       "instructionOffset": 9,
                       "variablesBefore": [
@@ -256,6 +241,9 @@
                       ]
                     },
                     {
+                      "skipEvaluation": false,
+                      "isGeneralization": false,
+                      "evaluationCount": 0,
                       "instruction": "goto -7",
                       "instructionOffset": 10,
                       "variablesBefore": [
@@ -267,6 +255,9 @@
                       ]
                     },
                     {
+                      "skipEvaluation": false,
+                      "isGeneralization": false,
+                      "evaluationCount": 1,
                       "instruction": "dup",
                       "instructionOffset": 3,
                       "variablesBefore": [
@@ -278,6 +269,9 @@
                       ]
                     },
                     {
+                      "skipEvaluation": false,
+                      "isGeneralization": false,
+                      "evaluationCount": 1,
                       "instruction": "iconst_5",
                       "instructionOffset": 4,
                       "variablesBefore": [
@@ -290,25 +284,28 @@
                       ]
                     },
                     {
+                      "skipEvaluation": false,
+                      "isGeneralization": false,
+                      "evaluationCount": 1,
                       "instruction": "if_icmple +8",
                       "instructionOffset": 5,
                       "updatedEvaluationStack": [
                         {
-                          "variables": [
+                          "startVariables": [
                             "LPartialEvaluatorDummy;!#0",
                             "empty"
                           ],
-                          "stack": [
+                          "startStack": [
                             "i"
                           ],
                           "startOffset": 8
                         },
                         {
-                          "variables": [
+                          "startVariables": [
                             "LPartialEvaluatorDummy;!#0",
                             "empty"
                           ],
-                          "stack": [
+                          "startStack": [
                             "i"
                           ],
                           "startOffset": 13
@@ -333,11 +330,14 @@
                     "i"
                   ],
                   "startOffset": 8,
-                  "blockEvaluationStack": []
+                  "branchEvaluationStack": []
                 },
                 {
                   "evaluations": [
                     {
+                      "skipEvaluation": false,
+                      "isGeneralization": false,
+                      "evaluationCount": 1,
                       "instruction": "jsr +4",
                       "instructionOffset": 13,
                       "variablesBefore": [
@@ -347,10 +347,13 @@
                       "stackBefore": [
                         "i"
                       ],
-                      "jsrBlockEvalTracker": [
+                      "jsrBlockEvaluations": [
                         {
                           "evaluations": [
                             {
+                              "skipEvaluation": false,
+                              "isGeneralization": false,
+                              "evaluationCount": 1,
                               "instruction": "athrow",
                               "instructionOffset": 16,
                               "variablesBefore": [
@@ -372,11 +375,14 @@
                             "LPartialEvaluatorDummy;!#0"
                           ],
                           "startOffset": 16,
-                          "blockEvaluationStack": []
+                          "branchEvaluationStack": []
                         },
                         {
                           "evaluations": [
                             {
+                              "skipEvaluation": false,
+                              "isGeneralization": false,
+                              "evaluationCount": 1,
                               "instruction": "iconst_5",
                               "instructionOffset": 8,
                               "variablesBefore": [
@@ -388,6 +394,9 @@
                               ]
                             },
                             {
+                              "skipEvaluation": false,
+                              "isGeneralization": false,
+                              "evaluationCount": 1,
                               "instruction": "isub",
                               "instructionOffset": 9,
                               "variablesBefore": [
@@ -400,14 +409,20 @@
                               ]
                             },
                             {
-                              "isSeenBefore": true
+                              "skipEvaluation": true,
+                              "isGeneralization": false,
+                              "evaluationCount": 1,
+                              "instruction": "goto -7",
+                              "instructionOffset": 10,
+                              "variablesBefore": [
+                                "LPartialEvaluatorDummy;!#0",
+                                "empty"
+                              ],
+                              "stackBefore": [
+                                "i"
+                              ]
                             }
                           ],
-                          "exceptionHandlerInfo": {
-                            "catchStartOffset": 3,
-                            "catchEndOffset": 21,
-                            "catchType": "java/lang/Throwable"
-                          },
                           "startVariables": [
                             "LPartialEvaluatorDummy;!#0",
                             "empty"
@@ -416,11 +431,14 @@
                             "i"
                           ],
                           "startOffset": 8,
-                          "blockEvaluationStack": []
+                          "branchEvaluationStack": []
                         },
                         {
                           "evaluations": [
                             {
+                              "skipEvaluation": false,
+                              "isGeneralization": false,
+                              "evaluationCount": 0,
                               "instruction": "iconst_5",
                               "instructionOffset": 21,
                               "variablesBefore": [
@@ -432,6 +450,9 @@
                               ]
                             },
                             {
+                              "skipEvaluation": false,
+                              "isGeneralization": false,
+                              "evaluationCount": 0,
                               "instruction": "ireturn",
                               "instructionOffset": 22,
                               "variablesBefore": [
@@ -447,6 +468,7 @@
                           "exceptionHandlerInfo": {
                             "catchStartOffset": 3,
                             "catchEndOffset": 21,
+                            "handlerStartOffset": 21,
                             "catchType": "java/lang/Throwable"
                           },
                           "startVariables": [
@@ -456,12 +478,14 @@
                           "startStack": [
                             "Ljava/lang/Throwable;?!#1"
                           ],
-                          "startOffset": 21,
-                          "blockEvaluationStack": []
+                          "startOffset": 21
                         },
                         {
                           "evaluations": [
                             {
+                              "skipEvaluation": false,
+                              "isGeneralization": false,
+                              "evaluationCount": 1,
                               "instruction": "iconst_5",
                               "instructionOffset": 21,
                               "variablesBefore": [
@@ -473,6 +497,9 @@
                               ]
                             },
                             {
+                              "skipEvaluation": false,
+                              "isGeneralization": false,
+                              "evaluationCount": 1,
                               "instruction": "ireturn",
                               "instructionOffset": 22,
                               "variablesBefore": [
@@ -488,6 +515,7 @@
                           "exceptionHandlerInfo": {
                             "catchStartOffset": 3,
                             "catchEndOffset": 21,
+                            "handlerStartOffset": 21,
                             "catchType": "java/lang/Throwable"
                           },
                           "startVariables": [
@@ -497,12 +525,14 @@
                           "startStack": [
                             "Ljava/lang/Throwable;?!#2"
                           ],
-                          "startOffset": 21,
-                          "blockEvaluationStack": []
+                          "startOffset": 21
                         },
                         {
                           "evaluations": [
                             {
+                              "skipEvaluation": false,
+                              "isGeneralization": false,
+                              "evaluationCount": 2,
                               "instruction": "iconst_5",
                               "instructionOffset": 21,
                               "variablesBefore": [
@@ -514,6 +544,9 @@
                               ]
                             },
                             {
+                              "skipEvaluation": false,
+                              "isGeneralization": false,
+                              "evaluationCount": 2,
                               "instruction": "ireturn",
                               "instructionOffset": 22,
                               "variablesBefore": [
@@ -529,6 +562,7 @@
                           "exceptionHandlerInfo": {
                             "catchStartOffset": 3,
                             "catchEndOffset": 21,
+                            "handlerStartOffset": 21,
                             "catchType": "java/lang/Throwable"
                           },
                           "startVariables": [
@@ -538,12 +572,14 @@
                           "startStack": [
                             "Ljava/lang/Throwable;?!#3"
                           ],
-                          "startOffset": 21,
-                          "blockEvaluationStack": []
+                          "startOffset": 21
                         },
                         {
                           "evaluations": [
                             {
+                              "skipEvaluation": false,
+                              "isGeneralization": false,
+                              "evaluationCount": 3,
                               "instruction": "iconst_5",
                               "instructionOffset": 21,
                               "variablesBefore": [
@@ -555,6 +591,9 @@
                               ]
                             },
                             {
+                              "skipEvaluation": false,
+                              "isGeneralization": false,
+                              "evaluationCount": 3,
                               "instruction": "ireturn",
                               "instructionOffset": 22,
                               "variablesBefore": [
@@ -570,6 +609,7 @@
                           "exceptionHandlerInfo": {
                             "catchStartOffset": 3,
                             "catchEndOffset": 21,
+                            "handlerStartOffset": 21,
                             "catchType": "java/lang/Throwable"
                           },
                           "startVariables": [
@@ -579,12 +619,14 @@
                           "startStack": [
                             "Ljava/lang/Throwable;?!#4"
                           ],
-                          "startOffset": 21,
-                          "blockEvaluationStack": []
+                          "startOffset": 21
                         },
                         {
                           "evaluations": [
                             {
+                              "skipEvaluation": false,
+                              "isGeneralization": false,
+                              "evaluationCount": 4,
                               "instruction": "iconst_5",
                               "instructionOffset": 21,
                               "variablesBefore": [
@@ -596,6 +638,9 @@
                               ]
                             },
                             {
+                              "skipEvaluation": false,
+                              "isGeneralization": false,
+                              "evaluationCount": 4,
                               "instruction": "ireturn",
                               "instructionOffset": 22,
                               "variablesBefore": [
@@ -611,6 +656,7 @@
                           "exceptionHandlerInfo": {
                             "catchStartOffset": 3,
                             "catchEndOffset": 21,
+                            "handlerStartOffset": 21,
                             "catchType": "java/lang/Throwable"
                           },
                           "startVariables": [
@@ -620,14 +666,14 @@
                           "startStack": [
                             "Ljava/lang/Throwable;?!#5"
                           ],
-                          "startOffset": 21,
-                          "blockEvaluationStack": []
+                          "startOffset": 21
                         },
                         {
                           "evaluations": [
                             {
+                              "skipEvaluation": false,
                               "isGeneralization": true,
-                              "timesSeen": 5,
+                              "evaluationCount": 5,
                               "instruction": "iconst_5",
                               "instructionOffset": 21,
                               "variablesBefore": [
@@ -635,12 +681,13 @@
                                 "empty"
                               ],
                               "stackBefore": [
-                                "Ljava/lang/Throwable;?!"
+                                "Ljava/lang/Throwable;?!#6"
                               ]
                             },
                             {
+                              "skipEvaluation": false,
                               "isGeneralization": true,
-                              "timesSeen": 5,
+                              "evaluationCount": 5,
                               "instruction": "ireturn",
                               "instructionOffset": 22,
                               "variablesBefore": [
@@ -656,6 +703,7 @@
                           "exceptionHandlerInfo": {
                             "catchStartOffset": 3,
                             "catchEndOffset": 21,
+                            "handlerStartOffset": 21,
                             "catchType": "java/lang/Throwable"
                           },
                           "startVariables": [
@@ -665,18 +713,29 @@
                           "startStack": [
                             "Ljava/lang/Throwable;?!#6"
                           ],
-                          "startOffset": 21,
-                          "blockEvaluationStack": []
+                          "startOffset": 21
                         },
                         {
                           "evaluations": [
                             {
-                              "isSeenBefore": true
+                              "skipEvaluation": true,
+                              "isGeneralization": false,
+                              "evaluationCount": 6,
+                              "instruction": "iconst_5",
+                              "instructionOffset": 21,
+                              "variablesBefore": [
+                                "LPartialEvaluatorDummy;!#0",
+                                "empty"
+                              ],
+                              "stackBefore": [
+                                "Ljava/lang/Throwable;?!"
+                              ]
                             }
                           ],
                           "exceptionHandlerInfo": {
                             "catchStartOffset": 3,
                             "catchEndOffset": 21,
+                            "handlerStartOffset": 21,
                             "catchType": "java/lang/Throwable"
                           },
                           "startVariables": [
@@ -686,8 +745,7 @@
                           "startStack": [
                             "Ljava/lang/Throwable;?!#7"
                           ],
-                          "startOffset": 21,
-                          "blockEvaluationStack": []
+                          "startOffset": 21
                         }
                       ]
                     }
@@ -700,13 +758,13 @@
                     "i"
                   ],
                   "startOffset": 13,
-                  "blockEvaluationStack": [
+                  "branchEvaluationStack": [
                     {
-                      "variables": [
+                      "startVariables": [
                         "LPartialEvaluatorDummy;!#0",
                         "empty"
                       ],
-                      "stack": [
+                      "startStack": [
                         "i"
                       ],
                       "startOffset": 8
@@ -724,53 +782,18 @@
             "i"
           ],
           "startOffset": 13,
-          "blockEvaluationStack": [
+          "branchEvaluationStack": [
             {
-              "variables": [
+              "startVariables": [
                 "LPartialEvaluatorDummy;!#0",
                 "empty"
               ],
-              "stack": [
+              "startStack": [
                 "i"
               ],
               "startOffset": 8
             }
           ]
-        },
-        {
-          "evaluations": [],
-          "startOffset": 21,
-          "blockEvaluationStack": []
-        },
-        {
-          "evaluations": [],
-          "startOffset": 21,
-          "blockEvaluationStack": []
-        },
-        {
-          "evaluations": [],
-          "startOffset": 21,
-          "blockEvaluationStack": []
-        },
-        {
-          "evaluations": [],
-          "startOffset": 21,
-          "blockEvaluationStack": []
-        },
-        {
-          "evaluations": [],
-          "startOffset": 21,
-          "blockEvaluationStack": []
-        },
-        {
-          "evaluations": [],
-          "startOffset": 21,
-          "blockEvaluationStack": []
-        },
-        {
-          "evaluations": [],
-          "startOffset": 21,
-          "blockEvaluationStack": []
         }
       ]
     }
