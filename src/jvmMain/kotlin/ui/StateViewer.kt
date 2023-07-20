@@ -54,7 +54,7 @@ fun StateViewer(viewModel: DebuggerViewModel) {
 
                 // Indicators for generalization and times seen
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    if (viewModel.evaluation?.isGeneralization != null) {
+                    if (evaluation.isGeneralization != null) {
                         Icon(
                             Icons.Rounded.Warning,
                             contentDescription = "Instruction has been generalized",
@@ -63,13 +63,13 @@ fun StateViewer(viewModel: DebuggerViewModel) {
                         Text("Generalized", color = Colors.Orange.value)
                     }
 
-                    if (viewModel.evaluation?.timesSeen != null) {
+                    if (evaluation.timesSeen != null) {
                         Icon(
                             imageVector = Icons.Outlined.Visibility,
                             contentDescription = "Amount of time instruction has been seen",
 
                         )
-                        Text(viewModel.evaluation?.timesSeen.toString())
+                        Text(evaluation.timesSeen.toString())
                     }
                 }
             }
@@ -90,6 +90,9 @@ fun StateViewer(viewModel: DebuggerViewModel) {
     }
 }
 
+/**
+ * Display a list in a column with indexes.
+ */
 @Composable
 fun <T> DisplayList(list: List<T>) {
     LazyColumn(

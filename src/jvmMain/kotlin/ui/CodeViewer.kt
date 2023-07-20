@@ -116,7 +116,7 @@ fun CodeViewer(viewModel: DebuggerViewModel) {
                                 Text(
                                     it.offset.toString(),
                                     style = MaterialTheme.typography.bodySmall,
-                                    modifier = Modifier.padding(horizontal = 8.dp).width(16.dp),
+                                    modifier = Modifier.padding(end = 8.dp).width(32.dp),
                                     textAlign = TextAlign.End,
                                 )
                                 Divider(
