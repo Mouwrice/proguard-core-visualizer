@@ -1,9 +1,9 @@
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 
 plugins {
-    kotlin("multiplatform") version "1.8.20"
-    id("org.jetbrains.compose") version "1.4.1"
-    id("org.jlleitschuh.gradle.ktlint") version "11.5.0"
+    kotlin("multiplatform") version libs.versions.kotlin.multiplatform
+    alias(libs.plugins.jetbrains.compose)
+    alias(libs.plugins.jlleitschuh.ktlint)
 }
 
 group = "com.proguard.visualizer"
@@ -20,6 +20,7 @@ kotlin {
     jvm {
     }
     sourceSets {
+
         val jvmMain by getting {
             dependencies {
                 implementation(compose.desktop.currentOs)
@@ -31,7 +32,6 @@ kotlin {
                 implementation(libs.dansoftowner.jthemedetecor)
             }
         }
-        val jvmTest by getting
     }
 }
 
@@ -47,7 +47,7 @@ compose.desktop {
 }
 
 configure<org.jlleitschuh.gradle.ktlint.KtlintExtension> {
-    version.set("0.50.0")
+    version.set(libs.versions.ktlint)
     verbose.set(true)
     outputToConsole.set(true)
     ignoreFailures.set(true)
