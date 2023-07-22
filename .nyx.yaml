@@ -31,5 +31,3 @@ services:
       AUTHENTICATION_TOKEN: "{{#environmentVariable}}GITHUB_TOKEN{{/environmentVariable}}"
       REPOSITORY_NAME: "proguard-core-visualizer"
       REPOSITORY_OWNER: "Mouwrice"
-summary: true
-verbosity: INFO
