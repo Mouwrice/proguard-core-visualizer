@@ -22,8 +22,13 @@ releasePrefix: v
 releaseTypes:
   publicationServices: 
     - github
-resume: true
 scheme: SEMVER
+git:
+  remotes:
+    origin:
+      authenticationMethod: USER_PASSWORD
+      user: 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
+      password: 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
 services: 
   github: 
     type: "GITHUB"
