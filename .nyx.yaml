@@ -3,7 +3,7 @@ preset: "extended"
 changelog:
   path: "CHANGELOG.md"
   sections:
-    "Added": "^(feat|chore\\(deps\\))$"
+    "Added": "^(feat|chore\\(deps\\)|fix\\(deps\\))$"
     "Fixed": "^fix$"
   substitutions:
     "(?m)#([0-9]+)(?s)": "[#%s](https://example.com/issues/%s)"
