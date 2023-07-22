@@ -1,3 +1,5 @@
+rootProject.name = "proguard-core-visualizer"
+
 pluginManagement {
     repositories {
         gradlePluginPortal()
@@ -6,7 +8,9 @@ pluginManagement {
 }
 
 plugins {
+    // Unnfortunately, version catalogs are not supported in settings.gradle.kts
     id("org.danilopianini.gradle-pre-commit-git-hooks") version "1.1.9"
+    id("com.mooltiverse.oss.nyx") version "2.0.0"
 }
 
 gitHooks {
@@ -24,4 +28,7 @@ gitHooks {
     createHooks()
 }
 
-rootProject.name = "proguard-core-visualizer"
+configure<com.mooltiverse.oss.nyx.gradle.NyxExtension> {
+    dryRun.set(true)
+    preset.set("simple")
+}
