@@ -1,5 +1,13 @@
 # https://github.com/mooltiverse/nyx-github-action
 
+permissions:
+  contents: write
+  deployments: write
+  id-token: read
+  packages: write
+  pages: write
+  statuses: read
+
 name: Nyx Release
 on:
   push:
