@@ -29,6 +29,21 @@ gitHooks {
 }
 
 configure<com.mooltiverse.oss.nyx.gradle.NyxExtension> {
-    dryRun.set(true)
+    // https://mooltiverse.github.io/nyx/guide/user/configuration-reference/changelog/
+    changelog {
+        path = "CHANGELOG.md"
+        sections.set(
+            mutableMapOf(
+                Pair(
+                    "Added",
+                    "^(feat|chore\\(deps\\))$",
+                ),
+                Pair(
+                    "Fixed",
+                    "^fix$",
+                ),
+            ),
+        )
+    }
     preset.set("simple")
 }
