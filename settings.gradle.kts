@@ -10,7 +10,7 @@ pluginManagement {
 plugins {
     // Unnfortunately, version catalogs are not supported in settings.gradle.kts
     id("org.danilopianini.gradle-pre-commit-git-hooks") version "1.1.9"
-    id("com.mooltiverse.oss.nyx") version "2.0.0"
+    id("com.mooltiverse.oss.nyx") version "2.4.6"
 }
 
 gitHooks {
