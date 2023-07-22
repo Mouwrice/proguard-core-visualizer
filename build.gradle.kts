@@ -1,13 +1,8 @@
-import org.jetbrains.compose.desktop.application.dsl.TargetFormat
-
 plugins {
     kotlin("multiplatform") version libs.versions.kotlin.multiplatform
     alias(libs.plugins.jetbrains.compose)
     alias(libs.plugins.jlleitschuh.ktlint)
 }
-
-group = "com.proguard.visualizer"
-version = "1.0.0"
 
 repositories {
     google()
@@ -31,17 +26,6 @@ kotlin {
                 implementation(libs.materialkolor)
                 implementation(libs.dansoftowner.jthemedetecor)
             }
-        }
-    }
-}
-
-compose.desktop {
-    application {
-        mainClass = "MainKt"
-        nativeDistributions {
-            targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
-            packageName = "proguard-core-visualizer"
-            packageVersion = "1.0.0"
         }
     }
 }

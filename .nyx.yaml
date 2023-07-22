@@ -1,0 +1,33 @@
+---
+preset: "extended"
+changelog:
+  path: "CHANGELOG.md"
+  sections:
+    "Added": "^(feat|chore\\(deps\\)|fix\\(deps\\))$"
+    "Fixed": "^fix$"
+  substitutions:
+    "(?m)#([0-9]+)(?s)": "[#%s](https://example.com/issues/%s)"
+commitMessageConventions: 
+  enabled: 
+    - conventionalCommits
+  items: 
+    conventionalCommits: 
+      expression: "(?m)^(?<type>[a-zA-Z0-9_]+)(!)?(\\((?<scope>[a-z ]+)\\))?:( (?<title>.+))$(?s).*"
+      bumpExpressions: 
+        major: "(?s)(?m)^[a-zA-Z0-9_]+(!|.*^(BREAKING( |-)CHANGE: )).*"
+        minor: "(?s)(?m)^feat(?!!|.*^(BREAKING( |-)CHANGE: )).*"
+        patch: "(?s)(?m)^fix(?!!|.*^(BREAKING( |-)CHANGE: )).*"
+initialVersion: "0.1.0"
+releasePrefix: v
+releaseTypes:
+  publicationServices: 
+    - github
+resume: true
+scheme: SEMVER
+services: 
+  github: 
+    type: "GITHUB"
+    options: 
+      AUTHENTICATION_TOKEN: "{{#environmentVariable}}GITHUB_TOKEN{{/environmentVariable}}"
+      REPOSITORY_NAME: "proguard-core-visualizer"
+      REPOSITORY_OWNER: "Mouwrice"
