@@ -1,4 +1,4 @@
-version = libs.versions.project.version
+version = libs.versions.project
 
 plugins {
     kotlin("multiplatform") version libs.versions.kotlin.multiplatform

@@ -1,7 +1,7 @@
 [versions]
 kotlin-multiplatform = "1.8.20"
 ktlint = "0.50.0"
-project-version = "0.1.0"
+project = "0.1.0"
 
 [libraries]
 darkrockstudios-mpfilepicker = { module = "com.darkrockstudios:mpfilepicker", version = "1.2.0" }
