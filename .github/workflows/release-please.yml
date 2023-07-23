@@ -17,3 +17,10 @@ jobs:
         with:
           release-type: node
           package-name: proguard-core-visualizer
+          
+          # https://github.com/googleapis/release-please/blob/main/docs/customizing.md#updating-arbitrary-toml-files
+          # Update the project version in the toml file
+          extra-files: |
+            type: "toml"
+            path: "gradle/libs.versions.toml"
+            jsonpath: "$versions.project-version"
