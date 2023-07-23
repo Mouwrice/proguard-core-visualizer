@@ -1,4 +1,4 @@
-version = "0.1.0"
+version = file("version.txt").readText().trim()
 
 plugins {
     kotlin("multiplatform") version libs.versions.kotlin.multiplatform
