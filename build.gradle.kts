@@ -1,3 +1,5 @@
+version = "0.1.0"
+
 plugins {
     kotlin("multiplatform") version libs.versions.kotlin.multiplatform
     alias(libs.plugins.jetbrains.compose)
