@@ -23,7 +23,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
-import data.DebuggerViewModel
+import viewModel.DebuggerViewModel
 
 /**
  * Displays the current state of the PartialEvaluator.
@@ -40,7 +40,7 @@ fun StateViewer(viewModel: DebuggerViewModel) {
             val evaluation = viewModel.evaluation
             if (evaluation != null) {
                 Text(
-                    evaluation.instruction ?: "",
+                    evaluation.instruction,
                     fontFamily = FontFamily.Monospace,
                     fontSize = MaterialTheme.typography.titleMedium.fontSize,
                     modifier = Modifier
@@ -54,7 +54,7 @@ fun StateViewer(viewModel: DebuggerViewModel) {
 
                 // Indicators for generalization and times seen
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    if (evaluation.isGeneralization != null) {
+                    if (evaluation.isGeneralization) {
                         Icon(
                             Icons.Rounded.Warning,
                             contentDescription = "Instruction has been generalized",
@@ -63,14 +63,11 @@ fun StateViewer(viewModel: DebuggerViewModel) {
                         Text("Generalized", color = Colors.Orange.value)
                     }
 
-                    if (evaluation.timesSeen != null) {
-                        Icon(
-                            imageVector = Icons.Outlined.Visibility,
-                            contentDescription = "Amount of time instruction has been seen",
-
-                        )
-                        Text(evaluation.timesSeen.toString())
-                    }
+                    Icon(
+                        imageVector = Icons.Outlined.Visibility,
+                        contentDescription = "Amount of time instruction has been seen",
+                    )
+                    Text((evaluation.evaluationCount + 1).toString())
                 }
             }
         }

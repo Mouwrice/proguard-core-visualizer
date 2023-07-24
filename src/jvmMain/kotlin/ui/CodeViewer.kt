@@ -32,7 +32,7 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import data.DebuggerViewModel
+import viewModel.DebuggerViewModel
 
 /**
  * Panel that displays all instructions and a pointer to the current instruction.

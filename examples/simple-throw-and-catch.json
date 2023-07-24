@@ -28,6 +28,9 @@
         {
           "evaluations": [
             {
+              "skipEvaluation": false,
+              "isGeneralization": false,
+              "evaluationCount": 0,
               "instruction": "aload_0 v0",
               "instructionOffset": 0,
               "variablesBefore": [
@@ -36,6 +39,9 @@
               "stackBefore": []
             },
             {
+              "skipEvaluation": false,
+              "isGeneralization": false,
+              "evaluationCount": 0,
               "instruction": "athrow",
               "instructionOffset": 1,
               "variablesBefore": [
@@ -51,11 +57,14 @@
           ],
           "startStack": [],
           "startOffset": 0,
-          "blockEvaluationStack": []
+          "branchEvaluationStack": []
         },
         {
           "evaluations": [
             {
+              "skipEvaluation": false,
+              "isGeneralization": false,
+              "evaluationCount": 0,
               "instruction": "iconst_1",
               "instructionOffset": 2,
               "variablesBefore": [
@@ -66,6 +75,9 @@
               ]
             },
             {
+              "skipEvaluation": false,
+              "isGeneralization": false,
+              "evaluationCount": 0,
               "instruction": "ireturn",
               "instructionOffset": 3,
               "variablesBefore": [
@@ -80,6 +92,7 @@
           "exceptionHandlerInfo": {
             "catchStartOffset": 0,
             "catchEndOffset": 2,
+            "handlerStartOffset": 2,
             "catchType": "java/lang/Throwable"
           },
           "startVariables": [
@@ -88,12 +101,14 @@
           "startStack": [
             "Ljava/lang/Throwable;?!#1"
           ],
-          "startOffset": 2,
-          "blockEvaluationStack": []
+          "startOffset": 2
         },
         {
           "evaluations": [
             {
+              "skipEvaluation": false,
+              "isGeneralization": false,
+              "evaluationCount": 1,
               "instruction": "iconst_1",
               "instructionOffset": 2,
               "variablesBefore": [
@@ -104,6 +119,9 @@
               ]
             },
             {
+              "skipEvaluation": false,
+              "isGeneralization": false,
+              "evaluationCount": 1,
               "instruction": "ireturn",
               "instructionOffset": 3,
               "variablesBefore": [
@@ -118,6 +136,7 @@
           "exceptionHandlerInfo": {
             "catchStartOffset": 0,
             "catchEndOffset": 2,
+            "handlerStartOffset": 2,
             "catchType": "java/lang/Throwable"
           },
           "startVariables": [
@@ -126,12 +145,14 @@
           "startStack": [
             "Ljava/lang/Throwable;?!#2"
           ],
-          "startOffset": 2,
-          "blockEvaluationStack": []
+          "startOffset": 2
         },
         {
           "evaluations": [
             {
+              "skipEvaluation": false,
+              "isGeneralization": false,
+              "evaluationCount": 2,
               "instruction": "iconst_1",
               "instructionOffset": 2,
               "variablesBefore": [
@@ -142,6 +163,9 @@
               ]
             },
             {
+              "skipEvaluation": false,
+              "isGeneralization": false,
+              "evaluationCount": 2,
               "instruction": "ireturn",
               "instructionOffset": 3,
               "variablesBefore": [
@@ -156,6 +180,7 @@
           "exceptionHandlerInfo": {
             "catchStartOffset": 0,
             "catchEndOffset": 2,
+            "handlerStartOffset": 2,
             "catchType": "java/lang/Throwable"
           },
           "startVariables": [
@@ -164,12 +189,14 @@
           "startStack": [
             "Ljava/lang/Throwable;?!#3"
           ],
-          "startOffset": 2,
-          "blockEvaluationStack": []
+          "startOffset": 2
         },
         {
           "evaluations": [
             {
+              "skipEvaluation": false,
+              "isGeneralization": false,
+              "evaluationCount": 3,
               "instruction": "iconst_1",
               "instructionOffset": 2,
               "variablesBefore": [
@@ -180,6 +207,9 @@
               ]
             },
             {
+              "skipEvaluation": false,
+              "isGeneralization": false,
+              "evaluationCount": 3,
               "instruction": "ireturn",
               "instructionOffset": 3,
               "variablesBefore": [
@@ -194,6 +224,7 @@
           "exceptionHandlerInfo": {
             "catchStartOffset": 0,
             "catchEndOffset": 2,
+            "handlerStartOffset": 2,
             "catchType": "java/lang/Throwable"
           },
           "startVariables": [
@@ -202,12 +233,14 @@
           "startStack": [
             "Ljava/lang/Throwable;?!#4"
           ],
-          "startOffset": 2,
-          "blockEvaluationStack": []
+          "startOffset": 2
         },
         {
           "evaluations": [
             {
+              "skipEvaluation": false,
+              "isGeneralization": false,
+              "evaluationCount": 4,
               "instruction": "iconst_1",
               "instructionOffset": 2,
               "variablesBefore": [
@@ -218,6 +251,9 @@
               ]
             },
             {
+              "skipEvaluation": false,
+              "isGeneralization": false,
+              "evaluationCount": 4,
               "instruction": "ireturn",
               "instructionOffset": 3,
               "variablesBefore": [
@@ -232,6 +268,7 @@
           "exceptionHandlerInfo": {
             "catchStartOffset": 0,
             "catchEndOffset": 2,
+            "handlerStartOffset": 2,
             "catchType": "java/lang/Throwable"
           },
           "startVariables": [
@@ -240,26 +277,27 @@
           "startStack": [
             "Ljava/lang/Throwable;?!#5"
           ],
-          "startOffset": 2,
-          "blockEvaluationStack": []
+          "startOffset": 2
         },
         {
           "evaluations": [
             {
+              "skipEvaluation": false,
               "isGeneralization": true,
-              "timesSeen": 5,
+              "evaluationCount": 5,
               "instruction": "iconst_1",
               "instructionOffset": 2,
               "variablesBefore": [
                 "LPartialEvaluatorDummy;!#0"
               ],
               "stackBefore": [
-                "Ljava/lang/Throwable;?!"
+                "Ljava/lang/Throwable;?!#6"
               ]
             },
             {
+              "skipEvaluation": false,
               "isGeneralization": true,
-              "timesSeen": 5,
+              "evaluationCount": 5,
               "instruction": "ireturn",
               "instructionOffset": 3,
               "variablesBefore": [
@@ -274,6 +312,7 @@
           "exceptionHandlerInfo": {
             "catchStartOffset": 0,
             "catchEndOffset": 2,
+            "handlerStartOffset": 2,
             "catchType": "java/lang/Throwable"
           },
           "startVariables": [
@@ -282,18 +321,28 @@
           "startStack": [
             "Ljava/lang/Throwable;?!#6"
           ],
-          "startOffset": 2,
-          "blockEvaluationStack": []
+          "startOffset": 2
         },
         {
           "evaluations": [
             {
-              "isSeenBefore": true
+              "skipEvaluation": true,
+              "isGeneralization": false,
+              "evaluationCount": 6,
+              "instruction": "iconst_1",
+              "instructionOffset": 2,
+              "variablesBefore": [
+                "LPartialEvaluatorDummy;!#0"
+              ],
+              "stackBefore": [
+                "Ljava/lang/Throwable;?!"
+              ]
             }
           ],
           "exceptionHandlerInfo": {
             "catchStartOffset": 0,
             "catchEndOffset": 2,
+            "handlerStartOffset": 2,
             "catchType": "java/lang/Throwable"
           },
           "startVariables": [
@@ -302,8 +351,7 @@
           "startStack": [
             "Ljava/lang/Throwable;?!#7"
           ],
-          "startOffset": 2,
-          "blockEvaluationStack": []
+          "startOffset": 2
         }
       ]
     }
