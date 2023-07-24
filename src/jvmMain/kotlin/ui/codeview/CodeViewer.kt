@@ -78,7 +78,7 @@ fun ErrorViewer(error: ErrorRecord) {
  * Display the current instruction. Highlight it if it is the current one.
  */
 @Composable
-fun InstructionViewer(instruction: InstructionRecord, isCurrent: Boolean, inCatch: Boolean) {
+fun InstructionViewer(instruction: InstructionRecord, maxOffsetLength: Int, isCurrent: Boolean, inCatch: Boolean) {
     // Highlight if the instruction is the current one
     val color =
         if (isCurrent) Colors.Red.value.copy(alpha = 0.5F) else MaterialTheme.colorScheme.surface
@@ -89,10 +89,13 @@ fun InstructionViewer(instruction: InstructionRecord, isCurrent: Boolean, inCatc
         Modifier.fillMaxWidth().background(color).padding(2.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
+        // Pad with whitespaces to align the offsets
+        // Compose seems to trim the whitespaces, so we use a special whitespace character
+        val offset = instruction.offset.toString().padStart(maxOffsetLength, ' ')
         Text(
-            instruction.offset.toString(),
+            offset,
             style = MaterialTheme.typography.bodySmall,
-            modifier = Modifier.padding(end = 8.dp).width(32.dp),
+            modifier = Modifier.padding(start = 4.dp, end = 8.dp),
             textAlign = TextAlign.End,
         )
         Divider(
@@ -122,6 +125,9 @@ fun CodeViewer(viewModel: DebuggerViewModel) {
             item {
                 MethodHeader(codeAttribute)
             }
+
+            // Get the length of the offset as string of the last instruction of the current code attribute
+            val maxOffsetLength = codeAttribute.instructions.last().offset.toString().length
 
             // Display the instructions of the current code attribute
             codeAttribute.instructions.forEach {
@@ -166,7 +172,8 @@ fun CodeViewer(viewModel: DebuggerViewModel) {
 
                 // Display the current instruction
                 item {
-                    InstructionViewer(it, isCurrent, inCatch)
+                    println("$index ${it.instruction}")
+                    InstructionViewer(it, maxOffsetLength, isCurrent, inCatch)
                 }
 
                 // There is an error to display at the current instruction
