@@ -92,15 +92,14 @@ class DebuggerViewModel {
 
         val blockEvaluations = codeAttributes[currentCodeAttribute].blockEvaluations
         val blockEvaluation = blockEvaluations[currentBlockEvaluation]
+        evaluation = blockEvaluation.evaluations[currentEvaluation]
+        currentBlockEvaluationStack = blockEvaluation.branchEvaluationStack
 
         hasNext = currentCodeAttribute < codeAttributes.size - 1 ||
             currentBlockEvaluation < blockEvaluations.size - 1 ||
             currentEvaluation < blockEvaluation.evaluations.size - 1
 
         hasPrevious = currentCodeAttribute > 0 || currentBlockEvaluation > 0 || currentEvaluation > 0
-
-        evaluation = blockEvaluation.evaluations[currentEvaluation]
-        currentBlockEvaluationStack = blockEvaluation.branchEvaluationStack
     }
 
     /**
