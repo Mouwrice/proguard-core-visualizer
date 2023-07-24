@@ -38,70 +38,70 @@ class DebuggerViewModel {
     )
         private set
 
+    var hasNext by mutableStateOf(false)
+        private set
+
+    var hasPrevious by mutableStateOf(false)
+        private set
+
     private var stateTracker: StateTracker? = null
     private var currentBlockEvaluation: Int = 0
     private var currentEvaluation: Int = 0
 
     fun nextEvaluation() {
-        val codeAttributes = stateTracker?.codeAttributes
-        val blockEvaluations = codeAttributes?.get(currentCodeAttribute)?.blockEvaluations
-        val evaluations = blockEvaluations?.get(currentBlockEvaluation)?.evaluations
-        if (currentEvaluation < (
-                (
-                    evaluations?.size?.minus(1)
-                    )
-                    ?: 0
-                )
-        ) {
+        val codeAttributes = stateTracker?.codeAttributes ?: return
+
+        val blockEvaluations = codeAttributes[currentCodeAttribute].blockEvaluations
+        val evaluations = blockEvaluations[currentBlockEvaluation].evaluations
+
+        if (currentEvaluation < evaluations.size - 1) {
             currentEvaluation++
-        } else if (currentBlockEvaluation < (
-                (
-                    blockEvaluations?.size?.minus(1)
-                    ) ?: 0
-                )
-        ) {
+        } else if (currentBlockEvaluation < blockEvaluations.size - 1) {
             currentBlockEvaluation++
             currentEvaluation = 0
-        } else if (currentCodeAttribute < ((codeAttributes?.size?.minus(1)) ?: 0)) {
+        } else if (currentCodeAttribute < codeAttributes.size - 1) {
             currentCodeAttribute++
             currentBlockEvaluation = 0
             currentEvaluation = 0
         }
+
         update()
     }
 
     fun previousEvaluation() {
-        val codeAttributes = stateTracker?.codeAttributes
-        val blockEvaluations = codeAttributes?.get(currentCodeAttribute)?.blockEvaluations
-        val evaluations = blockEvaluations?.get(currentBlockEvaluation)?.evaluations
+        val codeAttributes = stateTracker?.codeAttributes ?: return
+
+        val blockEvaluations = codeAttributes[currentCodeAttribute].blockEvaluations
+        val evaluations = blockEvaluations[currentBlockEvaluation].evaluations
+
         if (currentEvaluation > 0) {
             currentEvaluation--
         } else if (currentBlockEvaluation > 0) {
             currentBlockEvaluation--
-            currentEvaluation = (
-                codeAttributes?.get(currentCodeAttribute)?.blockEvaluations?.get(
-                    currentBlockEvaluation,
-                )?.evaluations?.size?.minus(1) ?: 0
-                )
+            currentEvaluation = evaluations.size - 1
         } else if (currentCodeAttribute > 0) {
             currentCodeAttribute--
-            currentBlockEvaluation =
-                (
-                    blockEvaluations?.size?.minus(1)
-                        ?: 0
-                    )
-            currentEvaluation = (
-                evaluations?.size?.minus(1) ?: 0
-                )
+            currentBlockEvaluation = blockEvaluations.size - 1
+            currentEvaluation = evaluations.size - 1
         }
+
         update()
     }
 
     private fun update() {
-        val blockEvaluations = stateTracker?.codeAttributes?.get(currentCodeAttribute)?.blockEvaluations
-        val blockEvaluation = blockEvaluations?.get(currentBlockEvaluation)
-        evaluation = blockEvaluation?.evaluations?.get(currentEvaluation)
-        currentBlockEvaluationStack = blockEvaluation?.branchEvaluationStack ?: emptyList()
+        val codeAttributes = stateTracker?.codeAttributes ?: return
+
+        val blockEvaluations = codeAttributes[currentCodeAttribute].blockEvaluations
+        val blockEvaluation = blockEvaluations[currentBlockEvaluation]
+
+        hasNext = currentCodeAttribute < codeAttributes.size - 1 ||
+            currentBlockEvaluation < blockEvaluations.size - 1 ||
+            currentEvaluation < blockEvaluation.evaluations.size - 1
+
+        hasPrevious = currentCodeAttribute > 0 || currentBlockEvaluation > 0 || currentEvaluation > 0
+
+        evaluation = blockEvaluation.evaluations[currentEvaluation]
+        currentBlockEvaluationStack = blockEvaluation.branchEvaluationStack
     }
 
     /**
@@ -124,6 +124,9 @@ class DebuggerViewModel {
      * Resets the view model to its initial state.
      */
     fun reset() {
+        hasNext = false
+        hasPrevious = false
+
         currentEvaluation = 0
         currentBlockEvaluation = 0
         currentCodeAttribute = 0

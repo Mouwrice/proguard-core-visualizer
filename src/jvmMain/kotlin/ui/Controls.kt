@@ -17,11 +17,11 @@ fun Controls(viewModel: DebuggerViewModel, setShowFilePicker: (Boolean) -> Unit)
             Text("Open json file")
         }
 
-        OutlinedButton(onClick = { viewModel.previousEvaluation() }) {
+        OutlinedButton(enabled = viewModel.hasPrevious, onClick = { viewModel.previousEvaluation() }) {
             Text("Previous")
         }
 
-        OutlinedButton(onClick = { viewModel.nextEvaluation() }) {
+        OutlinedButton(enabled = viewModel.hasNext, onClick = { viewModel.nextEvaluation() }) {
             Text("Next")
         }
     }
