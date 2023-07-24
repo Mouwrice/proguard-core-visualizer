@@ -78,10 +78,12 @@ fun ErrorViewer(error: ErrorRecord) {
  * Display the current instruction. Highlight it if it is the current one.
  */
 @Composable
-fun InstructionViewer(instruction: InstructionRecord, isCurrent: Boolean) {
+fun InstructionViewer(instruction: InstructionRecord, isCurrent: Boolean, inCatch: Boolean) {
     // Highlight if the instruction is the current one
     val color =
         if (isCurrent) Colors.Red.value.copy(alpha = 0.5F) else MaterialTheme.colorScheme.surface
+
+    val dividerColor = if (inCatch) Colors.Red.value else MaterialTheme.colorScheme.onSurfaceVariant
 
     Row(
         Modifier.fillMaxWidth().background(color).padding(2.dp),
@@ -94,7 +96,7 @@ fun InstructionViewer(instruction: InstructionRecord, isCurrent: Boolean) {
             textAlign = TextAlign.End,
         )
         Divider(
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            color = dividerColor,
             modifier = Modifier
                 .height(20.dp)
                 .width(1.dp),
@@ -126,15 +128,53 @@ fun CodeViewer(viewModel: DebuggerViewModel) {
                 val isCurrent =
                     viewModel.currentCodeAttribute == index && viewModel.evaluation?.instructionOffset == it.offset
 
+                var inCatch = false
+                // Display a try-catch block, if any
+                viewModel.currentExceptionHandler?.let { exceptionHandler ->
+                    // Display the start of a try-catch block
+                    if (exceptionHandler.catchStartOffset == it.offset) {
+                        item {
+                            Text(
+                                "Catch ${exceptionHandler.catchType}",
+                                style = MaterialTheme.typography.bodySmall,
+                                fontFamily = FontFamily.Monospace,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .background(Colors.Red.value.copy(alpha = 0.2F))
+                                    .padding(horizontal = 16.dp, vertical = 6.dp),
+                            )
+                        }
+                    }
+                    // Display the end of a try-catch block
+                    if (exceptionHandler.catchEndOffset == it.offset) {
+                        item {
+                            Text(
+                                "End catch",
+                                style = MaterialTheme.typography.bodySmall,
+                                fontFamily = FontFamily.Monospace,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .background(Colors.Red.value.copy(alpha = 0.2F))
+                                    .padding(horizontal = 16.dp, vertical = 6.dp),
+                            )
+                        }
+                    }
+
+                    inCatch =
+                        exceptionHandler.catchStartOffset <= it.offset && exceptionHandler.catchEndOffset > it.offset
+                }
+
+                // Display the current instruction
                 item {
-                    InstructionViewer(it, isCurrent)
+                    InstructionViewer(it, isCurrent, inCatch)
                 }
 
                 // There is an error to display at the current instruction
-                val error = codeAttribute.error
-                if (isCurrent && error != null && error.instructionOffset == it.offset) {
-                    item {
-                        ErrorViewer(error)
+                codeAttribute.error?.let { error ->
+                    if (isCurrent && error.instructionOffset == it.offset) {
+                        item {
+                            ErrorViewer(error)
+                        }
                     }
                 }
             }
