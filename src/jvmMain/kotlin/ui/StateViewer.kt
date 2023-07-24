@@ -88,8 +88,7 @@ fun InstructionEvaluation(evaluation: InstructionEvaluationRecord) {
 @Composable
 fun StateViewer(viewModel: DebuggerViewModel?) {
     Column(Modifier.fillMaxSize()) {
-        val evaluation = viewModel?.evaluation
-        if (evaluation != null) {
+        viewModel?.evaluation?.let { evaluation ->
             InstructionEvaluation(evaluation)
         }
 
@@ -102,8 +101,7 @@ fun StateViewer(viewModel: DebuggerViewModel?) {
                 DisplayList(viewModel?.evaluation?.stackBefore?.reversed() ?: emptyList())
             }
             Category("Branches") {
-                val branches = viewModel?.currentBlockEvaluationStack?.map { it.startOffset } ?: emptyList()
-                DisplayList(branches)
+                DisplayList(viewModel?.currentBlockEvaluationStack?.map { it.startOffset } ?: emptyList())
             }
         }
     }

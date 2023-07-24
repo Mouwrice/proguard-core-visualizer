@@ -55,7 +55,7 @@ class DebuggerViewModel private constructor(val file: File, stateTracker: StateT
         val blockEvaluation = blockEvaluations[currentBlockEvaluation]
         currentExceptionHandler = blockEvaluation.exceptionHandlerInfo
         evaluation = blockEvaluation.evaluations[currentEvaluation]
-        currentBlockEvaluationStack = blockEvaluation.branchEvaluationStack ?: emptyList()
+        currentBlockEvaluationStack = blockEvaluation.branchEvaluationStack
         hasNext = currentCodeAttribute < codeAttributes.size - 1 ||
             currentBlockEvaluation < blockEvaluations.size - 1 ||
             currentEvaluation < blockEvaluation.evaluations.size - 1
@@ -102,7 +102,7 @@ class DebuggerViewModel private constructor(val file: File, stateTracker: StateT
         val blockEvaluation = blockEvaluations[currentBlockEvaluation]
         currentExceptionHandler = blockEvaluation.exceptionHandlerInfo
         evaluation = blockEvaluation.evaluations[currentEvaluation]
-        currentBlockEvaluationStack = blockEvaluation.branchEvaluationStack ?: emptyList()
+        currentBlockEvaluationStack = blockEvaluation.branchEvaluationStack
 
         hasNext = currentCodeAttribute < codeAttributes.size - 1 ||
             currentBlockEvaluation < blockEvaluations.size - 1 ||

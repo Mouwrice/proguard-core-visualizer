@@ -128,8 +128,10 @@ fun CodeViewer(viewModel: DebuggerViewModel) {
                 val isCurrent =
                     viewModel.currentCodeAttribute == index && viewModel.evaluation?.instructionOffset == it.offset
 
-                // Display the start of a try-catch block, if any
+                var inCatch = false
+                // Display a try-catch block, if any
                 viewModel.currentExceptionHandler?.let { exceptionHandler ->
+                    // Display the start of a try-catch block
                     if (exceptionHandler.catchStartOffset == it.offset) {
                         item {
                             Text(
@@ -143,10 +145,7 @@ fun CodeViewer(viewModel: DebuggerViewModel) {
                             )
                         }
                     }
-                }
-
-                // Display the end of a try-catch block, if any
-                viewModel.currentExceptionHandler?.let { exceptionHandler ->
+                    // Display the end of a try-catch block
                     if (exceptionHandler.catchEndOffset == it.offset) {
                         item {
                             Text(
@@ -160,21 +159,22 @@ fun CodeViewer(viewModel: DebuggerViewModel) {
                             )
                         }
                     }
+
+                    inCatch =
+                        exceptionHandler.catchStartOffset <= it.offset && exceptionHandler.catchEndOffset > it.offset
                 }
 
-                val inCatch = viewModel.currentExceptionHandler?.let { exceptionHandler ->
-                    exceptionHandler.catchStartOffset <= it.offset && exceptionHandler.catchEndOffset > it.offset
-                } ?: false
-
+                // Display the current instruction
                 item {
                     InstructionViewer(it, isCurrent, inCatch)
                 }
 
                 // There is an error to display at the current instruction
-                val error = codeAttribute.error
-                if (isCurrent && error != null && error.instructionOffset == it.offset) {
-                    item {
-                        ErrorViewer(error)
+                codeAttribute.error?.let { error ->
+                    if (isCurrent && error.instructionOffset == it.offset) {
+                        item {
+                            ErrorViewer(error)
+                        }
                     }
                 }
             }

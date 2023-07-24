@@ -32,32 +32,29 @@ import viewmodel.DebuggerViewModel
  */
 @Composable
 fun FileTab(viewModel: DebuggerViewModel, closeFile: () -> Unit) {
-    val file = viewModel.file
-    if (file != null) {
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(16.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.fillMaxWidth().background(MaterialTheme.colorScheme.surfaceVariant)
-                .padding(horizontal = 16.dp, vertical = 8.dp),
+    Row(
+        horizontalArrangement = Arrangement.spacedBy(16.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier.fillMaxWidth().background(MaterialTheme.colorScheme.surfaceVariant)
+            .padding(horizontal = 16.dp, vertical = 8.dp),
+    ) {
+        Text(
+            viewModel.file.name,
+            style = MaterialTheme.typography.titleSmall,
+        )
+        // An IconButton is currently fixed to 48.dp, so we need to make our own.
+        // https://github.com/androidx/androidx/blob/androidx-main/compose/material/material/src/commonMain/kotlin/androidx/compose/material/IconButton.kt
+        Box(
+            modifier = Modifier.size(16.dp)
+                .clickable(
+                    onClick = closeFile,
+                    role = Role.Button,
+                    interactionSource = MutableInteractionSource(),
+                    indication = rememberRipple(bounded = false, radius = 12.dp),
+                ),
+            contentAlignment = Alignment.Center,
         ) {
-            Text(
-                file.name,
-                style = MaterialTheme.typography.titleSmall,
-            )
-            // An IconButton is currently fixed to 48.dp, so we need to make our own.
-            // https://github.com/androidx/androidx/blob/androidx-main/compose/material/material/src/commonMain/kotlin/androidx/compose/material/IconButton.kt
-            Box(
-                modifier = Modifier.size(16.dp)
-                    .clickable(
-                        onClick = closeFile,
-                        role = Role.Button,
-                        interactionSource = MutableInteractionSource(),
-                        indication = rememberRipple(bounded = false, radius = 12.dp),
-                    ),
-                contentAlignment = Alignment.Center,
-            ) {
-                Icon(Icons.Default.Close, contentDescription = "Close file")
-            }
+            Icon(Icons.Default.Close, contentDescription = "Close file")
         }
     }
 }
@@ -76,11 +73,11 @@ fun FileViewer(viewModel: DebuggerViewModel?, closeFile: () -> Unit) {
                 shape = MaterialTheme.shapes.medium,
             ).clip(MaterialTheme.shapes.medium),
         ) {
-            if (viewModel == null) return
+            viewModel?.let { viewModel ->
+                FileTab(viewModel, closeFile)
 
-            FileTab(viewModel, closeFile)
-
-            CodeViewer(viewModel)
+                CodeViewer(viewModel)
+            }
         }
     }
 }

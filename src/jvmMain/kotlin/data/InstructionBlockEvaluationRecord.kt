@@ -27,5 +27,5 @@ data class InstructionBlockEvaluationRecord(
     /**
      * Current branch evaluation stack
      */
-    val branchEvaluationStack: List<BranchTargetRecord>?,
+    val branchEvaluationStack: List<BranchTargetRecord>,
 )
