@@ -7,7 +7,7 @@ data class InstructionBlockEvaluationRecord(
     /**
      * List of instruction evaluation trackers.
      */
-    val evaluations: List<InstructionEvaluationRecord?>?,
+    val evaluations: List<InstructionEvaluationRecord>,
     /**
      * Exception handler info. If present, this instructionBlock regards an exception handler
      */
