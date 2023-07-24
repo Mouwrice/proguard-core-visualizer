@@ -24,7 +24,62 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
+import data.InstructionEvaluationRecord
 import viewmodel.DebuggerViewModel
+
+/**
+ * Displays the current instruction that is being evaluated.
+ * Also shows if the instruction has been generalized or skipped.
+ * And how many times the instruction has been seen.
+ */
+@Composable
+fun InstructionEvaluation(evaluation: InstructionEvaluationRecord) {
+    Row(
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier.fillMaxWidth(),
+    ) {
+        Text(
+            evaluation.instruction,
+            fontFamily = FontFamily.Monospace,
+            fontSize = MaterialTheme.typography.titleMedium.fontSize,
+            modifier = Modifier
+                .clip(MaterialTheme.shapes.medium)
+                .background(Colors.LightGreen.value.copy(alpha = 0.2F))
+                .border(
+                    border = BorderStroke(1.dp, Colors.DarkGreen.value),
+                    shape = MaterialTheme.shapes.medium,
+                ).padding(8.dp),
+        )
+
+        // Indicators for generalization and times seen
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            if (evaluation.skipEvaluation) {
+                Icon(
+                    Icons.Rounded.FastForward,
+                    contentDescription = "Instruction has been skipped",
+                    tint = Colors.Orange.value,
+                )
+                Text("Skipped", color = Colors.Orange.value)
+            }
+
+            if (evaluation.isGeneralization) {
+                Icon(
+                    Icons.Rounded.Warning,
+                    contentDescription = "Instruction has been generalized",
+                    tint = Colors.Orange.value,
+                )
+                Text("Generalized", color = Colors.Orange.value)
+            }
+
+            Icon(
+                imageVector = Icons.Outlined.Visibility,
+                contentDescription = "Amount of time instruction has been seen",
+            )
+            Text((evaluation.evaluationCount + 1).toString())
+        }
+    }
+}
 
 /**
  * Displays the current state of the PartialEvaluator.
@@ -33,53 +88,9 @@ import viewmodel.DebuggerViewModel
 @Composable
 fun StateViewer(viewModel: DebuggerViewModel?) {
     Column(Modifier.fillMaxSize()) {
-        Row(
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.fillMaxWidth(),
-        ) {
-            val evaluation = viewModel?.evaluation
-            if (evaluation != null) {
-                Text(
-                    evaluation.instruction,
-                    fontFamily = FontFamily.Monospace,
-                    fontSize = MaterialTheme.typography.titleMedium.fontSize,
-                    modifier = Modifier
-                        .clip(MaterialTheme.shapes.medium)
-                        .background(Colors.LightGreen.value.copy(alpha = 0.2F))
-                        .border(
-                            border = BorderStroke(1.dp, Colors.DarkGreen.value),
-                            shape = MaterialTheme.shapes.medium,
-                        ).padding(8.dp),
-                )
-
-                // Indicators for generalization and times seen
-                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    if (evaluation.skipEvaluation) {
-                        Icon(
-                            Icons.Rounded.FastForward,
-                            contentDescription = "Instruction has been skipped",
-                            tint = Colors.Orange.value,
-                        )
-                        Text("Skipped", color = Colors.Orange.value)
-                    }
-
-                    if (evaluation.isGeneralization) {
-                        Icon(
-                            Icons.Rounded.Warning,
-                            contentDescription = "Instruction has been generalized",
-                            tint = Colors.Orange.value,
-                        )
-                        Text("Generalized", color = Colors.Orange.value)
-                    }
-
-                    Icon(
-                        imageVector = Icons.Outlined.Visibility,
-                        contentDescription = "Amount of time instruction has been seen",
-                    )
-                    Text((evaluation.evaluationCount + 1).toString())
-                }
-            }
+        val evaluation = viewModel?.evaluation
+        if (evaluation != null) {
+            InstructionEvaluation(evaluation)
         }
 
         Category("Variables", maxHeight = 0.3F) {
