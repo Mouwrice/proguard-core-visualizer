@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.2.0](https://github.com/Mouwrice/proguard-core-visualizer/compare/v0.1.1...v0.2.0) (2023-07-24)
+
+
+### Features
+
+* use new format & data classes ([#19](https://github.com/Mouwrice/proguard-core-visualizer/issues/19)) ([8086aa1](https://github.com/Mouwrice/proguard-core-visualizer/commit/8086aa16d3debf7e9eaede5d090e08c2c439aa44))
+
+
+### Bug Fixes
+
+* **deps:** update dependency com.materialkolor:material-kolor to v1.2.0 ([#20](https://github.com/Mouwrice/proguard-core-visualizer/issues/20)) ([8245ae1](https://github.com/Mouwrice/proguard-core-visualizer/commit/8245ae111f40e96f0f9025cd4c98cccaacbd108f))
+
 ## [0.1.1](https://github.com/Mouwrice/proguard-core-visualizer/compare/v0.1.0...v0.1.1) (2023-07-23)
 
 
