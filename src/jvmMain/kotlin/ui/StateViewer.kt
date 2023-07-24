@@ -13,6 +13,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Visibility
+import androidx.compose.material.icons.rounded.FastForward
 import androidx.compose.material.icons.rounded.Warning
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -54,6 +55,15 @@ fun StateViewer(viewModel: DebuggerViewModel) {
 
                 // Indicators for generalization and times seen
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    if (evaluation.skipEvaluation) {
+                        Icon(
+                            Icons.Rounded.FastForward,
+                            contentDescription = "Instruction has been skipped",
+                            tint = Colors.Orange.value,
+                        )
+                        Text("Skipped", color = Colors.Orange.value)
+                    }
+
                     if (evaluation.isGeneralization) {
                         Icon(
                             Icons.Rounded.Warning,

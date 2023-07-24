@@ -71,18 +71,17 @@ class DebuggerViewModel {
     fun previousEvaluation() {
         val codeAttributes = stateTracker?.codeAttributes ?: return
 
-        val blockEvaluations = codeAttributes[currentCodeAttribute].blockEvaluations
-        val evaluations = blockEvaluations[currentBlockEvaluation].evaluations
-
         if (currentEvaluation > 0) {
             currentEvaluation--
         } else if (currentBlockEvaluation > 0) {
             currentBlockEvaluation--
-            currentEvaluation = evaluations.size - 1
+            currentEvaluation =
+                codeAttributes[currentCodeAttribute].blockEvaluations[currentBlockEvaluation].evaluations.size - 1
         } else if (currentCodeAttribute > 0) {
             currentCodeAttribute--
-            currentBlockEvaluation = blockEvaluations.size - 1
-            currentEvaluation = evaluations.size - 1
+            currentBlockEvaluation = codeAttributes[currentCodeAttribute].blockEvaluations.size - 1
+            currentEvaluation =
+                codeAttributes[currentCodeAttribute].blockEvaluations[currentBlockEvaluation].evaluations.size - 1
         }
 
         update()
