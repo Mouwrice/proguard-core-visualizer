@@ -13,6 +13,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Visibility
+import androidx.compose.material.icons.rounded.FastForward
 import androidx.compose.material.icons.rounded.Warning
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -23,21 +24,21 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
-import viewModel.DebuggerViewModel
+import viewmodel.DebuggerViewModel
 
 /**
  * Displays the current state of the PartialEvaluator.
  * Showing the current instruction, the stack, the variables and the branches that still need to be evaluated.
  */
 @Composable
-fun StateViewer(viewModel: DebuggerViewModel) {
+fun StateViewer(viewModel: DebuggerViewModel?) {
     Column(Modifier.fillMaxSize()) {
         Row(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.fillMaxWidth(),
         ) {
-            val evaluation = viewModel.evaluation
+            val evaluation = viewModel?.evaluation
             if (evaluation != null) {
                 Text(
                     evaluation.instruction,
@@ -54,6 +55,15 @@ fun StateViewer(viewModel: DebuggerViewModel) {
 
                 // Indicators for generalization and times seen
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    if (evaluation.skipEvaluation) {
+                        Icon(
+                            Icons.Rounded.FastForward,
+                            contentDescription = "Instruction has been skipped",
+                            tint = Colors.Orange.value,
+                        )
+                        Text("Skipped", color = Colors.Orange.value)
+                    }
+
                     if (evaluation.isGeneralization) {
                         Icon(
                             Icons.Rounded.Warning,
@@ -73,15 +83,16 @@ fun StateViewer(viewModel: DebuggerViewModel) {
         }
 
         Category("Variables", maxHeight = 0.3F) {
-            DisplayList(viewModel.evaluation?.variablesBefore ?: emptyList())
+            DisplayList(viewModel?.evaluation?.variablesBefore ?: emptyList())
         }
 
         Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
             Category("Stack", maxWidth = 0.7F) {
-                DisplayList(viewModel.evaluation?.stackBefore?.reversed() ?: emptyList())
+                DisplayList(viewModel?.evaluation?.stackBefore?.reversed() ?: emptyList())
             }
             Category("Branches") {
-                DisplayList(viewModel.currentBlockEvaluationStack.map { it.startOffset })
+                val branches = viewModel?.currentBlockEvaluationStack?.map { it.startOffset } ?: emptyList()
+                DisplayList(branches)
             }
         }
     }

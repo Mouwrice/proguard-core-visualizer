@@ -10,6 +10,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -19,13 +20,14 @@ import androidx.compose.ui.window.application
 import com.darkrockstudios.libraries.mpfilepicker.FilePicker
 import com.jthemedetecor.OsThemeDetector
 import com.materialkolor.AnimatedDynamicMaterialTheme
-import viewModel.DebuggerViewModel
-import ui.CodeViewer
 import ui.Controls
 import ui.StateViewer
+import ui.codeview.FileViewer
+import viewmodel.DebuggerViewModel
 
 @Composable
-fun App(viewModel: DebuggerViewModel) {
+fun App() {
+    var viewModel by rememberSaveable { mutableStateOf<DebuggerViewModel?>(null) }
     var showFilePicker by remember { mutableStateOf(false) }
 
     Box(Modifier.fillMaxSize().padding(all = 16.dp)) {
@@ -35,7 +37,10 @@ fun App(viewModel: DebuggerViewModel) {
             }
 
             Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-                CodeViewer(viewModel)
+                // Closing the file means setting the view model to null.
+                FileViewer(viewModel) {
+                    viewModel = null
+                }
                 StateViewer(viewModel)
             }
         }
@@ -44,14 +49,15 @@ fun App(viewModel: DebuggerViewModel) {
         FilePicker(showFilePicker, fileExtensions = listOf("json")) { path ->
             showFilePicker = false
             if (path != null) {
-                viewModel.loadJson(path.path)
+                // If we already have a view model, load the json file into it.
+                // Otherwise, create a new view model from the json file.
+                viewModel = viewModel?.loadJson(path.path) ?: DebuggerViewModel.fromJson(path.path)
             }
         }
     }
 }
 
 fun main() = application {
-    val viewModel = DebuggerViewModel()
     Window(
         title = "Proguard CORE Visualizer",
         onCloseRequest = ::exitApplication,
@@ -59,7 +65,7 @@ fun main() = application {
         AppTheme(
             seedColor = Color.Blue,
         ) {
-            App(viewModel)
+            App()
         }
     }
 }
