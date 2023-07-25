@@ -19,7 +19,6 @@ import androidx.compose.material3.Divider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -104,25 +103,25 @@ fun InstructionViewer(instruction: InstructionRecord, maxOffsetLength: Int, colo
 fun CodeViewer(viewModel: DebuggerViewModel) {
     val state = rememberLazyListState()
     val coroutineScope = rememberCoroutineScope()
-    var offsetWhenLastUpdated by remember {
-        mutableStateOf(viewModel.evaluation?.instructionOffset ?: 0)
+
+    val aimOffset = mapOf(
+        Pair(Display.RESULTS, viewModel.codeAttributes[viewModel.currentCodeAttribute].instructions[viewModel.currentInstruction].offset),
+        Pair(Display.EVALUATIONS, viewModel.evaluation?.instructionOffset ?: 0),
+    )
+
+    var prevOffset by remember {
+        mutableStateOf(aimOffset)
     }
 
-    val shouldRefocus by remember {
-        derivedStateOf {
-            offsetWhenLastUpdated != viewModel.evaluation?.instructionOffset &&
-                !state.layoutInfo.visibleItemsInfo.any { it.key == (viewModel.evaluation?.instructionOffset ?: "") }
-        }
-    }
-
-    if (shouldRefocus) {
-        val newOffset = viewModel.evaluation?.instructionOffset ?: 0
-        offsetWhenLastUpdated = newOffset
+    if (prevOffset[viewModel.display] != aimOffset[viewModel.display] &&
+        !state.layoutInfo.visibleItemsInfo.any { it.key == aimOffset[viewModel.display] }
+    ) {
+        prevOffset = HashMap(aimOffset)
 
         coroutineScope.launch {
             // Animate scroll to the first item
             val index = viewModel.codeAttributes[viewModel.currentCodeAttribute].instructions.withIndex()
-                .find { it.value.offset == viewModel.evaluation?.instructionOffset }
+                .find { it.value.offset == aimOffset[viewModel.display] }
             if (index != null) {
                 val visibleItemCount = state.layoutInfo.visibleItemsInfo.size
                 state.scrollToItem(if (index.index - visibleItemCount / 2 < 0) 0 else index.index - visibleItemCount / 2)
