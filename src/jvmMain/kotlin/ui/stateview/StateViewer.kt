@@ -64,8 +64,10 @@ fun StateViewer(viewModel: DebuggerViewModel?) {
                             val instruction =
                                 viewModel.codeAttributes[viewModel.currentCodeAttribute].instructions[viewModel.currentInstruction]
                             DisplayList(
-                                instruction.finalTargetInstructions?.plus(instruction.finalOriginInstructions ?: emptyList())
-                                    ?: emptyList(),
+                                (
+                                    instruction.finalTargetInstructions
+                                        ?: emptyList()
+                                    ) + (instruction.finalOriginInstructions ?: emptyList()),
                             )
                         }
                     }
