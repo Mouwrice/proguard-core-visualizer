@@ -16,7 +16,7 @@ data class InstructionRecord(
     /**
      * Contains the final result computations from the partial evaluator regarding the variables of this instruction.
      */
-    private var finalVariablesBefore: List<String>?,
+    val finalVariablesBefore: List<String>?,
     /**
      * Contains the final result computations from the partial evaluator regarding the stack of this instruction.
      */
