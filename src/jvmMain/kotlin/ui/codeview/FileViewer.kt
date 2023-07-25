@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -16,10 +17,17 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.ripple.rememberRipple
+import androidx.compose.material3.Button
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -55,6 +63,29 @@ fun FileTab(viewModel: DebuggerViewModel, closeFile: () -> Unit) {
             contentAlignment = Alignment.Center,
         ) {
             Icon(Icons.Default.Close, contentDescription = "Close file")
+        }
+
+        Spacer(Modifier.weight(1f))
+        MethodDropdown(viewModel)
+    }
+}
+
+@Composable
+fun MethodDropdown(viewModel: DebuggerViewModel, modifier: Modifier = Modifier) {
+    Box(modifier) {
+        var expanded by remember { mutableStateOf(false) }
+        val currentAttribute = viewModel.codeAttributes[viewModel.currentCodeAttribute]
+        Button({ expanded = true }) {
+            Text("${currentAttribute.clazz}:${currentAttribute.method}")
+        }
+
+        DropdownMenu(expanded, { expanded = false }) {
+            viewModel.codeAttributes.forEachIndexed { index, attribute ->
+                DropdownMenuItem(
+                    { Text("${attribute.clazz}:${attribute.method}") },
+                    { viewModel.currentCodeAttribute = index; expanded = false },
+                )
+            }
         }
     }
 }

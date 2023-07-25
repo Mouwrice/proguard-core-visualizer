@@ -31,7 +31,6 @@ class DebuggerViewModel private constructor(val file: File, stateTracker: StateT
         private set
 
     var currentCodeAttribute by mutableStateOf(0)
-        private set
 
     var currentBlockEvaluationStack by mutableStateOf<List<BranchTargetRecord>>(
         emptyList(),
@@ -63,10 +62,9 @@ class DebuggerViewModel private constructor(val file: File, stateTracker: StateT
         currentExceptionHandler = blockEvaluation.exceptionHandlerInfo
         evaluation = blockEvaluation.evaluations[currentEvaluation]
         currentBlockEvaluationStack = blockEvaluation.branchEvaluationStack
-        hasNext = currentCodeAttribute < codeAttributes.size - 1 ||
-            currentBlockEvaluation < blockEvaluations.size - 1 ||
+        hasNext = currentBlockEvaluation < blockEvaluations.size - 1 ||
             currentEvaluation < blockEvaluation.evaluations.size - 1
-        hasPrevious = currentCodeAttribute > 0 || currentBlockEvaluation > 0 || currentEvaluation > 0
+        hasPrevious = currentBlockEvaluation > 0 || currentEvaluation > 0
     }
 
     private fun update() {
@@ -76,11 +74,10 @@ class DebuggerViewModel private constructor(val file: File, stateTracker: StateT
         evaluation = blockEvaluation.evaluations[currentEvaluation]
         currentBlockEvaluationStack = blockEvaluation.branchEvaluationStack
 
-        hasNext = currentCodeAttribute < codeAttributes.size - 1 ||
-            currentBlockEvaluation < blockEvaluations.size - 1 ||
+        hasNext = currentBlockEvaluation < blockEvaluations.size - 1 ||
             currentEvaluation < blockEvaluation.evaluations.size - 1
 
-        hasPrevious = currentCodeAttribute > 0 || currentBlockEvaluation > 0 || currentEvaluation > 0
+        hasPrevious = currentBlockEvaluation > 0 || currentEvaluation > 0
     }
 
     private fun previousInstruction() {
@@ -94,11 +91,6 @@ class DebuggerViewModel private constructor(val file: File, stateTracker: StateT
             currentEvaluation--
         } else if (currentBlockEvaluation > 0) {
             currentBlockEvaluation--
-            currentEvaluation =
-                codeAttributes[currentCodeAttribute].blockEvaluations[currentBlockEvaluation].evaluations.size - 1
-        } else if (currentCodeAttribute > 0) {
-            currentCodeAttribute--
-            currentBlockEvaluation = codeAttributes[currentCodeAttribute].blockEvaluations.size - 1
             currentEvaluation =
                 codeAttributes[currentCodeAttribute].blockEvaluations[currentBlockEvaluation].evaluations.size - 1
         }
@@ -120,10 +112,6 @@ class DebuggerViewModel private constructor(val file: File, stateTracker: StateT
             currentEvaluation++
         } else if (currentBlockEvaluation < blockEvaluations.size - 1) {
             currentBlockEvaluation++
-            currentEvaluation = 0
-        } else if (currentCodeAttribute < codeAttributes.size - 1) {
-            currentCodeAttribute++
-            currentBlockEvaluation = 0
             currentEvaluation = 0
         }
 

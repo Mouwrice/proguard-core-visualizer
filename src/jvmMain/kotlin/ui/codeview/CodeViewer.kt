@@ -130,77 +130,75 @@ fun CodeViewer(viewModel: DebuggerViewModel) {
         modifier = Modifier.fillMaxSize(),
     ) {
         LazyColumn(state = state) {
-            viewModel.codeAttributes.forEachIndexed { codeAttributeIndex, codeAttribute ->
+            val codeAttribute = viewModel.codeAttributes[viewModel.currentCodeAttribute]
+            item {
+                MethodHeader(codeAttribute)
+            }
 
-                item {
-                    MethodHeader(codeAttribute)
+            // Get the length of the offset as string of the last instruction of the current code attribute
+            val maxOffsetLength = codeAttribute.instructions.last().offset.toString().length
+
+            // Display the instructions of the current code attribute
+            codeAttribute.instructions.forEachIndexed { instructionIndex, instruction ->
+                val isCurrent = when (viewModel.display) {
+                    Display.EVALUATIONS -> viewModel.evaluation?.instructionOffset == instruction.offset
+                    Display.RESULTS -> viewModel.currentInstruction == instructionIndex
                 }
 
-                // Get the length of the offset as string of the last instruction of the current code attribute
-                val maxOffsetLength = codeAttribute.instructions.last().offset.toString().length
-
-                // Display the instructions of the current code attribute
-                codeAttribute.instructions.forEachIndexed { instructionIndex, instruction ->
-                    val isCurrent = when (viewModel.display) {
-                        Display.EVALUATIONS -> viewModel.currentCodeAttribute == codeAttributeIndex && viewModel.evaluation?.instructionOffset == instruction.offset
-                        Display.RESULTS -> viewModel.currentInstruction == instructionIndex
+                var inCatch = false
+                // Display a try-catch block, if any
+                viewModel.currentExceptionHandler?.let { exceptionHandler ->
+                    // Display the start of a try-catch block
+                    if (exceptionHandler.catchStartOffset == instruction.offset) {
+                        item {
+                            Text(
+                                "Catch ${exceptionHandler.catchType}",
+                                style = MaterialTheme.typography.bodySmall,
+                                fontFamily = FontFamily.Monospace,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .background(Colors.Red.value.copy(alpha = 0.2F))
+                                    .padding(horizontal = 16.dp, vertical = 6.dp),
+                            )
+                        }
+                    }
+                    // Display the end of a try-catch block
+                    if (exceptionHandler.catchEndOffset == instruction.offset) {
+                        item {
+                            Text(
+                                "End catch",
+                                style = MaterialTheme.typography.bodySmall,
+                                fontFamily = FontFamily.Monospace,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .background(Colors.Red.value.copy(alpha = 0.2F))
+                                    .padding(horizontal = 16.dp, vertical = 6.dp),
+                            )
+                        }
                     }
 
-                    var inCatch = false
-                    // Display a try-catch block, if any
-                    viewModel.currentExceptionHandler?.let { exceptionHandler ->
-                        // Display the start of a try-catch block
-                        if (exceptionHandler.catchStartOffset == instruction.offset) {
-                            item {
-                                Text(
-                                    "Catch ${exceptionHandler.catchType}",
-                                    style = MaterialTheme.typography.bodySmall,
-                                    fontFamily = FontFamily.Monospace,
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .background(Colors.Red.value.copy(alpha = 0.2F))
-                                        .padding(horizontal = 16.dp, vertical = 6.dp),
-                                )
-                            }
-                        }
-                        // Display the end of a try-catch block
-                        if (exceptionHandler.catchEndOffset == instruction.offset) {
-                            item {
-                                Text(
-                                    "End catch",
-                                    style = MaterialTheme.typography.bodySmall,
-                                    fontFamily = FontFamily.Monospace,
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .background(Colors.Red.value.copy(alpha = 0.2F))
-                                        .padding(horizontal = 16.dp, vertical = 6.dp),
-                                )
-                            }
-                        }
+                    inCatch =
+                        exceptionHandler.catchStartOffset <= instruction.offset && exceptionHandler.catchEndOffset > instruction.offset
+                }
 
-                        inCatch =
-                            exceptionHandler.catchStartOffset <= instruction.offset && exceptionHandler.catchEndOffset > instruction.offset
+                // Display the current instruction
+                item {
+                    // Highlight if the instruction is the current one
+                    var color = MaterialTheme.colorScheme.surface
+                    if (isCurrent) {
+                        color = when (viewModel.display) {
+                            Display.EVALUATIONS -> Colors.Red.value.copy(alpha = 0.5F)
+                            Display.RESULTS -> Colors.LightGreen.value.copy(alpha = 0.5F)
+                        }
                     }
+                    InstructionViewer(instruction, maxOffsetLength, color, inCatch)
+                }
 
-                    // Display the current instruction
-                    item {
-                        // Highlight if the instruction is the current one
-                        var color = MaterialTheme.colorScheme.surface
-                        if (isCurrent) {
-                            color = when (viewModel.display) {
-                                Display.EVALUATIONS -> Colors.Red.value.copy(alpha = 0.5F)
-                                Display.RESULTS -> Colors.LightGreen.value.copy(alpha = 0.5F)
-                            }
-                        }
-                        InstructionViewer(instruction, maxOffsetLength, color, inCatch)
-                    }
-
-                    // There is an error to display at the current instruction
-                    codeAttribute.error?.let { error ->
-                        if (isCurrent && error.instructionOffset == instruction.offset) {
-                            item {
-                                ErrorViewer(error)
-                            }
+                // There is an error to display at the current instruction
+                codeAttribute.error?.let { error ->
+                    if (isCurrent && error.instructionOffset == instruction.offset) {
+                        item {
+                            ErrorViewer(error)
                         }
                     }
                 }

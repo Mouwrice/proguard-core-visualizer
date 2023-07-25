@@ -27,7 +27,8 @@ import viewmodel.DebuggerViewModel
 
 @Composable
 fun App() {
-    var viewModel by rememberSaveable { mutableStateOf<DebuggerViewModel?>(null) }
+    var viewModel by rememberSaveable { mutableStateOf<DebuggerViewModel?>(DebuggerViewModel.fromJson("examples/2-methods.json")) }
+    // var viewModel by rememberSaveable { mutableStateOf<DebuggerViewModel?>(null) }
     var showFilePicker by remember { mutableStateOf(false) }
 
     Box(Modifier.fillMaxSize().padding(all = 16.dp)) {
