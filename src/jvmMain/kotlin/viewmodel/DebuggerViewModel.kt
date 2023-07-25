@@ -84,11 +84,6 @@ class DebuggerViewModel private constructor(val file: File, stateTracker: StateT
             currentBlockEvaluation--
             currentEvaluation =
                 codeAttributes[currentCodeAttribute].blockEvaluations[currentBlockEvaluation].evaluations.size - 1
-        } else if (currentCodeAttribute > 0) {
-            currentCodeAttribute--
-            currentBlockEvaluation = codeAttributes[currentCodeAttribute].blockEvaluations.size - 1
-            currentEvaluation =
-                codeAttributes[currentCodeAttribute].blockEvaluations[currentBlockEvaluation].evaluations.size - 1
         }
 
         update()
@@ -108,10 +103,6 @@ class DebuggerViewModel private constructor(val file: File, stateTracker: StateT
             currentEvaluation++
         } else if (currentBlockEvaluation < blockEvaluations.size - 1) {
             currentBlockEvaluation++
-            currentEvaluation = 0
-        } else if (currentCodeAttribute < codeAttributes.size - 1) {
-            currentCodeAttribute++
-            currentBlockEvaluation = 0
             currentEvaluation = 0
         }
 
@@ -141,8 +132,7 @@ class DebuggerViewModel private constructor(val file: File, stateTracker: StateT
             Display.EVALUATIONS -> {
                 val blockEvaluations = codeAttributes[currentCodeAttribute].blockEvaluations
                 val blockEvaluation = blockEvaluations[currentBlockEvaluation]
-                currentCodeAttribute < codeAttributes.size - 1 ||
-                    currentBlockEvaluation < blockEvaluations.size - 1 ||
+                currentBlockEvaluation < blockEvaluations.size - 1 ||
                     currentEvaluation < blockEvaluation.evaluations.size - 1
             }
 
@@ -152,7 +142,7 @@ class DebuggerViewModel private constructor(val file: File, stateTracker: StateT
 
     private fun hasPrevious(): Boolean {
         return when (display) {
-            Display.EVALUATIONS -> currentCodeAttribute > 0 || currentBlockEvaluation > 0 || currentEvaluation > 0
+            Display.EVALUATIONS -> currentBlockEvaluation > 0 || currentEvaluation > 0
             Display.RESULTS -> currentInstruction > 0
         }
     }
@@ -162,6 +152,16 @@ class DebuggerViewModel private constructor(val file: File, stateTracker: StateT
             Display.EVALUATIONS -> Display.RESULTS
             Display.RESULTS -> Display.EVALUATIONS
         }
+        hasNext = hasNext()
+        hasPrevious = hasPrevious()
+    }
+
+    fun selectCodeAttribute(index: Int) {
+        currentCodeAttribute = index
+        currentBlockEvaluation = 0
+        currentEvaluation = 0
+        currentInstruction = 0
+        update()
         hasNext = hasNext()
         hasPrevious = hasPrevious()
     }
