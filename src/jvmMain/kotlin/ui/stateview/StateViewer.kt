@@ -60,10 +60,14 @@ fun StateViewer(viewModel: DebuggerViewModel?) {
                             viewModel.currentBlockEvaluationStack.map { it.startOffset },
                         )
 
-                        Display.RESULTS -> DisplayList(
-                            viewModel.codeAttributes[viewModel.currentCodeAttribute].instructions[viewModel.currentInstruction].finalTargetInstructions
-                                ?: emptyList(),
-                        )
+                        Display.RESULTS -> {
+                            val instruction =
+                                viewModel.codeAttributes[viewModel.currentCodeAttribute].instructions[viewModel.currentInstruction]
+                            DisplayList(
+                                instruction.finalTargetInstructions?.plus(instruction.finalOriginInstructions ?: emptyList())
+                                    ?: emptyList(),
+                            )
+                        }
                     }
                 } else {
                     DisplayList(emptyList<String>())

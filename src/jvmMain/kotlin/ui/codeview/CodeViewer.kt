@@ -191,7 +191,16 @@ fun CodeViewer(viewModel: DebuggerViewModel) {
                                 Display.EVALUATIONS -> Colors.Red.value.copy(alpha = 0.5F)
                                 Display.RESULTS -> Colors.LightGreen.value.copy(alpha = 0.5F)
                             }
+                        } else if (viewModel.display == Display.RESULTS) {
+                            // Highlight the instruction if it is a target of the current instruction
+                            val currentInstruction = viewModel.codeAttributes[viewModel.currentCodeAttribute].instructions[viewModel.currentInstruction]
+                            if (currentInstruction.finalTargetInstructions?.contains(instruction.offset) == true) {
+                                color = Colors.Yellow.value.copy(alpha = 0.5F)
+                            } else if (currentInstruction.finalOriginInstructions?.contains(instruction.offset) == true) {
+                                color = Colors.Blue.value.copy(alpha = 0.5F)
+                            }
                         }
+
                         InstructionViewer(instruction, maxOffsetLength, color, inCatch)
                     }
 
