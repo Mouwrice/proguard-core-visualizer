@@ -28,8 +28,7 @@ import java.awt.Dimension
 
 @Composable
 fun App() {
-    var viewModel by rememberSaveable { mutableStateOf<DebuggerViewModel?>(DebuggerViewModel.fromJson("examples/2-methods.json")) }
-    // var viewModel by rememberSaveable { mutableStateOf<DebuggerViewModel?>(null) }
+    var viewModel by rememberSaveable { mutableStateOf<DebuggerViewModel?>(null) }
     var showFilePicker by remember { mutableStateOf(false) }
 
     Box(Modifier.fillMaxSize().padding(all = 16.dp)) {
@@ -64,7 +63,7 @@ fun main() = application {
         title = "Proguard CORE Visualizer",
         onCloseRequest = ::exitApplication,
     ) {
-        window.minimumSize = Dimension(800, 600)
+        window.minimumSize = Dimension(900, 600)
         AppTheme(
             seedColor = Color.Blue,
         ) {

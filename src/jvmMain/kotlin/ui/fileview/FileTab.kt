@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material.Surface
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
@@ -44,7 +45,6 @@ fun FileTab(viewModel: DebuggerViewModel, closeFile: () -> Unit) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(8.dp),
-            modifier = Modifier.fillMaxWidth(0.5F),
         ) {
             TooltipArea(tooltip = {
                 Surface(
@@ -63,6 +63,7 @@ fun FileTab(viewModel: DebuggerViewModel, closeFile: () -> Unit) {
                     style = MaterialTheme.typography.titleSmall,
                     overflow = TextOverflow.Ellipsis,
                     softWrap = false,
+                    modifier = Modifier.widthIn(max = 200.dp),
                 )
             }
             // An IconButton is currently fixed to 48.dp, so we need to make our own.
@@ -81,7 +82,7 @@ fun FileTab(viewModel: DebuggerViewModel, closeFile: () -> Unit) {
             }
         }
 
-        Spacer(Modifier.width(8.dp))
+        Spacer(modifier = Modifier.width(8.dp))
         MethodDropdown(viewModel)
     }
 }
