@@ -21,9 +21,10 @@ import com.darkrockstudios.libraries.mpfilepicker.FilePicker
 import com.jthemedetecor.OsThemeDetector
 import com.materialkolor.AnimatedDynamicMaterialTheme
 import ui.Controls
-import ui.StateViewer
-import ui.codeview.FileViewer
+import ui.fileview.FileViewer
+import ui.stateview.StateViewer
 import viewmodel.DebuggerViewModel
+import java.awt.Dimension
 
 @Composable
 fun App() {
@@ -63,6 +64,7 @@ fun main() = application {
         title = "Proguard CORE Visualizer",
         onCloseRequest = ::exitApplication,
     ) {
+        window.minimumSize = Dimension(800, 600)
         AppTheme(
             seedColor = Color.Blue,
         ) {
