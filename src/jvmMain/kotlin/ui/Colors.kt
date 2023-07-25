@@ -12,4 +12,6 @@ enum class Colors(val value: Color) {
     DarkGreen(Color.hsv(137F, 0.69F, 0.57F)),
     Red(Color.hsv(0F, 0.62F, 0.99F)),
     Orange(Color.hsv(30F, 1F, 1F)),
+    Blue(Color.hsv(234F, 0.90F, 0.96F)),
+    Yellow(Color.hsv(47F, 0.79F, 0.96F)),
 }

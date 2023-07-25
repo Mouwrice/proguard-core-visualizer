@@ -1,22 +1,12 @@
-package ui
+package ui.stateview
 
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.VerticalScrollbar
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.defaultScrollbarStyle
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.rememberScrollbarAdapter
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Visibility
 import androidx.compose.material.icons.rounded.FastForward
@@ -31,7 +21,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import data.InstructionEvaluationRecord
-import viewmodel.DebuggerViewModel
+import ui.Colors
 
 /**
  * Displays the current instruction that is being evaluated.
@@ -84,69 +74,5 @@ fun InstructionEvaluation(evaluation: InstructionEvaluationRecord) {
             )
             Text((evaluation.evaluationCount + 1).toString())
         }
-    }
-}
-
-/**
- * Displays the current state of the PartialEvaluator.
- * Showing the current instruction, the stack, the variables and the branches that still need to be evaluated.
- */
-@Composable
-fun StateViewer(viewModel: DebuggerViewModel?) {
-    Column(Modifier.fillMaxSize()) {
-        viewModel?.evaluation?.let { evaluation ->
-            InstructionEvaluation(evaluation)
-        }
-
-        Category("Variables", maxHeight = 0.3F) {
-            DisplayList(viewModel?.evaluation?.variablesBefore ?: emptyList())
-        }
-
-        Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-            Category("Stack", maxWidth = 0.7F) {
-                DisplayList(viewModel?.evaluation?.stackBefore?.reversed() ?: emptyList())
-            }
-            Category("Branches") {
-                DisplayList(viewModel?.currentBlockEvaluationStack?.map { it.startOffset } ?: emptyList())
-            }
-        }
-    }
-}
-
-/**
- * Display a list in a column with indexes.
- * With a scrollbar on the right side.
- */
-@Composable
-fun <T> DisplayList(list: List<T>) {
-    val state = rememberLazyListState()
-
-    Box(
-        modifier = Modifier.fillMaxSize(),
-    ) {
-        LazyColumn(
-            Modifier.fillMaxSize().border(
-                border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
-                shape = MaterialTheme.shapes.medium,
-            ).clip(MaterialTheme.shapes.medium),
-            state = state,
-        ) {
-            itemsIndexed(list) { index, it ->
-                val color =
-                    if (index % 2 == 0) MaterialTheme.colorScheme.surfaceVariant else MaterialTheme.colorScheme.surface
-                Text("$index: $it", Modifier.fillMaxWidth().background(color).padding(8.dp))
-            }
-        }
-
-        VerticalScrollbar(
-            modifier = Modifier.align(Alignment.CenterEnd).fillMaxHeight().padding(all = 4.dp),
-            adapter = rememberScrollbarAdapter(
-                scrollState = state,
-            ),
-            style = defaultScrollbarStyle().copy(
-                unhoverColor = MaterialTheme.colorScheme.outline,
-                hoverColor = MaterialTheme.colorScheme.onSurface,
-            ),
-        )
     }
 }

@@ -47,22 +47,60 @@ class DebuggerViewModel private constructor(val file: File, stateTracker: StateT
     var hasPrevious by mutableStateOf(false)
         private set
 
+    // Whether to show the final results of the evaluation for each instruction.
+    var display by mutableStateOf(Display.EVALUATIONS)
+
+    // The index of the current instruction that is selected.
+    var currentInstruction by mutableStateOf(0)
+        private set
+
     private var currentBlockEvaluation: Int = 0
     private var currentEvaluation: Int = 0
 
     init {
+        update()
+        hasNext = hasNext()
+        hasPrevious = hasPrevious()
+    }
+
+    private fun update() {
         val blockEvaluations = codeAttributes[currentCodeAttribute].blockEvaluations
         val blockEvaluation = blockEvaluations[currentBlockEvaluation]
         currentExceptionHandler = blockEvaluation.exceptionHandlerInfo
         evaluation = blockEvaluation.evaluations[currentEvaluation]
         currentBlockEvaluationStack = blockEvaluation.branchEvaluationStack
-        hasNext = currentCodeAttribute < codeAttributes.size - 1 ||
-            currentBlockEvaluation < blockEvaluations.size - 1 ||
-            currentEvaluation < blockEvaluation.evaluations.size - 1
-        hasPrevious = currentCodeAttribute > 0 || currentBlockEvaluation > 0 || currentEvaluation > 0
     }
 
-    fun nextEvaluation() {
+    private fun previousInstruction() {
+        if (currentInstruction > 0) {
+            currentInstruction--
+        }
+    }
+
+    private fun previousEvaluation() {
+        if (currentEvaluation > 0) {
+            currentEvaluation--
+        } else if (currentBlockEvaluation > 0) {
+            currentBlockEvaluation--
+            currentEvaluation =
+                codeAttributes[currentCodeAttribute].blockEvaluations[currentBlockEvaluation].evaluations.size - 1
+        } else if (currentCodeAttribute > 0) {
+            currentCodeAttribute--
+            currentBlockEvaluation = codeAttributes[currentCodeAttribute].blockEvaluations.size - 1
+            currentEvaluation =
+                codeAttributes[currentCodeAttribute].blockEvaluations[currentBlockEvaluation].evaluations.size - 1
+        }
+
+        update()
+    }
+
+    private fun nextInstruction() {
+        if (currentInstruction < codeAttributes[currentCodeAttribute].instructions.size - 1) {
+            currentInstruction++
+        }
+    }
+
+    private fun nextEvaluation() {
         val blockEvaluations = codeAttributes[currentCodeAttribute].blockEvaluations
         val evaluations = blockEvaluations[currentBlockEvaluation].evaluations
 
@@ -80,35 +118,52 @@ class DebuggerViewModel private constructor(val file: File, stateTracker: StateT
         update()
     }
 
-    fun previousEvaluation() {
-        if (currentEvaluation > 0) {
-            currentEvaluation--
-        } else if (currentBlockEvaluation > 0) {
-            currentBlockEvaluation--
-            currentEvaluation =
-                codeAttributes[currentCodeAttribute].blockEvaluations[currentBlockEvaluation].evaluations.size - 1
-        } else if (currentCodeAttribute > 0) {
-            currentCodeAttribute--
-            currentBlockEvaluation = codeAttributes[currentCodeAttribute].blockEvaluations.size - 1
-            currentEvaluation =
-                codeAttributes[currentCodeAttribute].blockEvaluations[currentBlockEvaluation].evaluations.size - 1
+    fun next() {
+        when (display) {
+            Display.EVALUATIONS -> nextEvaluation()
+            Display.RESULTS -> nextInstruction()
         }
-
-        update()
+        hasNext = hasNext()
+        hasPrevious = hasPrevious()
     }
 
-    private fun update() {
-        val blockEvaluations = codeAttributes[currentCodeAttribute].blockEvaluations
-        val blockEvaluation = blockEvaluations[currentBlockEvaluation]
-        currentExceptionHandler = blockEvaluation.exceptionHandlerInfo
-        evaluation = blockEvaluation.evaluations[currentEvaluation]
-        currentBlockEvaluationStack = blockEvaluation.branchEvaluationStack
+    fun previous() {
+        when (display) {
+            Display.EVALUATIONS -> previousEvaluation()
+            Display.RESULTS -> previousInstruction()
+        }
+        hasNext = hasNext()
+        hasPrevious = hasPrevious()
+    }
 
-        hasNext = currentCodeAttribute < codeAttributes.size - 1 ||
-            currentBlockEvaluation < blockEvaluations.size - 1 ||
-            currentEvaluation < blockEvaluation.evaluations.size - 1
+    private fun hasNext(): Boolean {
+        return when (display) {
+            Display.EVALUATIONS -> {
+                val blockEvaluations = codeAttributes[currentCodeAttribute].blockEvaluations
+                val blockEvaluation = blockEvaluations[currentBlockEvaluation]
+                currentCodeAttribute < codeAttributes.size - 1 ||
+                    currentBlockEvaluation < blockEvaluations.size - 1 ||
+                    currentEvaluation < blockEvaluation.evaluations.size - 1
+            }
 
-        hasPrevious = currentCodeAttribute > 0 || currentBlockEvaluation > 0 || currentEvaluation > 0
+            Display.RESULTS -> currentInstruction < codeAttributes[currentCodeAttribute].instructions.size - 1
+        }
+    }
+
+    private fun hasPrevious(): Boolean {
+        return when (display) {
+            Display.EVALUATIONS -> currentCodeAttribute > 0 || currentBlockEvaluation > 0 || currentEvaluation > 0
+            Display.RESULTS -> currentInstruction > 0
+        }
+    }
+
+    fun switchDisplay() {
+        display = when (display) {
+            Display.EVALUATIONS -> Display.RESULTS
+            Display.RESULTS -> Display.EVALUATIONS
+        }
+        hasNext = hasNext()
+        hasPrevious = hasPrevious()
     }
 
     /**
