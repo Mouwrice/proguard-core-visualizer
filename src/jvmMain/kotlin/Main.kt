@@ -21,14 +21,14 @@ import com.darkrockstudios.libraries.mpfilepicker.FilePicker
 import com.jthemedetecor.OsThemeDetector
 import com.materialkolor.AnimatedDynamicMaterialTheme
 import ui.Controls
-import ui.StateViewer
-import ui.codeview.FileViewer
+import ui.fileview.FileViewer
+import ui.stateview.StateViewer
 import viewmodel.DebuggerViewModel
+import java.awt.Dimension
 
 @Composable
 fun App() {
-    var viewModel by rememberSaveable { mutableStateOf<DebuggerViewModel?>(DebuggerViewModel.fromJson("examples/evaluateSingleInstructionBlock-reflective.json")) }
-    // var viewModel by rememberSaveable { mutableStateOf<DebuggerViewModel?>(null) }
+    var viewModel by rememberSaveable { mutableStateOf<DebuggerViewModel?>(null) }
     var showFilePicker by remember { mutableStateOf(false) }
 
     Box(Modifier.fillMaxSize().padding(all = 16.dp)) {
@@ -57,6 +57,7 @@ fun App() {
         }
     }
 }
+
 fun main() = application {
     // TODO: remove when https://github.com/JetBrains/compose-multiplatform/issues/3366 is resolved
     System.setProperty("compose.scrolling.smooth.enabled", "false")
@@ -64,6 +65,7 @@ fun main() = application {
         title = "Proguard CORE Visualizer",
         onCloseRequest = ::exitApplication,
     ) {
+        window.minimumSize = Dimension(900, 600)
         AppTheme(
             seedColor = Color.Blue,
         ) {
