@@ -26,10 +26,7 @@ fun Controls(viewModel: DebuggerViewModel?, setShowFilePicker: (Boolean) -> Unit
         }
 
         OutlinedButton(enabled = viewModel != null, onClick = {
-            when (viewModel?.display ?: Display.EVALUATIONS) {
-                Display.EVALUATIONS -> viewModel?.display = Display.RESULTS
-                Display.RESULTS -> viewModel?.display = Display.EVALUATIONS
-            }
+            viewModel?.switchDisplay()
         }) {
             when (viewModel?.display ?: Display.EVALUATIONS) {
                 Display.EVALUATIONS -> Text("Show results")

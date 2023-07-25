@@ -1,4 +1,4 @@
-package ui
+package ui.stateview
 
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.layout.Column

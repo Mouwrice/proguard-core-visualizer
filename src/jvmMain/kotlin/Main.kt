@@ -21,8 +21,8 @@ import com.darkrockstudios.libraries.mpfilepicker.FilePicker
 import com.jthemedetecor.OsThemeDetector
 import com.materialkolor.AnimatedDynamicMaterialTheme
 import ui.Controls
-import ui.StateViewer
 import ui.codeview.FileViewer
+import ui.stateview.StateViewer
 import viewmodel.DebuggerViewModel
 
 @Composable
