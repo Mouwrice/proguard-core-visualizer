@@ -1,13 +1,20 @@
 package ui.codeview
 
+import androidx.compose.foundation.VerticalScrollbar
 import androidx.compose.foundation.background
+import androidx.compose.foundation.defaultScrollbarStyle
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.rememberScrollbarAdapter
 import androidx.compose.material3.Divider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -116,68 +123,85 @@ fun InstructionViewer(instruction: InstructionRecord, isCurrent: Boolean, inCatc
  */
 @Composable
 fun CodeViewer(viewModel: DebuggerViewModel) {
-    LazyColumn {
-        viewModel.codeAttributes.forEachIndexed { index, codeAttribute ->
+    val state = rememberLazyListState()
 
-            item {
-                MethodHeader(codeAttribute)
-            }
+    Box(
+        modifier = Modifier.fillMaxSize(),
+    ) {
+        LazyColumn(state = state) {
+            viewModel.codeAttributes.forEachIndexed { index, codeAttribute ->
 
-            // Display the instructions of the current code attribute
-            codeAttribute.instructions.forEach {
-                val isCurrent =
-                    viewModel.currentCodeAttribute == index && viewModel.evaluation?.instructionOffset == it.offset
-
-                var inCatch = false
-                // Display a try-catch block, if any
-                viewModel.currentExceptionHandler?.let { exceptionHandler ->
-                    // Display the start of a try-catch block
-                    if (exceptionHandler.catchStartOffset == it.offset) {
-                        item {
-                            Text(
-                                "Catch ${exceptionHandler.catchType}",
-                                style = MaterialTheme.typography.bodySmall,
-                                fontFamily = FontFamily.Monospace,
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .background(Colors.Red.value.copy(alpha = 0.2F))
-                                    .padding(horizontal = 16.dp, vertical = 6.dp),
-                            )
-                        }
-                    }
-                    // Display the end of a try-catch block
-                    if (exceptionHandler.catchEndOffset == it.offset) {
-                        item {
-                            Text(
-                                "End catch",
-                                style = MaterialTheme.typography.bodySmall,
-                                fontFamily = FontFamily.Monospace,
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .background(Colors.Red.value.copy(alpha = 0.2F))
-                                    .padding(horizontal = 16.dp, vertical = 6.dp),
-                            )
-                        }
-                    }
-
-                    inCatch =
-                        exceptionHandler.catchStartOffset <= it.offset && exceptionHandler.catchEndOffset > it.offset
-                }
-
-                // Display the current instruction
                 item {
-                    InstructionViewer(it, isCurrent, inCatch)
+                    MethodHeader(codeAttribute)
                 }
 
-                // There is an error to display at the current instruction
-                codeAttribute.error?.let { error ->
-                    if (isCurrent && error.instructionOffset == it.offset) {
-                        item {
-                            ErrorViewer(error)
+                // Display the instructions of the current code attribute
+                codeAttribute.instructions.forEach {
+                    val isCurrent =
+                        viewModel.currentCodeAttribute == index && viewModel.evaluation?.instructionOffset == it.offset
+
+                    var inCatch = false
+                    // Display a try-catch block, if any
+                    viewModel.currentExceptionHandler?.let { exceptionHandler ->
+                        // Display the start of a try-catch block
+                        if (exceptionHandler.catchStartOffset == it.offset) {
+                            item {
+                                Text(
+                                    "Catch ${exceptionHandler.catchType}",
+                                    style = MaterialTheme.typography.bodySmall,
+                                    fontFamily = FontFamily.Monospace,
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .background(Colors.Red.value.copy(alpha = 0.2F))
+                                        .padding(horizontal = 16.dp, vertical = 6.dp),
+                                )
+                            }
+                        }
+                        // Display the end of a try-catch block
+                        if (exceptionHandler.catchEndOffset == it.offset) {
+                            item {
+                                Text(
+                                    "End catch",
+                                    style = MaterialTheme.typography.bodySmall,
+                                    fontFamily = FontFamily.Monospace,
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .background(Colors.Red.value.copy(alpha = 0.2F))
+                                        .padding(horizontal = 16.dp, vertical = 6.dp),
+                                )
+                            }
+                        }
+
+                        inCatch =
+                            exceptionHandler.catchStartOffset <= it.offset && exceptionHandler.catchEndOffset > it.offset
+                    }
+
+                    // Display the current instruction
+                    item {
+                        InstructionViewer(it, isCurrent, inCatch)
+                    }
+
+                    // There is an error to display at the current instruction
+                    codeAttribute.error?.let { error ->
+                        if (isCurrent && error.instructionOffset == it.offset) {
+                            item {
+                                ErrorViewer(error)
+                            }
                         }
                     }
                 }
             }
         }
+
+        VerticalScrollbar(
+            modifier = Modifier.align(Alignment.CenterEnd).fillMaxHeight().padding(all = 4.dp),
+            adapter = rememberScrollbarAdapter(
+                scrollState = state,
+            ),
+            style = defaultScrollbarStyle().copy(
+                unhoverColor = MaterialTheme.colorScheme.outline,
+                hoverColor = MaterialTheme.colorScheme.onSurface,
+            ),
+        )
     }
 }
