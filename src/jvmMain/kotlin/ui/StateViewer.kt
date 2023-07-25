@@ -32,6 +32,7 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import data.InstructionEvaluationRecord
 import viewmodel.DebuggerViewModel
+import viewmodel.Display
 
 /**
  * Displays the current instruction that is being evaluated.
@@ -39,7 +40,7 @@ import viewmodel.DebuggerViewModel
  * And how many times the instruction has been seen.
  */
 @Composable
-fun InstructionEvaluation(evaluation: InstructionEvaluationRecord) {
+private fun InstructionEvaluation(evaluation: InstructionEvaluationRecord) {
     Row(
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
@@ -88,37 +89,11 @@ fun InstructionEvaluation(evaluation: InstructionEvaluationRecord) {
 }
 
 /**
- * Displays the current state of the PartialEvaluator.
- * Showing the current instruction, the stack, the variables and the branches that still need to be evaluated.
- */
-@Composable
-fun StateViewer(viewModel: DebuggerViewModel?) {
-    Column(Modifier.fillMaxSize()) {
-        viewModel?.evaluation?.let { evaluation ->
-            InstructionEvaluation(evaluation)
-        }
-
-        Category("Variables", maxHeight = 0.3F) {
-            DisplayList(viewModel?.evaluation?.variablesBefore ?: emptyList())
-        }
-
-        Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-            Category("Stack", maxWidth = 0.7F) {
-                DisplayList(viewModel?.evaluation?.stackBefore?.reversed() ?: emptyList())
-            }
-            Category("Branches") {
-                DisplayList(viewModel?.currentBlockEvaluationStack?.map { it.startOffset } ?: emptyList())
-            }
-        }
-    }
-}
-
-/**
  * Display a list in a column with indexes.
  * With a scrollbar on the right side.
  */
 @Composable
-fun <T> DisplayList(list: List<T>) {
+private fun <T> DisplayList(list: List<T>) {
     val state = rememberLazyListState()
 
     Box(
@@ -148,5 +123,65 @@ fun <T> DisplayList(list: List<T>) {
                 hoverColor = MaterialTheme.colorScheme.onSurface,
             ),
         )
+    }
+}
+
+/**
+ * Displays the current state of the PartialEvaluator.
+ * Showing the current instruction, the stack, the variables and the branches that still need to be evaluated.
+ */
+@Composable
+fun StateViewer(viewModel: DebuggerViewModel?) {
+    Column(Modifier.fillMaxSize()) {
+        viewModel?.evaluation?.let { evaluation ->
+            InstructionEvaluation(evaluation)
+        }
+
+        Category("Variables", maxHeight = 0.3F) {
+            if (viewModel != null) {
+                when (viewModel.display) {
+                    Display.RESULTS -> DisplayList(
+                        viewModel.codeAttributes[viewModel.currentCodeAttribute].instructions[viewModel.currentInstruction].finalVariablesBefore
+                            ?: emptyList(),
+                    )
+
+                    Display.EVALUATIONS -> DisplayList(viewModel.evaluation?.variablesBefore ?: emptyList())
+                }
+            } else {
+                DisplayList(emptyList<String>())
+            }
+        }
+
+        Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+            Category("Stack", maxWidth = 0.7F) {
+                if (viewModel != null) {
+                    when (viewModel.display) {
+                        Display.EVALUATIONS -> DisplayList(viewModel.evaluation?.stackBefore?.reversed() ?: emptyList())
+                        Display.RESULTS -> DisplayList(
+                            viewModel.codeAttributes[viewModel.currentCodeAttribute].instructions[viewModel.currentInstruction].finalStackBefore
+                                ?: emptyList(),
+                        )
+                    }
+                } else {
+                    DisplayList(emptyList<String>())
+                }
+            }
+            Category("Branches") {
+                if (viewModel != null) {
+                    when (viewModel.display) {
+                        Display.EVALUATIONS -> DisplayList(
+                            viewModel.currentBlockEvaluationStack.map { it.startOffset },
+                        )
+
+                        Display.RESULTS -> DisplayList(
+                            viewModel.codeAttributes[viewModel.currentCodeAttribute].instructions[viewModel.currentInstruction].finalTargetInstructions
+                                ?: emptyList(),
+                        )
+                    }
+                } else {
+                    DisplayList(emptyList<String>())
+                }
+            }
+        }
     }
 }

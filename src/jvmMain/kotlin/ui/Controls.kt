@@ -8,6 +8,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.unit.dp
 import viewmodel.DebuggerViewModel
+import viewmodel.Display
 
 @Composable
 fun Controls(viewModel: DebuggerViewModel?, setShowFilePicker: (Boolean) -> Unit) {
@@ -16,12 +17,24 @@ fun Controls(viewModel: DebuggerViewModel?, setShowFilePicker: (Boolean) -> Unit
             Text("Open json file")
         }
 
-        OutlinedButton(enabled = viewModel == null || viewModel.hasPrevious, onClick = { viewModel?.previousEvaluation() }) {
+        OutlinedButton(enabled = viewModel?.hasPrevious == true, onClick = { viewModel?.previous() }) {
             Text("Previous")
         }
 
-        OutlinedButton(enabled = viewModel == null || viewModel.hasNext, onClick = { viewModel?.nextEvaluation() }) {
+        OutlinedButton(enabled = viewModel?.hasNext == true, onClick = { viewModel?.next() }) {
             Text("Next")
+        }
+
+        OutlinedButton(enabled = viewModel != null, onClick = {
+            when (viewModel?.display ?: Display.EVALUATIONS) {
+                Display.EVALUATIONS -> viewModel?.display = Display.RESULTS
+                Display.RESULTS -> viewModel?.display = Display.EVALUATIONS
+            }
+        }) {
+            when (viewModel?.display ?: Display.EVALUATIONS) {
+                Display.EVALUATIONS -> Text("Show results")
+                Display.RESULTS -> Text("Show evaluations")
+            }
         }
     }
 }

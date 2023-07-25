@@ -22,6 +22,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -30,6 +31,7 @@ import data.ErrorRecord
 import data.InstructionRecord
 import ui.Colors
 import viewmodel.DebuggerViewModel
+import viewmodel.Display
 
 /**
  * Display the name of the current method and its parameters.
@@ -85,11 +87,7 @@ fun ErrorViewer(error: ErrorRecord) {
  * Display the current instruction. Highlight it if it is the current one.
  */
 @Composable
-fun InstructionViewer(instruction: InstructionRecord, maxOffsetLength: Int, isCurrent: Boolean, inCatch: Boolean) {
-    // Highlight if the instruction is the current one
-    val color =
-        if (isCurrent) Colors.Red.value.copy(alpha = 0.5F) else MaterialTheme.colorScheme.surface
-
+fun InstructionViewer(instruction: InstructionRecord, maxOffsetLength: Int, color: Color, inCatch: Boolean) {
     val dividerColor = if (inCatch) Colors.Red.value else MaterialTheme.colorScheme.onSurfaceVariant
 
     Row(
@@ -132,7 +130,7 @@ fun CodeViewer(viewModel: DebuggerViewModel) {
         modifier = Modifier.fillMaxSize(),
     ) {
         LazyColumn(state = state) {
-            viewModel.codeAttributes.forEachIndexed { index, codeAttribute ->
+            viewModel.codeAttributes.forEachIndexed { codeAttributeIndex, codeAttribute ->
 
                 item {
                     MethodHeader(codeAttribute)
@@ -142,15 +140,17 @@ fun CodeViewer(viewModel: DebuggerViewModel) {
                 val maxOffsetLength = codeAttribute.instructions.last().offset.toString().length
 
                 // Display the instructions of the current code attribute
-                codeAttribute.instructions.forEach {
-                    val isCurrent =
-                        viewModel.currentCodeAttribute == index && viewModel.evaluation?.instructionOffset == it.offset
+                codeAttribute.instructions.forEachIndexed { instructionIndex, instruction ->
+                    val isCurrent = when (viewModel.display) {
+                        Display.EVALUATIONS -> viewModel.currentCodeAttribute == codeAttributeIndex && viewModel.evaluation?.instructionOffset == instruction.offset
+                        Display.RESULTS -> viewModel.currentInstruction == instructionIndex
+                    }
 
                     var inCatch = false
                     // Display a try-catch block, if any
                     viewModel.currentExceptionHandler?.let { exceptionHandler ->
                         // Display the start of a try-catch block
-                        if (exceptionHandler.catchStartOffset == it.offset) {
+                        if (exceptionHandler.catchStartOffset == instruction.offset) {
                             item {
                                 Text(
                                     "Catch ${exceptionHandler.catchType}",
@@ -164,7 +164,7 @@ fun CodeViewer(viewModel: DebuggerViewModel) {
                             }
                         }
                         // Display the end of a try-catch block
-                        if (exceptionHandler.catchEndOffset == it.offset) {
+                        if (exceptionHandler.catchEndOffset == instruction.offset) {
                             item {
                                 Text(
                                     "End catch",
@@ -179,17 +179,25 @@ fun CodeViewer(viewModel: DebuggerViewModel) {
                         }
 
                         inCatch =
-                            exceptionHandler.catchStartOffset <= it.offset && exceptionHandler.catchEndOffset > it.offset
+                            exceptionHandler.catchStartOffset <= instruction.offset && exceptionHandler.catchEndOffset > instruction.offset
                     }
 
                     // Display the current instruction
                     item {
-                        InstructionViewer(it, maxOffsetLength, isCurrent, inCatch)
+                        // Highlight if the instruction is the current one
+                        var color = MaterialTheme.colorScheme.surface
+                        if (isCurrent) {
+                            color = when (viewModel.display) {
+                                Display.EVALUATIONS -> Colors.Red.value.copy(alpha = 0.5F)
+                                Display.RESULTS -> Colors.LightGreen.value.copy(alpha = 0.5F)
+                            }
+                        }
+                        InstructionViewer(instruction, maxOffsetLength, color, inCatch)
                     }
 
                     // There is an error to display at the current instruction
                     codeAttribute.error?.let { error ->
-                        if (isCurrent && error.instructionOffset == it.offset) {
+                        if (isCurrent && error.instructionOffset == instruction.offset) {
                             item {
                                 ErrorViewer(error)
                             }
