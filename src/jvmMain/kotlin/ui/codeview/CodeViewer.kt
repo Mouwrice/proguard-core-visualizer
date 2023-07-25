@@ -19,6 +19,7 @@ import androidx.compose.material3.Divider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -31,41 +32,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import data.CodeAttributeRecord
 import data.ErrorRecord
 import data.InstructionRecord
 import kotlinx.coroutines.launch
 import ui.Colors
 import viewmodel.DebuggerViewModel
 import viewmodel.Display
-
-/**
- * Display the name of the current method and its parameters.
- */
-@Composable
-fun MethodHeader(codeAttribute: CodeAttributeRecord) {
-    Column(
-        Modifier.fillMaxWidth().padding(bottom = 10.dp)
-            .background(Colors.LightGreen.value.copy(alpha = 0.2F)),
-    ) {
-        Text(
-            "${codeAttribute.clazz}::${codeAttribute.method}",
-            style = MaterialTheme.typography.titleSmall,
-            fontFamily = FontFamily.Monospace,
-            modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
-        )
-        Text(
-            "parameters: ${codeAttribute.parameters.joinToString(", ")}",
-            style = MaterialTheme.typography.titleSmall,
-            fontFamily = FontFamily.Monospace,
-            modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
-        )
-        Divider(
-            color = Colors.DarkGreen.value,
-            modifier = Modifier.padding(top = 8.dp).shadow(4.dp),
-        )
-    }
-}
 
 /**
  * Display the exception that occurred during the evaluation of the current instruction.
@@ -132,14 +104,18 @@ fun InstructionViewer(instruction: InstructionRecord, maxOffsetLength: Int, colo
 fun CodeViewer(viewModel: DebuggerViewModel) {
     val state = rememberLazyListState()
     val coroutineScope = rememberCoroutineScope()
-
     var offsetWhenLastUpdated by remember {
         mutableStateOf(viewModel.evaluation?.instructionOffset ?: 0)
     }
 
-    if (offsetWhenLastUpdated != viewModel.evaluation?.instructionOffset &&
-        !state.layoutInfo.visibleItemsInfo.any { it.key == (viewModel.evaluation?.instructionOffset ?: "") }
-    ) {
+    val shouldRefocus by remember {
+        derivedStateOf {
+            offsetWhenLastUpdated != viewModel.evaluation?.instructionOffset &&
+                !state.layoutInfo.visibleItemsInfo.any { it.key == (viewModel.evaluation?.instructionOffset ?: "") }
+        }
+    }
+
+    if (shouldRefocus) {
         val newOffset = viewModel.evaluation?.instructionOffset ?: 0
         offsetWhenLastUpdated = newOffset
 
@@ -149,8 +125,7 @@ fun CodeViewer(viewModel: DebuggerViewModel) {
                 .find { it.value.offset == viewModel.evaluation?.instructionOffset }
             if (index != null) {
                 val visibleItemCount = state.layoutInfo.visibleItemsInfo.size
-                println(visibleItemCount)
-                state.animateScrollToItem(if (index.index - visibleItemCount / 2 < 0) 0 else index.index - visibleItemCount / 2)
+                state.scrollToItem(if (index.index - visibleItemCount / 2 < 0) 0 else index.index - visibleItemCount / 2)
             }
         }
     }
