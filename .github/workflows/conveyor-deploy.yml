@@ -39,6 +39,8 @@ jobs:
           
       - name: Run Conveyor     
         uses: hydraulic-software/conveyor/actions/build@v10.1
+        env:
+          OAUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           command: make copied-site
           signing_key: ${{ secrets.CONVEYOR_SIGNING_KEY }}          
