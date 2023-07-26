@@ -1,6 +1,7 @@
 name: Gradle jvmJar
 on: 
   workflow_dispatch:
+  workflow_call:
 
 jobs:
   gradle:
