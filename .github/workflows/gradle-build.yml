@@ -1,4 +1,4 @@
-name: Gradle build
+name: Gradle Build
 on: 
   pull_request:
   workflow_dispatch:
