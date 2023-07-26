@@ -58,6 +58,8 @@ fun App() {
 }
 
 fun main() = application {
+    // TODO: remove when https://github.com/JetBrains/compose-multiplatform/issues/3366 is resolved
+    System.setProperty("compose.scrolling.smooth.enabled", "false")
     Window(
         title = "Proguard CORE Visualizer",
         onCloseRequest = ::exitApplication,
