@@ -14,13 +14,20 @@ import androidx.compose.foundation.rememberScrollbarAdapter
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.launch
 import ui.Colors
 import viewmodel.DebuggerViewModel
 import viewmodel.Display
+import java.lang.Integer.max
 
 /**
  * Display all methods and their instructions from the parsed code attributes.
@@ -28,16 +35,38 @@ import viewmodel.Display
 @Composable
 fun CodeViewer(viewModel: DebuggerViewModel) {
     val state = rememberLazyListState()
+    val coroutineScope = rememberCoroutineScope()
+
+    val aimOffset = mapOf(
+        Pair(Display.RESULTS, viewModel.codeAttributes[viewModel.currentCodeAttribute].instructions[viewModel.currentInstruction].offset),
+        Pair(Display.EVALUATIONS, viewModel.evaluation?.instructionOffset ?: 0),
+    )
+
+    var prevOffset by remember {
+        mutableStateOf(aimOffset)
+    }
+
+    if (prevOffset[viewModel.display] != aimOffset[viewModel.display] &&
+        !state.layoutInfo.visibleItemsInfo.any { it.key == aimOffset[viewModel.display] }
+    ) {
+        prevOffset = HashMap(aimOffset)
+
+        coroutineScope.launch {
+            // Animate scroll to the first item
+            val index = viewModel.codeAttributes[viewModel.currentCodeAttribute].instructions.withIndex()
+                .find { it.value.offset == aimOffset[viewModel.display] }
+            if (index != null) {
+                val visibleItemCount = state.layoutInfo.visibleItemsInfo.size
+                state.animateScrollToItem(max(0, index.index - visibleItemCount / 2))
+            }
+        }
+    }
 
     Box(
         modifier = Modifier.fillMaxSize(),
     ) {
         LazyColumn(state = state) {
             val codeAttribute = viewModel.codeAttributes[viewModel.currentCodeAttribute]
-            item {
-                MethodHeader(codeAttribute)
-            }
-
             // Get the length of the offset as string of the last instruction of the current code attribute
             val maxOffsetLength = codeAttribute.instructions.last().offset.toString().length
 
@@ -85,7 +114,7 @@ fun CodeViewer(viewModel: DebuggerViewModel) {
                 }
 
                 // Display the current instruction
-                item {
+                item(key = instruction.offset) {
                     // Highlight if the instruction is the current one
                     var color = MaterialTheme.colorScheme.surface
                     if (isCurrent) {
