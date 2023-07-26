@@ -27,6 +27,7 @@ import kotlinx.coroutines.launch
 import ui.Colors
 import viewmodel.DebuggerViewModel
 import viewmodel.Display
+import java.lang.Integer.max
 
 /**
  * Display all methods and their instructions from the parsed code attributes.
@@ -56,7 +57,7 @@ fun CodeViewer(viewModel: DebuggerViewModel) {
                 .find { it.value.offset == aimOffset[viewModel.display] }
             if (index != null) {
                 val visibleItemCount = state.layoutInfo.visibleItemsInfo.size
-                state.scrollToItem(if (index.index - visibleItemCount / 2 < 0) 0 else index.index - visibleItemCount / 2)
+                state.animateScrollToItem(max(0, index.index - visibleItemCount / 2))
             }
         }
     }
