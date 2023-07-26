@@ -133,7 +133,7 @@ fun CodeViewer(viewModel: DebuggerViewModel) {
                         }
                     }
 
-                    InstructionViewer(instruction, maxOffsetLength, color, inCatch)
+                    InstructionViewer(viewModel, instruction, maxOffsetLength, color, inCatch)
                 }
 
                 // There is an error to display at the current instruction

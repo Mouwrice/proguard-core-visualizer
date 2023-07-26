@@ -32,7 +32,8 @@ import kotlin.io.path.inputStream
 
 @Composable
 fun App() {
-    var viewModel by rememberSaveable { mutableStateOf<DebuggerViewModel?>(null) }
+    var viewModel by rememberSaveable { mutableStateOf<DebuggerViewModel?>(DebuggerViewModel.fromJson("examples/branches.json")) }
+    // var viewModel by rememberSaveable { mutableStateOf<DebuggerViewModel?>(null) }
     var showFilePicker by remember { mutableStateOf(false) }
 
     Box(Modifier.fillMaxSize().padding(all = 16.dp)) {

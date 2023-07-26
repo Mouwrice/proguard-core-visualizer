@@ -52,7 +52,6 @@ class DebuggerViewModel private constructor(val file: File, stateTracker: StateT
 
     // The index of the current instruction that is selected.
     var currentInstruction by mutableStateOf(0)
-        private set
 
     private var currentBlockEvaluation: Int = 0
     private var currentEvaluation: Int = 0
