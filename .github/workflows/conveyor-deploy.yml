@@ -41,6 +41,6 @@ jobs:
         uses: hydraulic-software/conveyor/actions/build@v10.1
         with:
           command: make copied-site
-          signing_key: ${{ secrets.SIGNING_KEY }}          
+          signing_key: ${{ secrets.CONVEYOR_SIGNING_KEY }}          
           agree_to_license: 1
   
