@@ -19,7 +19,9 @@ kotlin {
     jvm {
         withJava()
     }
-    jvmToolchain(17)
+    // Java 11 is the minimum supported version for Compose Desktop.
+    // Higher versions seem to not work for the moment.
+    jvmToolchain(11)
 
     sourceSets {
         val jvmMain by getting {
