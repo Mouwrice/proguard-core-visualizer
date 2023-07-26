@@ -8,6 +8,8 @@ import data.ExceptionHandlerRecord
 import data.InstructionEvaluationRecord
 import data.StateTracker
 import java.io.File
+import java.nio.file.Files
+import java.nio.file.Path
 
 /**
  * This view model is a very close representation of the loaded json file.
@@ -16,7 +18,7 @@ import java.io.File
  * @param file The file that is represented by this instance.
  * @param stateTracker The state tracker that is used to parse the json file.
  */
-class DebuggerViewModel private constructor(val file: File, stateTracker: StateTracker) {
+class DebuggerViewModel private constructor(val file: Path, stateTracker: StateTracker) {
     /**
      * All the code attributes parsed from the json file.
      */
@@ -166,29 +168,17 @@ class DebuggerViewModel private constructor(val file: File, stateTracker: StateT
         hasPrevious = hasPrevious()
     }
 
-    /**
-     * Loads the json file at the given path and returns a new view model.
-     */
-    fun loadJson(path: String): DebuggerViewModel {
-        val file = File(path)
-        return try {
-            val stateTracker = StateTracker.fromJson(path)
-            DebuggerViewModel(file, stateTracker)
-        } catch (e: Exception) {
-            println("Error while parsing json file: $e")
-            this
-        }
-    }
-
     companion object {
         /**
          * Create a new view model given a path to a json file.
          * Used to create the initial view model.
          */
-        fun fromJson(path: String): DebuggerViewModel {
-            val file = File(path)
-            val stateTracker = StateTracker.fromJson(path)
-            return DebuggerViewModel(file, stateTracker)
+        fun fromFile(path: Path): DebuggerViewModel {
+            return fromJson(path, Files.readString(path))
+        }
+
+        fun fromJson(path: Path, json: String): DebuggerViewModel {
+            return DebuggerViewModel(path, StateTracker.fromJson(json))
         }
     }
 }

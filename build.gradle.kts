@@ -33,6 +33,7 @@ kotlin {
                 implementation(libs.google.gson)
                 implementation(libs.materialkolor)
                 implementation(libs.dansoftowner.jthemedetecor)
+                implementation("com.guardsquare:proguard-core:9.0.9")
             }
         }
     }

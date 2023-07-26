@@ -29,6 +29,7 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import viewmodel.DebuggerViewModel
+import kotlin.io.path.name
 
 /**
  * Displays the name of the current file and a button to close it.

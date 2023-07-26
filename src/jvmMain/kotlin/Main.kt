@@ -22,10 +22,26 @@ import androidx.compose.ui.window.application
 import com.darkrockstudios.libraries.mpfilepicker.FilePicker
 import com.jthemedetecor.OsThemeDetector
 import com.materialkolor.AnimatedDynamicMaterialTheme
+import proguard.classfile.ClassPool
+import proguard.classfile.attribute.Attribute.CODE
+import proguard.classfile.attribute.visitor.AllAttributeVisitor
+import proguard.classfile.attribute.visitor.AttributeNameFilter
+import proguard.classfile.visitor.AllClassVisitor
+import proguard.classfile.visitor.AllMethodVisitor
+import proguard.classfile.visitor.ClassPoolFiller
+import proguard.evaluation.PartialEvaluator
+import proguard.evaluation.stateTrackers.jsonPrinter.JsonPrinter
+import proguard.io.ClassFilter
+import proguard.io.ClassReader
+import proguard.io.DataEntrySource
+import proguard.io.FileSource
+import proguard.io.JarReader
 import ui.Controls
 import ui.fileview.FileViewer
 import ui.stateview.StateViewer
 import viewmodel.DebuggerViewModel
+import java.io.File
+import java.nio.file.Path
 import java.nio.file.Paths
 import kotlin.io.path.exists
 import kotlin.io.path.inputStream
@@ -51,12 +67,51 @@ fun App() {
         }
 
         // Accept json files
-        FilePicker(showFilePicker, fileExtensions = listOf("json")) { path ->
+        FilePicker(showFilePicker, fileExtensions = listOf("json", "jar")) { path ->
             showFilePicker = false
             if (path != null) {
-                // If we already have a view model, load the json file into it.
-                // Otherwise, create a new view model from the json file.
-                viewModel = viewModel?.loadJson(path.path) ?: DebuggerViewModel.fromJson(path.path)
+                if (path.path.endsWith(".jar")) {
+                    val classPool = ClassPool()
+
+                    val source: DataEntrySource = FileSource(
+                        File(path.path),
+                    )
+
+                    source.pumpDataEntries(
+                        JarReader(
+                            false,
+                            ClassFilter(
+                                ClassReader(
+                                    false,
+                                    false,
+                                    false,
+                                    false,
+                                    null,
+                                    ClassPoolFiller(classPool),
+                                ),
+                            ),
+                        ),
+                    )
+
+                    val tracker = JsonPrinter()
+                    val pe = PartialEvaluator.Builder.create()
+                        .setEvaluateAllCode(true).setStateTracker(tracker).build()
+                    classPool.accept(
+                        AllClassVisitor(
+                            AllMethodVisitor(
+                                AllAttributeVisitor(
+                                    AttributeNameFilter(CODE, pe),
+                                ),
+                            ),
+                            // "proguard/evaluation/PartialEvaluator",
+                        ),
+                    )
+                    viewModel = DebuggerViewModel.fromJson(Path.of(path.path), tracker.json)
+                } else {
+                    // If we already have a view model, load the json file into it.
+                    // Otherwise, create a new view model from the json file.
+                    viewModel = DebuggerViewModel.fromFile(Path.of(path.path))
+                }
             }
         }
     }

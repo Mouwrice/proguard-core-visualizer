@@ -8,7 +8,7 @@ pluginManagement {
 }
 
 plugins {
-    // Unnfortunately, version catalogs are not supported in settings.gradle.kts
+    // Unfortunately, version catalogs are not supported in settings.gradle.kts
     id("org.danilopianini.gradle-pre-commit-git-hooks") version "1.1.9"
 }
 
@@ -17,4 +17,8 @@ gitHooks {
         conventionalCommits()
     }
     createHooks()
+}
+
+includeBuild("/home/jitse/Documents/core") {
+    name = "proguard-core"
 }
