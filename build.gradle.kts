@@ -19,6 +19,7 @@ kotlin {
     jvm {
         withJava()
     }
+    jvmToolchain(17)
 
     sourceSets {
         val jvmMain by getting {
