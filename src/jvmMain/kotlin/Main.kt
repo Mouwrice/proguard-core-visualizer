@@ -26,7 +26,6 @@ import ui.Controls
 import ui.fileview.FileViewer
 import ui.stateview.StateViewer
 import viewmodel.DebuggerViewModel
-import java.awt.Dimension
 import java.nio.file.Paths
 import kotlin.io.path.exists
 import kotlin.io.path.inputStream
@@ -64,6 +63,9 @@ fun App() {
 }
 
 fun main() = application {
+    // TODO: remove when https://github.com/JetBrains/compose-multiplatform/issues/3366 is resolved
+    System.setProperty("compose.scrolling.smooth.enabled", "false")
+
     val version = System.getProperty("app.version") ?: "DEV"
 
     // app.dir is set when packaged to point at our collected inputs.
@@ -81,7 +83,6 @@ fun main() = application {
         icon = appIcon,
         onCloseRequest = ::exitApplication,
     ) {
-        window.minimumSize = Dimension(900, 600)
         AppTheme(
             seedColor = Color.Blue,
         ) {

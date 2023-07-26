@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.Surface
 import androidx.compose.material.icons.Icons
@@ -58,7 +57,6 @@ fun MethodDropdown(viewModel: DebuggerViewModel, modifier: Modifier = Modifier) 
                         fontFamily = FontFamily.Monospace,
                         overflow = TextOverflow.Ellipsis,
                         softWrap = false,
-                        modifier = Modifier.widthIn(max = 250.dp),
                     )
                     Icon(Icons.Default.ExpandMore, contentDescription = "Expand method dropdown")
                 }
