@@ -5,6 +5,7 @@ output/
 !**/src/main/**/build/
 !**/src/test/**/build/
 *.log
+.rtx.toml
 
 ### IntelliJ IDEA ###
 .idea/

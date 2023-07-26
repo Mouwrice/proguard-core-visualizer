@@ -19,7 +19,6 @@ kotlin {
     jvm {
         withJava()
     }
-    jvmToolchain(17)
 
     sourceSets {
         val jvmMain by getting {
@@ -61,7 +60,6 @@ configure<org.jlleitschuh.gradle.ktlint.KtlintExtension> {
 // https://github.com/JetBrains/compose-jb/issues/1404#issuecomment-1146894731
 configurations.all {
     attributes {
-
         attribute(Attribute.of("ui", String::class.java), "awt")
     }
 }
