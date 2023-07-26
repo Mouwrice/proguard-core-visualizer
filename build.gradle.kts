@@ -27,6 +27,7 @@ kotlin {
                 implementation(libs.google.gson)
                 implementation(libs.materialkolor)
                 implementation(libs.dansoftowner.jthemedetecor)
+                implementation("cafe.adriel.bonsai:bonsai-core:1.2.0")
             }
         }
     }
