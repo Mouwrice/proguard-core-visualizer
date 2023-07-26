@@ -14,6 +14,8 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.painter.BitmapPainter
+import androidx.compose.ui.res.loadImageBitmap
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
@@ -24,6 +26,9 @@ import ui.Controls
 import ui.fileview.FileViewer
 import ui.stateview.StateViewer
 import viewmodel.DebuggerViewModel
+import java.nio.file.Paths
+import kotlin.io.path.exists
+import kotlin.io.path.inputStream
 
 @Composable
 fun App() {
@@ -60,8 +65,22 @@ fun App() {
 fun main() = application {
     // TODO: remove when https://github.com/JetBrains/compose-multiplatform/issues/3366 is resolved
     System.setProperty("compose.scrolling.smooth.enabled", "false")
+
+    val version = System.getProperty("app.version") ?: "DEV"
+
+    // app.dir is set when packaged to point at our collected inputs.
+    val appIcon = remember {
+        System.getProperty("app.dir")
+            ?.let { Paths.get(it, "icon-512.png") }
+            ?.takeIf { it.exists() }
+            ?.inputStream()
+            ?.buffered()
+            ?.use { BitmapPainter(loadImageBitmap(it)) }
+    }
+
     Window(
-        title = "Proguard CORE Visualizer",
+        title = "Proguard CORE Visualizer $version",
+        icon = appIcon,
         onCloseRequest = ::exitApplication,
     ) {
         AppTheme(

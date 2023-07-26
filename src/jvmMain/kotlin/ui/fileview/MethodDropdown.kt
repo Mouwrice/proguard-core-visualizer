@@ -57,7 +57,6 @@ fun MethodDropdown(viewModel: DebuggerViewModel, modifier: Modifier = Modifier) 
                         fontFamily = FontFamily.Monospace,
                         overflow = TextOverflow.Ellipsis,
                         softWrap = false,
-//                        modifier = Modifier.widthIn(max = 250.dp),
                     )
                     Icon(Icons.Default.ExpandMore, contentDescription = "Expand method dropdown")
                 }
