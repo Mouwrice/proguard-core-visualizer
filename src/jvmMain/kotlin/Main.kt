@@ -46,9 +46,7 @@ fun App() {
             }
 
             Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-                FileViewer(viewModel) {
-                    viewModel.closeFile(viewModel.fileIndex)
-                }
+                FileViewer(viewModel)
                 StateViewer(viewModel)
             }
         }
