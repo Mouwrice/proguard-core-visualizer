@@ -34,6 +34,7 @@ kotlin {
                 implementation(libs.materialkolor)
                 implementation(libs.dansoftowner.jthemedetecor)
                 implementation("com.guardsquare:proguard-core:9.0.9")
+                implementation("cafe.adriel.bonsai:bonsai-core:1.2.0")
             }
         }
     }
