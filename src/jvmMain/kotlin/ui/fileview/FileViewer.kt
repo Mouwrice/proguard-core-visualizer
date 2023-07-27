@@ -181,7 +181,10 @@ fun FileViewer(viewModel: DebuggerViewModel) {
                 node.content?.let { viewUpdate = it }
             },
         )
-        viewUpdate?.let { viewModel.updateFileIndex(it.first); viewModel.updateAttributeIndex(it.second) }
+        viewUpdate?.let {
+            viewModel.updateFileIndex(it.first)
+            viewModel.updateAttributeIndex(it.second)
+        }
         Divider(
             thickness = 1.dp,
             color = MaterialTheme.colorScheme.outline,
@@ -190,7 +193,6 @@ fun FileViewer(viewModel: DebuggerViewModel) {
 
         Column {
             viewModel.codeAttribute?.let { MethodHeader(it) }
-
             CodeViewer(viewModel)
         }
     }
