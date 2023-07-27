@@ -90,6 +90,7 @@ fun InstructionViewer(viewModel: DebuggerViewModel, instruction: InstructionReco
                     val evalCount = it.second.evaluationCount + 1
                     DropdownMenuItem({ Text(evalCount.toString()) }, onClick = {
                         expandedSelection = false
+                        viewModel.display = Display.EVALUATIONS
                         viewModel.updateEvaluationBlockIndex(it.first.first)
                         viewModel.evaluationIndex = it.first.second
                     })

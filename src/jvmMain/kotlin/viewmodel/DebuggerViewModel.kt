@@ -5,7 +5,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import data.StateTracker
-import java.nio.file.Files
 import java.nio.file.Path
 
 /**
@@ -147,10 +146,10 @@ class DebuggerViewModel {
      * Loads the json file at the given path and returns a new view model.
      */
     fun loadJson(path: String): DebuggerViewModel {
-        val file = Path.of(path)
+        val pathHandle = Path.of(path)
         return try {
-            val stateTracker = StateTracker.fromJson(Files.readString(file))
-            addFile(file, stateTracker)
+            val stateTracker = StateTracker.fromJson(pathHandle)
+            addFile(pathHandle, stateTracker)
             return this
         } catch (e: Exception) {
             println("Error while parsing json file: $e")

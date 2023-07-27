@@ -33,12 +33,10 @@ import kotlin.io.path.inputStream
 @Composable
 fun App() {
     val viewModel by rememberSaveable { mutableStateOf(DebuggerViewModel()) }
-    if (viewModel.openedFiles.isEmpty()) {
-        viewModel.loadJson("examples/branches.json")
-    }
     var showFilePicker by remember { mutableStateOf(false) }
     var pickedFile by remember { mutableStateOf<String?>(null) }
 
+    // State change done here to avoid invalid state issues in the lifecycles.
     pickedFile?.let {
         viewModel.loadJson(it)
         pickedFile = null

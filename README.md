@@ -36,8 +36,8 @@ The repository contains some samples in the [examples](examples) directory.
 ## 🤝 Contributing
 
 Contributions, issues and feature requests are welcome.
-Feel free to check the [issues](issues) page and the [contributing
-guide](blob/master/CONTRIBUTING.md) if you would like to contribute.
+Feel free to check the [issues](https://github.com/Mouwrice/proguard-core-visualizer/issues) page and the [contributing
+guide](CONTRIBUTING.md) if you would like to contribute.
 
 ## 📝 License
 

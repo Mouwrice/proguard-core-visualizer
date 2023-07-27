@@ -57,6 +57,7 @@ fun BonsaiTree(viewModel: DebuggerViewModel): Tree<Pair<Int, Int>?> {
         viewModel.openedFiles.forEachIndexed { fileIndex, (path, tracker) ->
             Branch(null, customName = {
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
+                    // State change done here to avoid invalid state issues in the lifecycles.
                     var remove by remember { mutableStateOf(false) }
                     if (remove) {
                         remove = false
@@ -181,6 +182,8 @@ fun FileViewer(viewModel: DebuggerViewModel) {
                 node.content?.let { viewUpdate = it }
             },
         )
+
+        // State change done here to avoid invalid state issues in the lifecycles.
         viewUpdate?.let {
             viewModel.updateFileIndex(it.first)
             viewModel.updateAttributeIndex(it.second)
