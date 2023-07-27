@@ -27,7 +27,7 @@ fun InstructionViewer(instruction: InstructionRecord, maxOffsetLength: Int, colo
     val dividerColor = if (inCatch) Colors.Red.value else MaterialTheme.colorScheme.onSurfaceVariant
 
     Row(
-        Modifier.fillMaxWidth().background(color).padding(2.dp),
+        Modifier.fillMaxWidth().background(color),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         // Pad with whitespaces to align the offsets
