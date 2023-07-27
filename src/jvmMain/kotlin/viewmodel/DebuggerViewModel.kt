@@ -7,7 +7,6 @@ import androidx.compose.runtime.setValue
 import data.StateTracker
 import java.nio.file.Files
 import java.nio.file.Path
-import kotlin.io.path.name
 
 /**
  * This view model is a very close representation of the loaded json file.
@@ -38,7 +37,7 @@ class DebuggerViewModel {
 
     val codeAttributes by derivedStateOf { openedFiles.getOrNull(fileIndex)?.second?.codeAttributes ?: emptyList() }
 
-    val name by derivedStateOf { openedFiles.getOrNull(fileIndex)?.first?.name ?: "" }
+    val path by derivedStateOf { openedFiles.getOrNull(fileIndex)?.first }
 
     var attributeIndex by mutableStateOf(0)
         private set
@@ -103,7 +102,6 @@ class DebuggerViewModel {
             evaluationIndex--
         } else if (evaluationBlockIndex > 0) {
             evaluationBlockIndex--
-            // TODO: maybe this state has not been updated yet??
             evaluationIndex = (evaluationBlock?.evaluations?.size ?: 1) - 1
         }
     }

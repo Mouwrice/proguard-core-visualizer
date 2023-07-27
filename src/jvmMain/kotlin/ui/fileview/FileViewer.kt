@@ -29,8 +29,10 @@ fun FileViewer(viewModel: DebuggerViewModel, closeFile: () -> Unit) {
                 shape = MaterialTheme.shapes.medium,
             ).clip(MaterialTheme.shapes.medium),
         ) {
-            FileTab(viewModel, closeFile)
-            CodeViewer(viewModel)
+            if (viewModel.path != null) {
+                FileTab(viewModel, closeFile)
+                CodeViewer(viewModel)
+            }
         }
     }
 }

@@ -29,6 +29,7 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import viewmodel.DebuggerViewModel
+import kotlin.io.path.name
 
 /**
  * Displays the name of the current file and a button to close it.
@@ -53,13 +54,13 @@ fun FileTab(viewModel: DebuggerViewModel, closeFile: () -> Unit) {
                     shape = MaterialTheme.shapes.small,
                 ) {
                     Text(
-                        text = viewModel.name,
+                        text = viewModel.path?.name ?: "",
                         modifier = Modifier.padding(10.dp),
                     )
                 }
             }) {
                 Text(
-                    viewModel.name,
+                    viewModel.path?.name ?: "",
                     style = MaterialTheme.typography.titleSmall,
                     overflow = TextOverflow.Ellipsis,
                     softWrap = false,
