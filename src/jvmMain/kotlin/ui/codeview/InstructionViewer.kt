@@ -41,7 +41,7 @@ fun InstructionViewer(viewModel: DebuggerViewModel, instruction: InstructionReco
     }
 
     Row(
-        Modifier.fillMaxWidth().background(color).padding(2.dp).onClick {
+        Modifier.fillMaxWidth().background(color).onClick {
             expandedSelection = true
         },
         verticalAlignment = Alignment.CenterVertically,
@@ -69,26 +69,32 @@ fun InstructionViewer(viewModel: DebuggerViewModel, instruction: InstructionReco
             modifier = Modifier.padding(start = 16.dp),
         )
 
-        DropdownMenu(expandedSelection, { expandedSelection = false }) {
-            DropdownMenuItem({ Text("Result") }, onClick = {
-                expandedSelection = false
-                val instructionIndex = viewModel.codeAttributes[viewModel.currentCodeAttribute].instructions.indexOf(instruction)
-                viewModel.display = Display.RESULTS
-                viewModel.currentInstruction = instructionIndex
-            })
+        viewModel.codeAttribute?.let { codeAttribute ->
+            DropdownMenu(expandedSelection, { expandedSelection = false }) {
+                DropdownMenuItem({ Text("Result") }, onClick = {
+                    expandedSelection = false
+                    val instructionIndex = codeAttribute.instructions.indexOf(instruction)
+                    viewModel.display = Display.RESULTS
+                    viewModel.instructionIndex = instructionIndex
+                })
 
-            // viewModel.codeAttributes[viewModel.currentCodeAttribute].blockEvaluations.withIndex().flatMap { blockIndex ->
-            //     blockIndex.value.evaluations.filter { evaluationIndex ->
-            //         evaluationIndex.instructionOffset == instruction.offset
-            //     }.withIndex().map {evaluationIndex ->
-            //         Pair(Pair(blockIndex.index, evaluationIndex.index), evaluationIndex.value)
-            //     }
-            // }.forEach() {
-            //     val evalCount = it.second.evaluationCount
-            //     DropdownMenuItem({ Text(evalCount.toString()) }, onClick = {
-            //         viewModel.evaluation = it.first.second
-            //     })
-            // }
+                codeAttribute.blockEvaluations.withIndex().flatMap { blockIndex ->
+                    // Filter: match instruction
+                    blockIndex.value.evaluations.filter { evaluationIndex ->
+                        evaluationIndex.instructionOffset == instruction.offset
+                    }.withIndex().map { evaluationIndex ->
+                        // Pair of <Block index; evaluation index> with a pair containing the evaluation
+                        Pair(Pair(blockIndex.index, evaluationIndex.index), evaluationIndex.value)
+                    }
+                }.forEach() {
+                    val evalCount = it.second.evaluationCount + 1
+                    DropdownMenuItem({ Text(evalCount.toString()) }, onClick = {
+                        expandedSelection = false
+                        viewModel.updateEvaluationBlockIndex(it.first.first)
+                        viewModel.evaluationIndex = it.first.second
+                    })
+                }
+            }
         }
     }
 }
