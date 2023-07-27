@@ -14,5 +14,12 @@ data class StateTracker(val codeAttributes: List<CodeAttributeRecord>) {
         fun fromJson(json: Path): StateTracker {
             return Gson().fromJson(BufferedReader(json.reader()), StateTracker::class.java)
         }
+
+        /**
+         * Parse from a json string.
+         */
+        fun fromJson(json: String): StateTracker {
+            return Gson().fromJson(json, StateTracker::class.java)
+        }
     }
 }

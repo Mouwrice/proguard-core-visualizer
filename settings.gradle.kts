@@ -4,11 +4,12 @@ pluginManagement {
     repositories {
         gradlePluginPortal()
         maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
+        maven("https://jitpack.io")
     }
 }
 
 plugins {
-    // Unnfortunately, version catalogs are not supported in settings.gradle.kts
+    // Unfortunately, version catalogs can not be used in settings.gradle.kts
     id("org.danilopianini.gradle-pre-commit-git-hooks") version "1.1.9"
 }
 
