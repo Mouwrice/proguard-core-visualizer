@@ -53,13 +53,13 @@ fun FileTab(viewModel: DebuggerViewModel, closeFile: () -> Unit) {
                     shape = MaterialTheme.shapes.small,
                 ) {
                     Text(
-                        text = viewModel.file.name,
+                        text = viewModel.name,
                         modifier = Modifier.padding(10.dp),
                     )
                 }
             }) {
                 Text(
-                    viewModel.file.name,
+                    viewModel.name,
                     style = MaterialTheme.typography.titleSmall,
                     overflow = TextOverflow.Ellipsis,
                     softWrap = false,

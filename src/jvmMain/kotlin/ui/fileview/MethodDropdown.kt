@@ -33,63 +33,64 @@ import viewmodel.DebuggerViewModel
 fun MethodDropdown(viewModel: DebuggerViewModel, modifier: Modifier = Modifier) {
     Box(modifier) {
         var expanded by remember { mutableStateOf(false) }
-        val currentAttribute = viewModel.codeAttributes[viewModel.currentCodeAttribute]
-        TooltipArea(tooltip = {
-            Surface(
-                modifier = Modifier.shadow(4.dp),
-                color = MaterialTheme.colorScheme.surface,
-                shape = MaterialTheme.shapes.small,
-            ) {
-                Text(
-                    text = "${currentAttribute.clazz}::${currentAttribute.method}",
-                    modifier = Modifier.padding(10.dp),
-                )
-            }
-        }) {
-            OutlinedButton(
-                contentPadding = PaddingValues(vertical = 4.dp, horizontal = 12.dp),
-                shape = MaterialTheme.shapes.small,
-                onClick = { expanded = true },
-            ) {
-                Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+        viewModel.codeAttribute?.let { currentAttribute ->
+            TooltipArea(tooltip = {
+                Surface(
+                    modifier = Modifier.shadow(4.dp),
+                    color = MaterialTheme.colorScheme.surface,
+                    shape = MaterialTheme.shapes.small,
+                ) {
                     Text(
-                        "${currentAttribute.clazz}::${currentAttribute.method}",
-                        fontFamily = FontFamily.Monospace,
-                        overflow = TextOverflow.Ellipsis,
-                        softWrap = false,
+                        text = "${currentAttribute.clazz}::${currentAttribute.method}",
+                        modifier = Modifier.padding(10.dp),
                     )
-                    Icon(Icons.Default.ExpandMore, contentDescription = "Expand method dropdown")
+                }
+            }) {
+                OutlinedButton(
+                    contentPadding = PaddingValues(vertical = 4.dp, horizontal = 12.dp),
+                    shape = MaterialTheme.shapes.small,
+                    onClick = { expanded = true },
+                ) {
+                    Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                        Text(
+                            "${currentAttribute.clazz}::${currentAttribute.method}",
+                            fontFamily = FontFamily.Monospace,
+                            overflow = TextOverflow.Ellipsis,
+                            softWrap = false,
+                        )
+                        Icon(Icons.Default.ExpandMore, contentDescription = "Expand method dropdown")
+                    }
                 }
             }
-        }
 
-        DropdownMenu(expanded, { expanded = false }) {
-            viewModel.codeAttributes.forEachIndexed { index, attribute ->
-                TooltipArea(tooltip = {
-                    Surface(
-                        modifier = Modifier.shadow(4.dp),
-                        color = MaterialTheme.colorScheme.surface,
-                        shape = MaterialTheme.shapes.small,
-                    ) {
-                        Text(
-                            text = "${attribute.clazz}:${attribute.method}",
-                            modifier = Modifier.padding(10.dp),
-                        )
-                    }
-                }) {
-                    DropdownMenuItem(
-                        onClick = {
-                            viewModel.selectCodeAttribute(index)
-                            expanded = false
-                        },
-                    ) {
-                        Text(
-                            "${attribute.clazz}:${attribute.method}",
-                            fontFamily = FontFamily.Monospace,
-                            fontSize = MaterialTheme.typography.bodySmall.fontSize,
-                            softWrap = false,
-                            overflow = TextOverflow.Ellipsis,
-                        )
+            DropdownMenu(expanded, { expanded = false }) {
+                viewModel.codeAttributes.forEachIndexed { index, attribute ->
+                    TooltipArea(tooltip = {
+                        Surface(
+                            modifier = Modifier.shadow(4.dp),
+                            color = MaterialTheme.colorScheme.surface,
+                            shape = MaterialTheme.shapes.small,
+                        ) {
+                            Text(
+                                text = "${attribute.clazz}:${attribute.method}",
+                                modifier = Modifier.padding(10.dp),
+                            )
+                        }
+                    }) {
+                        DropdownMenuItem(
+                            onClick = {
+                                viewModel.updateAttributeIndex(index)
+                                expanded = false
+                            },
+                        ) {
+                            Text(
+                                "${attribute.clazz}:${attribute.method}",
+                                fontFamily = FontFamily.Monospace,
+                                fontSize = MaterialTheme.typography.bodySmall.fontSize,
+                                softWrap = false,
+                                overflow = TextOverflow.Ellipsis,
+                            )
+                        }
                     }
                 }
             }

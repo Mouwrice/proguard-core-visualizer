@@ -21,7 +21,7 @@ import viewmodel.DebuggerViewModel
  * @param viewModel the [DebuggerViewModel] that contains the state of the debugger.
  */
 @Composable
-fun FileViewer(viewModel: DebuggerViewModel?, closeFile: () -> Unit) {
+fun FileViewer(viewModel: DebuggerViewModel, closeFile: () -> Unit) {
     Column(Modifier.fillMaxWidth(0.5f)) {
         Column(
             Modifier.fillMaxSize().border(
@@ -29,11 +29,8 @@ fun FileViewer(viewModel: DebuggerViewModel?, closeFile: () -> Unit) {
                 shape = MaterialTheme.shapes.medium,
             ).clip(MaterialTheme.shapes.medium),
         ) {
-            viewModel?.let { viewModel ->
-                FileTab(viewModel, closeFile)
-
-                CodeViewer(viewModel)
-            }
+            FileTab(viewModel, closeFile)
+            CodeViewer(viewModel)
         }
     }
 }
