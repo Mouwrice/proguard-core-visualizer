@@ -145,11 +145,24 @@ class DebuggerViewModel {
     /**
      * Loads the json file at the given path and returns a new view model.
      */
-    fun loadJson(path: String): DebuggerViewModel {
-        val pathHandle = Path.of(path)
+    fun loadJson(path: Path): DebuggerViewModel {
         return try {
-            val stateTracker = StateTracker.fromJson(pathHandle)
-            addFile(pathHandle, stateTracker)
+            val stateTracker = StateTracker.fromJson(path)
+            addFile(path, stateTracker)
+            return this
+        } catch (e: Exception) {
+            println("Error while parsing json file: $e")
+            this
+        }
+    }
+
+    /**
+     * Loads the given json string and returns a new view model.
+     */
+    fun loadJson(path: Path, json: String): DebuggerViewModel {
+        return try {
+            val stateTracker = StateTracker.fromJson(json)
+            addFile(path, stateTracker)
             return this
         } catch (e: Exception) {
             println("Error while parsing json file: $e")
