@@ -36,7 +36,10 @@ fun App() {
     var showFilePicker by remember { mutableStateOf(false) }
     var pickedFile by remember { mutableStateOf<String?>(null) }
 
-    pickedFile?.let { viewModel.loadJson(it); pickedFile = null }
+    pickedFile?.let {
+        viewModel.loadJson(it)
+        pickedFile = null
+    }
 
     Box(Modifier.fillMaxSize().padding(all = 16.dp)) {
         Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {

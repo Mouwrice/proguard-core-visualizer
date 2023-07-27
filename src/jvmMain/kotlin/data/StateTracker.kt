@@ -1,8 +1,6 @@
 package data
 
 import com.google.gson.Gson
-import java.io.BufferedReader
-import java.io.FileReader
 
 data class StateTracker(val codeAttributes: List<CodeAttributeRecord>) {
     companion object {
