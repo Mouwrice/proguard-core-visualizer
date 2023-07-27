@@ -10,7 +10,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
@@ -23,9 +22,6 @@ import androidx.compose.ui.window.application
 import com.darkrockstudios.libraries.mpfilepicker.FilePicker
 import com.jthemedetecor.OsThemeDetector
 import com.materialkolor.AnimatedDynamicMaterialTheme
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import ui.Controls
 import ui.fileview.FileViewer
 import ui.stateview.StateViewer
@@ -38,6 +34,9 @@ import kotlin.io.path.inputStream
 fun App() {
     val viewModel by rememberSaveable { mutableStateOf(DebuggerViewModel()) }
     var showFilePicker by remember { mutableStateOf(false) }
+    var pickedFile by remember { mutableStateOf<String?>(null) }
+
+    pickedFile?.let { viewModel.loadJson(it); pickedFile = null }
 
     Box(Modifier.fillMaxSize().padding(all = 16.dp)) {
         Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -54,11 +53,7 @@ fun App() {
         // Accept json files
         FilePicker(showFilePicker, fileExtensions = listOf("json")) { path ->
             showFilePicker = false
-            if (path != null) {
-                // If we already have a view model, load the json file into it.
-                // Otherwise, create a new view model from the json file.
-                viewModel.loadJson(path.path)
-            }
+            pickedFile = path?.path
         }
     }
 }

@@ -13,16 +13,16 @@ import java.nio.file.Path
  * This view model is a very close representation of the loaded json file.
  */
 class DebuggerViewModel {
-    var openedFiles = mutableStateListOf<Pair<Path, StateTracker>>()
+    var openedFiles by mutableStateOf(emptyList<Pair<Path, StateTracker>>())
         private set
 
     fun addFile(file: Path, stateTracker: StateTracker) {
-        openedFiles.add(Pair(file, stateTracker))
+        openedFiles = openedFiles.plus(Pair(file, stateTracker))
         updateAttributeIndex(0)
     }
 
     fun closeFile(index: Int) {
-        openedFiles.removeAt(index)
+        openedFiles = openedFiles.minus(openedFiles[index])
     }
 
     var fileIndex by mutableStateOf(0)

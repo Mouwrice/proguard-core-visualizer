@@ -52,61 +52,33 @@ import kotlin.io.path.name
  */
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun BonsaiTree(viewModel: DebuggerViewModel): Tree<Int?> {
+fun BonsaiTree(viewModel: DebuggerViewModel): Tree<Pair<Int, Int>?> {
     return Tree {
-        Branch(null, customName = {
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
-                var remove by remember { mutableStateOf(false) }
-                if (remove) {
-                    remove = false
-                    viewModel.closeFile(0)
-                }
-
-                // An IconButton is currently fixed to 48.dp, so we need to make our own.
-                // https://github.com/androidx/androidx/blob/androidx-main/compose/material/material/src/commonMain/kotlin/androidx/compose/material/IconButton.kt
-                Box(
-                    modifier = Modifier.size(16.dp)
-                        .clickable(
-                            role = Role.Button,
-                            interactionSource = MutableInteractionSource(),
-                            indication = rememberRipple(bounded = false, radius = 12.dp),
-                        ) {
-                            remove = true
-                        },
-                    contentAlignment = Alignment.Center,
-                ) {
-                    Icon(Icons.Default.Close, tint = MaterialTheme.colorScheme.error, contentDescription = "Close file")
-                }
-
-                TooltipArea(tooltip = {
-                    Surface(
-                        modifier = Modifier.shadow(4.dp),
-                        color = MaterialTheme.colorScheme.surfaceVariant,
-                        shape = MaterialTheme.shapes.extraSmall,
-                    ) {
-                        Text(
-                            text = viewModel.path?.name ?: "",
-                            modifier = Modifier.padding(4.dp),
-                            style = MaterialTheme.typography.labelMedium,
-                        )
+        viewModel.openedFiles.forEachIndexed { fileIndex, (path, tracker) ->
+            Branch(null, customName = {
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
+                    var remove by remember { mutableStateOf(false) }
+                    if (remove) {
+                        remove = false
+                        viewModel.closeFile(fileIndex)
                     }
-                }) {
-                    Text(
-                        viewModel.path?.name ?: "",
-                        style = MaterialTheme.typography.labelMedium,
-                        overflow = TextOverflow.Ellipsis,
-                        softWrap = false,
-                    )
-                }
-            }
-        }) {
-            // Clazz name to <attributeIndex, method>
-            val branches = HashMap<String, MutableList<Pair<Int, String>>>()
-            viewModel.codeAttributes.forEachIndexed { index, codeAttribute ->
-                branches.getOrPut(codeAttribute.clazz) { mutableListOf() }.add(Pair(index, codeAttribute.method))
-            }
-            branches.forEach { (clazz, methods) ->
-                Branch(null, customName = {
+
+                    // An IconButton is currently fixed to 48.dp, so we need to make our own.
+                    // https://github.com/androidx/androidx/blob/androidx-main/compose/material/material/src/commonMain/kotlin/androidx/compose/material/IconButton.kt
+                    Box(
+                        modifier = Modifier.size(16.dp)
+                            .clickable(
+                                role = Role.Button,
+                                interactionSource = MutableInteractionSource(),
+                                indication = rememberRipple(bounded = false, radius = 12.dp),
+                            ) {
+                                remove = true
+                            },
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        Icon(Icons.Default.Close, tint = MaterialTheme.colorScheme.error, contentDescription = "Close file")
+                    }
+
                     TooltipArea(tooltip = {
                         Surface(
                             modifier = Modifier.shadow(4.dp),
@@ -114,32 +86,62 @@ fun BonsaiTree(viewModel: DebuggerViewModel): Tree<Int?> {
                             shape = MaterialTheme.shapes.extraSmall,
                         ) {
                             Text(
-                                text = clazz,
+                                text = path.name,
                                 modifier = Modifier.padding(4.dp),
                                 style = MaterialTheme.typography.labelMedium,
                             )
                         }
-                    }) { Text(clazz, style = MaterialTheme.typography.labelMedium) }
-                }) {
-                    methods.forEach { method ->
-                        Leaf(
-                            method.first,
-                            customName = {
-                                TooltipArea(tooltip = {
-                                    Surface(
-                                        modifier = Modifier.shadow(4.dp),
-                                        color = MaterialTheme.colorScheme.surfaceVariant,
-                                        shape = MaterialTheme.shapes.extraSmall,
-                                    ) {
-                                        Text(
-                                            text = method.second,
-                                            modifier = Modifier.padding(4.dp),
-                                            style = MaterialTheme.typography.labelMedium,
-                                        )
-                                    }
-                                }) { Text(method.second, style = MaterialTheme.typography.labelSmall) }
-                            },
+                    }) {
+                        Text(
+                            path.name,
+                            style = MaterialTheme.typography.labelMedium,
+                            overflow = TextOverflow.Ellipsis,
+                            softWrap = false,
                         )
+                    }
+                }
+            }) {
+                // Clazz name to <attributeIndex, method>
+                val branches = HashMap<String, MutableList<Pair<Int, String>>>()
+                tracker.codeAttributes.forEachIndexed { attributesIndex, codeAttribute ->
+                    branches.getOrPut(codeAttribute.clazz) { mutableListOf() }.add(Pair(attributesIndex, codeAttribute.method))
+                }
+                branches.forEach { (clazz, methods) ->
+                    Branch(null, customName = {
+                        TooltipArea(tooltip = {
+                            Surface(
+                                modifier = Modifier.shadow(4.dp),
+                                color = MaterialTheme.colorScheme.surfaceVariant,
+                                shape = MaterialTheme.shapes.extraSmall,
+                            ) {
+                                Text(
+                                    text = clazz,
+                                    modifier = Modifier.padding(4.dp),
+                                    style = MaterialTheme.typography.labelMedium,
+                                )
+                            }
+                        }) { Text(clazz, style = MaterialTheme.typography.labelMedium) }
+                    }) {
+                        methods.forEach { method ->
+                            Leaf(
+                                Pair(fileIndex, method.first),
+                                customName = {
+                                    TooltipArea(tooltip = {
+                                        Surface(
+                                            modifier = Modifier.shadow(4.dp),
+                                            color = MaterialTheme.colorScheme.surfaceVariant,
+                                            shape = MaterialTheme.shapes.extraSmall,
+                                        ) {
+                                            Text(
+                                                text = method.second,
+                                                modifier = Modifier.padding(4.dp),
+                                                style = MaterialTheme.typography.labelMedium,
+                                            )
+                                        }
+                                    }) { Text(method.second, style = MaterialTheme.typography.labelSmall) }
+                                },
+                            )
+                        }
                     }
                 }
             }
@@ -161,6 +163,7 @@ fun FileViewer(viewModel: DebuggerViewModel) {
         ).clip(MaterialTheme.shapes.medium),
     ) {
         val tree = BonsaiTree(viewModel)
+        var viewUpdate by remember { mutableStateOf<Pair<Int, Int>?>(null) }
         Bonsai(
             tree = tree,
             style = BonsaiStyle(
@@ -175,9 +178,10 @@ fun FileViewer(viewModel: DebuggerViewModel) {
                 tree.clearSelection()
                 tree.toggleExpansion(node)
                 tree.selectNode(node)
-                node.content?.let { viewModel.updateAttributeIndex(it) }
+                node.content?.let { viewUpdate = it }
             },
         )
+        viewUpdate?.let { viewModel.updateFileIndex(it.first); viewModel.updateAttributeIndex(it.second) }
         Divider(
             thickness = 1.dp,
             color = MaterialTheme.colorScheme.outline,
