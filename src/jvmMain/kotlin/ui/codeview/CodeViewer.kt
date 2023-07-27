@@ -38,7 +38,7 @@ fun CodeViewer(viewModel: DebuggerViewModel) {
     val coroutineScope = rememberCoroutineScope()
 
     val aimOffset = mapOf(
-        Pair(Display.RESULTS, viewModel.codeAttributes[viewModel.currentCodeAttribute].instructions[viewModel.currentInstruction].offset),
+        Pair(Display.RESULTS, viewModel.instruction?.offset ?: 0),
         Pair(Display.EVALUATIONS, viewModel.evaluation?.instructionOffset ?: 0),
     )
 
@@ -53,8 +53,8 @@ fun CodeViewer(viewModel: DebuggerViewModel) {
 
         coroutineScope.launch {
             // Animate scroll to the first item
-            val index = viewModel.codeAttributes[viewModel.currentCodeAttribute].instructions.withIndex()
-                .find { it.value.offset == aimOffset[viewModel.display] }
+            val index = viewModel.codeAttribute?.instructions?.withIndex()
+                ?.find { it.value.offset == aimOffset[viewModel.display] }
             if (index != null) {
                 val visibleItemCount = state.layoutInfo.visibleItemsInfo.size
                 state.animateScrollToItem(max(0, index.index - visibleItemCount / 2))
@@ -66,81 +66,81 @@ fun CodeViewer(viewModel: DebuggerViewModel) {
         modifier = Modifier.fillMaxSize(),
     ) {
         LazyColumn(state = state) {
-            val codeAttribute = viewModel.codeAttributes[viewModel.currentCodeAttribute]
-            // Get the length of the offset as string of the last instruction of the current code attribute
-            val maxOffsetLength = codeAttribute.instructions.last().offset.toString().length
+            viewModel.codeAttribute?.let { codeAttribute ->
+                // Get the length of the offset as string of the last instruction of the current code attribute
+                val maxOffsetLength = codeAttribute.instructions.last().offset.toString().length
 
-            // Display the instructions of the current code attribute
-            codeAttribute.instructions.forEachIndexed { instructionIndex, instruction ->
-                val isCurrent = when (viewModel.display) {
-                    Display.EVALUATIONS -> viewModel.evaluation?.instructionOffset == instruction.offset
-                    Display.RESULTS -> viewModel.currentInstruction == instructionIndex
-                }
-
-                var inCatch = false
-                // Display a try-catch block, if any
-                viewModel.currentExceptionHandler?.let { exceptionHandler ->
-                    // Display the start of a try-catch block
-                    if (exceptionHandler.catchStartOffset == instruction.offset) {
-                        item {
-                            Text(
-                                "Catch ${exceptionHandler.catchType}",
-                                style = MaterialTheme.typography.bodySmall,
-                                fontFamily = FontFamily.Monospace,
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .background(Colors.Red.value.copy(alpha = 0.2F))
-                                    .padding(horizontal = 16.dp, vertical = 6.dp),
-                            )
-                        }
-                    }
-                    // Display the end of a try-catch block
-                    if (exceptionHandler.catchEndOffset == instruction.offset) {
-                        item {
-                            Text(
-                                "End catch",
-                                style = MaterialTheme.typography.bodySmall,
-                                fontFamily = FontFamily.Monospace,
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .background(Colors.Red.value.copy(alpha = 0.2F))
-                                    .padding(horizontal = 16.dp, vertical = 6.dp),
-                            )
-                        }
+                // Display the instructions of the current code attribute
+                codeAttribute.instructions.forEachIndexed { instructionIndex, instruction ->
+                    val isCurrent = when (viewModel.display) {
+                        Display.EVALUATIONS -> viewModel.evaluation?.instructionOffset == instruction.offset
+                        Display.RESULTS -> viewModel.instructionIndex == instructionIndex
                     }
 
-                    inCatch =
-                        exceptionHandler.catchStartOffset <= instruction.offset && exceptionHandler.catchEndOffset > instruction.offset
-                }
+                    var inCatch = false
+                    // Display a try-catch block, if any
+                    viewModel.evaluationBlock?.exceptionHandlerInfo?.let { exceptionHandler ->
+                        // Display the start of a try-catch block
+                        if (exceptionHandler.catchStartOffset == instruction.offset) {
+                            item {
+                                Text(
+                                    "Catch ${exceptionHandler.catchType}",
+                                    style = MaterialTheme.typography.bodySmall,
+                                    fontFamily = FontFamily.Monospace,
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .background(Colors.Red.value.copy(alpha = 0.2F))
+                                        .padding(horizontal = 16.dp, vertical = 6.dp),
+                                )
+                            }
+                        }
+                        // Display the end of a try-catch block
+                        if (exceptionHandler.catchEndOffset == instruction.offset) {
+                            item {
+                                Text(
+                                    "End catch",
+                                    style = MaterialTheme.typography.bodySmall,
+                                    fontFamily = FontFamily.Monospace,
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .background(Colors.Red.value.copy(alpha = 0.2F))
+                                        .padding(horizontal = 16.dp, vertical = 6.dp),
+                                )
+                            }
+                        }
 
-                // Display the current instruction
-                item(key = instruction.offset) {
-                    // Highlight if the instruction is the current one
-                    var color = MaterialTheme.colorScheme.surface
-                    if (isCurrent) {
-                        color = when (viewModel.display) {
-                            Display.EVALUATIONS -> Colors.Red.value.copy(alpha = 0.5F)
-                            Display.RESULTS -> Colors.LightGreen.value.copy(alpha = 0.5F)
-                        }
-                    } else if (viewModel.display == Display.RESULTS) {
-                        // Highlight the instruction if it is a target of the current instruction
-                        val currentInstruction =
-                            viewModel.codeAttributes[viewModel.currentCodeAttribute].instructions[viewModel.currentInstruction]
-                        if (currentInstruction.finalTargetInstructions?.contains(instruction.offset) == true) {
-                            color = Colors.Yellow.value.copy(alpha = 0.5F)
-                        } else if (currentInstruction.finalOriginInstructions?.contains(instruction.offset) == true) {
-                            color = Colors.Blue.value.copy(alpha = 0.5F)
-                        }
+                        inCatch =
+                            exceptionHandler.catchStartOffset <= instruction.offset && exceptionHandler.catchEndOffset > instruction.offset
                     }
 
-                    InstructionViewer(instruction, maxOffsetLength, color, inCatch)
-                }
+                    // Display the current instruction
+                    item(key = instruction.offset) {
+                        // Highlight if the instruction is the current one
+                        var color = MaterialTheme.colorScheme.surface
+                        if (isCurrent) {
+                            color = when (viewModel.display) {
+                                Display.EVALUATIONS -> Colors.Red.value.copy(alpha = 0.5F)
+                                Display.RESULTS -> Colors.LightGreen.value.copy(alpha = 0.5F)
+                            }
+                        } else if (viewModel.display == Display.RESULTS) {
+                            // Highlight the instruction if it is a target of the current instruction
+                            val currentInstruction = codeAttribute.instructions[viewModel.instructionIndex]
+                            if (currentInstruction.finalTargetInstructions?.contains(instruction.offset) == true) {
+                                color = Colors.Yellow.value.copy(alpha = 0.5F)
+                            } else if (currentInstruction.finalOriginInstructions?.contains(instruction.offset) == true) {
+                                color = Colors.Blue.value.copy(alpha = 0.5F)
+                            }
+                        }
 
-                // There is an error to display at the current instruction
-                codeAttribute.error?.let { error ->
-                    if (isCurrent && error.instructionOffset == instruction.offset) {
-                        item {
-                            ErrorViewer(error)
+                        InstructionViewer(instruction, maxOffsetLength, color, inCatch)
+                    }
+
+                    // There is an error to display at the current instruction
+                    codeAttribute.error?.let { error ->
+                        if (isCurrent && error.instructionOffset == instruction.offset) {
+                            item {
+                                ErrorViewer(error)
+                            }
                         }
                     }
                 }

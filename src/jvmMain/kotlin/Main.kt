@@ -32,8 +32,15 @@ import kotlin.io.path.inputStream
 
 @Composable
 fun App() {
-    var viewModel by rememberSaveable { mutableStateOf<DebuggerViewModel?>(null) }
+    val viewModel by rememberSaveable { mutableStateOf(DebuggerViewModel()) }
     var showFilePicker by remember { mutableStateOf(false) }
+    var pickedFile by remember { mutableStateOf<String?>(null) }
+
+    // State change done here to avoid invalid state issues in the lifecycles.
+    pickedFile?.let {
+        viewModel.loadJson(it)
+        pickedFile = null
+    }
 
     Box(Modifier.fillMaxSize().padding(all = 16.dp)) {
         Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -42,10 +49,7 @@ fun App() {
             }
 
             Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-                // Closing the file means setting the view model to null.
-                FileViewer(viewModel) {
-                    viewModel = null
-                }
+                FileViewer(viewModel)
                 StateViewer(viewModel)
             }
         }
@@ -53,11 +57,7 @@ fun App() {
         // Accept json files
         FilePicker(showFilePicker, fileExtensions = listOf("json")) { path ->
             showFilePicker = false
-            if (path != null) {
-                // If we already have a view model, load the json file into it.
-                // Otherwise, create a new view model from the json file.
-                viewModel = viewModel?.loadJson(path.path) ?: DebuggerViewModel.fromJson(path.path)
-            }
+            pickedFile = path?.path
         }
     }
 }
