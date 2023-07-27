@@ -1,7 +1,7 @@
 <p align="center">
   <br />
   <br />
-  <a href="https://www.guardsquare.com/proguard">
+  <a href="https://mouwrice.github.io/proguard-core-visualizer/download.html">
     <img
       src="https://github.com/Mouwrice/proguard-core-visualizer/assets/56763273/e3a08c7f-0eb5-41ec-9ef9-09b11d907bc7"
       alt="ProGuardCORE Visualizer" width="400">
@@ -9,17 +9,12 @@
 </p>
 
 
-<h4 align="center">A desktop application to visualize evaluations from ProGuardCORE</h4>
+<h4 align="center">A desktop application to visualize evaluations from <a href="https://github.com/Guardsquare/proguard-core"> ProGuardCORE</a></h4>
 
 <!-- Badges -->
 <p align="center">
   <!-- TODO -->
 </p>
-
-
-ProGuardCORE Visualizer is a tool for [ProGuardCORE](https://github.com/Guardsquare/proguard-core).
-
-If you have never heard of ProGuard then this tool might not be for you 😃
 
 ## ❓ Getting Help
 If you have **usage or general questions**, do not hesitate to [make a discussion](https://github.com/Mouwrice/proguard-core-visualizer/discussions/new/choose).
@@ -33,6 +28,8 @@ The latest release is available for download on the following page:
 📩 https://mouwrice.github.io/proguard-core-visualizer/download.html
 
 ## ✨ Features
+
+If you have never heard of ProGuard then this tool might not be for you 😃
 
 The repository contains some samples in the [examples](examples) directory.
 
