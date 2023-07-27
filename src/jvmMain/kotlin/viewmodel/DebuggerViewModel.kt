@@ -2,6 +2,7 @@ package viewmodel
 
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import data.StateTracker
@@ -10,21 +11,18 @@ import java.nio.file.Path
 
 /**
  * This view model is a very close representation of the loaded json file.
- * The view model always belongs to a single file.
- * When loading a new file, the view model creates and returns a new instance.
- * @param file The file that is represented by this instance.
- * @param stateTracker The state tracker that is used to parse the json file.
  */
 class DebuggerViewModel {
-    var openedFiles by mutableStateOf(listOf<Pair<Path, StateTracker>>())
+    var openedFiles = mutableStateListOf<Pair<Path, StateTracker>>()
         private set
 
     fun addFile(file: Path, stateTracker: StateTracker) {
-        openedFiles = openedFiles.plus(Pair(file, stateTracker))
+        openedFiles.add(Pair(file, stateTracker))
+        updateAttributeIndex(0)
     }
 
     fun closeFile(index: Int) {
-        openedFiles = openedFiles.drop(index)
+        openedFiles.removeAt(index)
     }
 
     var fileIndex by mutableStateOf(0)

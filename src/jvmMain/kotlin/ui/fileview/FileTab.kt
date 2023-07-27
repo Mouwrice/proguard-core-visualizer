@@ -22,6 +22,10 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
@@ -36,7 +40,11 @@ import kotlin.io.path.name
  */
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun FileTab(viewModel: DebuggerViewModel, closeFile: () -> Unit) {
+fun FileTab(viewModel: DebuggerViewModel) {
+    var rem by remember { mutableStateOf(false) }
+    if (rem) {
+        viewModel.closeFile(0)
+    }
     Row(
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
@@ -72,11 +80,12 @@ fun FileTab(viewModel: DebuggerViewModel, closeFile: () -> Unit) {
             Box(
                 modifier = Modifier.size(16.dp)
                     .clickable(
-                        onClick = closeFile,
                         role = Role.Button,
                         interactionSource = MutableInteractionSource(),
                         indication = rememberRipple(bounded = false, radius = 12.dp),
-                    ),
+                    ) {
+                        rem = true
+                    },
                 contentAlignment = Alignment.Center,
             ) {
                 Icon(Icons.Default.Close, contentDescription = "Close file")
