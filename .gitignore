@@ -1,9 +1,11 @@
 .gradle
 build/
+output/
 !gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**/build/
 !**/src/test/**/build/
 *.log
+.rtx.toml
 
 ### IntelliJ IDEA ###
 .idea/
