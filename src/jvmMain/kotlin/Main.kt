@@ -30,7 +30,7 @@ import proguard.classfile.visitor.AllClassVisitor
 import proguard.classfile.visitor.AllMethodVisitor
 import proguard.classfile.visitor.ClassPoolFiller
 import proguard.evaluation.PartialEvaluator
-import proguard.evaluation.stateTrackers.jsonPrinter.JsonPrinter
+import proguard.evaluation.util.jsonPrinter.JsonPrinter
 import proguard.io.ClassFilter
 import proguard.io.ClassReader
 import proguard.io.DataEntrySource

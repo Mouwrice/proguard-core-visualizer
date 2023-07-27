@@ -17,7 +17,7 @@ import viewmodel.Display
 fun Controls(viewModel: DebuggerViewModel?, setShowFilePicker: (Boolean) -> Unit) {
     Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.wrapContentSize(align = Alignment.Companion.CenterStart, unbounded = true)) {
         Button(onClick = { setShowFilePicker(true) }) {
-            Text("Open json file")
+            Text("Open file")
         }
 
         OutlinedButton(enabled = viewModel?.hasPrevious == true, onClick = { viewModel?.previous() }) {

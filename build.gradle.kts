@@ -33,8 +33,9 @@ kotlin {
                 implementation(libs.google.gson)
                 implementation(libs.materialkolor)
                 implementation(libs.dansoftowner.jthemedetecor)
-                implementation("com.guardsquare:proguard-core:9.0.9")
-                implementation("cafe.adriel.bonsai:bonsai-core:1.2.0")
+//                implementation("com.guardsquare:proguard-core:9.0.9")
+                implementation("com.github.Guardsquare:proguard-core:PR104-SNAPSHOT")
+                implementation(libs.bonsai.core)
             }
         }
     }

@@ -41,6 +41,7 @@ import cafe.adriel.bonsai.core.tree.Tree
 import ui.codeview.CodeViewer
 import ui.codeview.MethodHeader
 import viewmodel.DebuggerViewModel
+import kotlin.io.path.name
 
 /**
  * Returns a bonsai tree where the content is the index to the code attribute.
