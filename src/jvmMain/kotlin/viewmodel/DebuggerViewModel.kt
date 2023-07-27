@@ -1,114 +1,124 @@
 package viewmodel
 
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import data.BranchTargetRecord
-import data.ExceptionHandlerRecord
-import data.InstructionEvaluationRecord
 import data.StateTracker
-import java.io.File
-import java.nio.file.Files
 import java.nio.file.Path
 
 /**
  * This view model is a very close representation of the loaded json file.
- * The view model always belongs to a single file.
- * When loading a new file, the view model creates and returns a new instance.
- * @param file The file that is represented by this instance.
- * @param stateTracker The state tracker that is used to parse the json file.
  */
-class DebuggerViewModel private constructor(val file: Path, stateTracker: StateTracker) {
-    /**
-     * All the code attributes parsed from the json file.
-     */
-    val codeAttributes = stateTracker.codeAttributes
-
-    /**
-     * The current instruction that is being evaluated.
-     */
-    var evaluation by mutableStateOf<InstructionEvaluationRecord?>(
-        null,
-    )
+class DebuggerViewModel {
+    var openedFiles by mutableStateOf(emptyList<Pair<Path, StateTracker>>())
         private set
 
-    var currentCodeAttribute by mutableStateOf(0)
+    fun addFile(file: Path, stateTracker: StateTracker) {
+        openedFiles = openedFiles.plus(Pair(file, stateTracker))
+        updateAttributeIndex(0)
+    }
+
+    fun closeFile(index: Int) {
+        openedFiles = openedFiles.minus(openedFiles[index])
+    }
+
+    var fileIndex by mutableStateOf(0)
         private set
 
-    var currentBlockEvaluationStack by mutableStateOf<List<BranchTargetRecord>>(
-        emptyList(),
-    )
+    fun updateFileIndex(value: Int) {
+        updateAttributeIndex(0)
+        fileIndex = value
+    }
+
+    val codeAttributes by derivedStateOf { openedFiles.getOrNull(fileIndex)?.second?.codeAttributes ?: emptyList() }
+
+    val path by derivedStateOf { openedFiles.getOrNull(fileIndex)?.first }
+
+    var attributeIndex by mutableStateOf(0)
         private set
 
-    var currentExceptionHandler by mutableStateOf<ExceptionHandlerRecord?>(null)
-        private set
+    fun updateAttributeIndex(value: Int) {
+        instructionIndex = 0
+        updateEvaluationBlockIndex(0)
+        attributeIndex = value
+    }
 
-    var hasNext by mutableStateOf(false)
-        private set
+    val codeAttribute by derivedStateOf { codeAttributes.getOrNull(attributeIndex) }
 
-    var hasPrevious by mutableStateOf(false)
-        private set
+    var instructionIndex by mutableStateOf(0)
+
+    val instruction by derivedStateOf { codeAttribute?.instructions?.getOrNull(instructionIndex) }
+
+    private var evaluationBlockIndex by mutableStateOf(0)
+
+    fun updateEvaluationBlockIndex(value: Int) {
+        evaluationBlockIndex = value
+        evaluationIndex = 0
+    }
+
+    val evaluationBlock by derivedStateOf { codeAttribute?.blockEvaluations?.getOrNull(evaluationBlockIndex) }
+
+    var evaluationIndex by mutableStateOf(0)
+
+    val evaluation by derivedStateOf { evaluationBlock?.evaluations?.getOrNull(evaluationIndex) }
+
+    val hasNext by derivedStateOf<Boolean> {
+        when (display) {
+            Display.EVALUATIONS -> {
+                val blockEvaluations = codeAttribute?.blockEvaluations
+                val blockEvaluation = blockEvaluations?.getOrNull(evaluationBlockIndex)
+                blockEvaluation != null && (
+                    evaluationBlockIndex < blockEvaluations.size - 1 ||
+                        evaluationIndex < blockEvaluation.evaluations.size - 1
+                    )
+            }
+            Display.RESULTS -> instructionIndex < (codeAttribute?.instructions?.size ?: 0) - 1
+        }
+    }
+
+    val hasPrevious by derivedStateOf {
+        when (display) {
+            Display.EVALUATIONS -> evaluationBlockIndex > 0 || evaluationIndex > 0
+            Display.RESULTS -> instructionIndex > 0
+        }
+    }
 
     // Whether to show the final results of the evaluation for each instruction.
     var display by mutableStateOf(Display.EVALUATIONS)
 
-    // The index of the current instruction that is selected.
-    var currentInstruction by mutableStateOf(0)
-        private set
-
-    private var currentBlockEvaluation: Int = 0
-    private var currentEvaluation: Int = 0
-
-    init {
-        update()
-        hasNext = hasNext()
-        hasPrevious = hasPrevious()
-    }
-
-    private fun update() {
-        val blockEvaluations = codeAttributes[currentCodeAttribute].blockEvaluations
-        val blockEvaluation = blockEvaluations[currentBlockEvaluation]
-        currentExceptionHandler = blockEvaluation.exceptionHandlerInfo
-        evaluation = blockEvaluation.evaluations[currentEvaluation]
-        currentBlockEvaluationStack = blockEvaluation.branchEvaluationStack
-    }
-
     private fun previousInstruction() {
-        if (currentInstruction > 0) {
-            currentInstruction--
+        if (instructionIndex > 0) {
+            instructionIndex--
         }
     }
 
     private fun previousEvaluation() {
-        if (currentEvaluation > 0) {
-            currentEvaluation--
-        } else if (currentBlockEvaluation > 0) {
-            currentBlockEvaluation--
-            currentEvaluation =
-                codeAttributes[currentCodeAttribute].blockEvaluations[currentBlockEvaluation].evaluations.size - 1
+        if (evaluationIndex > 0) {
+            evaluationIndex--
+        } else if (evaluationBlockIndex > 0) {
+            evaluationBlockIndex--
+            evaluationIndex = (evaluationBlock?.evaluations?.size ?: 1) - 1
         }
-
-        update()
     }
 
     private fun nextInstruction() {
-        if (currentInstruction < codeAttributes[currentCodeAttribute].instructions.size - 1) {
-            currentInstruction++
+        if (instructionIndex < (codeAttribute?.instructions?.size ?: 0) - 1) {
+            instructionIndex++
         }
     }
 
     private fun nextEvaluation() {
-        val blockEvaluations = codeAttributes[currentCodeAttribute].blockEvaluations
-        val evaluations = blockEvaluations[currentBlockEvaluation].evaluations
-
-        if (currentEvaluation < evaluations.size - 1) {
-            currentEvaluation++
-        } else if (currentBlockEvaluation < blockEvaluations.size - 1) {
-            currentBlockEvaluation++
-            currentEvaluation = 0
+        val blockEvaluations = codeAttribute?.blockEvaluations
+        val evaluations = blockEvaluations?.getOrNull(evaluationBlockIndex)?.evaluations
+        if (evaluations != null) {
+            if (evaluationIndex < evaluations.size - 1) {
+                evaluationIndex++
+            } else if (evaluationBlockIndex < blockEvaluations.size - 1) {
+                evaluationBlockIndex++
+                evaluationIndex = 0
+            }
         }
-
-        update()
     }
 
     fun next() {
@@ -116,36 +126,12 @@ class DebuggerViewModel private constructor(val file: Path, stateTracker: StateT
             Display.EVALUATIONS -> nextEvaluation()
             Display.RESULTS -> nextInstruction()
         }
-        hasNext = hasNext()
-        hasPrevious = hasPrevious()
     }
 
     fun previous() {
         when (display) {
             Display.EVALUATIONS -> previousEvaluation()
             Display.RESULTS -> previousInstruction()
-        }
-        hasNext = hasNext()
-        hasPrevious = hasPrevious()
-    }
-
-    private fun hasNext(): Boolean {
-        return when (display) {
-            Display.EVALUATIONS -> {
-                val blockEvaluations = codeAttributes[currentCodeAttribute].blockEvaluations
-                val blockEvaluation = blockEvaluations[currentBlockEvaluation]
-                currentBlockEvaluation < blockEvaluations.size - 1 ||
-                    currentEvaluation < blockEvaluation.evaluations.size - 1
-            }
-
-            Display.RESULTS -> currentInstruction < codeAttributes[currentCodeAttribute].instructions.size - 1
-        }
-    }
-
-    private fun hasPrevious(): Boolean {
-        return when (display) {
-            Display.EVALUATIONS -> currentBlockEvaluation > 0 || currentEvaluation > 0
-            Display.RESULTS -> currentInstruction > 0
         }
     }
 
@@ -154,31 +140,33 @@ class DebuggerViewModel private constructor(val file: Path, stateTracker: StateT
             Display.EVALUATIONS -> Display.RESULTS
             Display.RESULTS -> Display.EVALUATIONS
         }
-        hasNext = hasNext()
-        hasPrevious = hasPrevious()
     }
 
-    fun selectCodeAttribute(index: Int) {
-        currentCodeAttribute = index
-        currentBlockEvaluation = 0
-        currentEvaluation = 0
-        currentInstruction = 0
-        update()
-        hasNext = hasNext()
-        hasPrevious = hasPrevious()
-    }
-
-    companion object {
-        /**
-         * Create a new view model given a path to a json file.
-         * Used to create the initial view model.
-         */
-        fun fromFile(path: Path): DebuggerViewModel {
-            return fromJson(path, Files.readString(path))
+    /**
+     * Loads the json file at the given path and returns a new view model.
+     */
+    fun loadJson(path: Path): DebuggerViewModel {
+        return try {
+            val stateTracker = StateTracker.fromJson(path)
+            addFile(path, stateTracker)
+            return this
+        } catch (e: Exception) {
+            println("Error while parsing json file: $e")
+            this
         }
+    }
 
-        fun fromJson(path: Path, json: String): DebuggerViewModel {
-            return DebuggerViewModel(path, StateTracker.fromJson(json))
+    /**
+     * Loads the given json string and returns a new view model.
+     */
+    fun loadJson(path: Path, json: String): DebuggerViewModel {
+        return try {
+            val stateTracker = StateTracker.fromJson(json)
+            addFile(path, stateTracker)
+            return this
+        } catch (e: Exception) {
+            println("Error while parsing json file: $e")
+            this
         }
     }
 }

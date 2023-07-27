@@ -48,8 +48,21 @@ import kotlin.io.path.inputStream
 
 @Composable
 fun App() {
-    var viewModel by rememberSaveable { mutableStateOf<DebuggerViewModel?>(null) }
+    val viewModel by rememberSaveable { mutableStateOf(DebuggerViewModel()) }
     var showFilePicker by remember { mutableStateOf(false) }
+    var loadFile by remember { mutableStateOf<Path?>(null) }
+    var loadJsonString by remember { mutableStateOf<Pair<Path, String>?>(null) }
+
+    // State change done here to avoid invalid state issues in the lifecycles.
+    loadFile?.let {
+        viewModel.loadJson(it)
+        loadFile = null
+    }
+
+    loadJsonString?.let {
+        viewModel.loadJson(it.first, it.second)
+        loadJsonString = null
+    }
 
     Box(Modifier.fillMaxSize().padding(all = 16.dp)) {
         Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -58,10 +71,7 @@ fun App() {
             }
 
             Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-                // Closing the file means setting the view model to null.
-                FileViewer(viewModel) {
-                    viewModel = null
-                }
+                FileViewer(viewModel)
                 StateViewer(viewModel)
             }
         }
@@ -106,11 +116,12 @@ fun App() {
                             // "proguard/evaluation/PartialEvaluator",
                         ),
                     )
-                    viewModel = DebuggerViewModel.fromJson(Path.of(path.path), tracker.json)
+
+                    loadJsonString = Pair(Path.of(path.path), tracker.json)
                 } else {
                     // If we already have a view model, load the json file into it.
                     // Otherwise, create a new view model from the json file.
-                    viewModel = DebuggerViewModel.fromFile(Path.of(path.path))
+                    loadFile = Path.of(path.path)
                 }
             }
         }

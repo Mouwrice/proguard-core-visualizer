@@ -14,24 +14,24 @@ import viewmodel.DebuggerViewModel
 import viewmodel.Display
 
 @Composable
-fun Controls(viewModel: DebuggerViewModel?, setShowFilePicker: (Boolean) -> Unit) {
+fun Controls(viewModel: DebuggerViewModel, setShowFilePicker: (Boolean) -> Unit) {
     Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.wrapContentSize(align = Alignment.Companion.CenterStart, unbounded = true)) {
         Button(onClick = { setShowFilePicker(true) }) {
             Text("Open file")
         }
 
-        OutlinedButton(enabled = viewModel?.hasPrevious == true, onClick = { viewModel?.previous() }) {
+        OutlinedButton(enabled = viewModel.hasPrevious, onClick = { viewModel.previous() }) {
             Text("Previous")
         }
 
-        OutlinedButton(enabled = viewModel?.hasNext == true, onClick = { viewModel?.next() }) {
+        OutlinedButton(enabled = viewModel.hasNext, onClick = { viewModel.next() }) {
             Text("Next")
         }
 
-        OutlinedButton(enabled = viewModel != null, onClick = {
-            viewModel?.switchDisplay()
+        OutlinedButton(enabled = viewModel.codeAttribute != null, onClick = {
+            viewModel.switchDisplay()
         }) {
-            when (viewModel?.display ?: Display.EVALUATIONS) {
+            when (viewModel.display) {
                 Display.EVALUATIONS -> Text("Show results")
                 Display.RESULTS -> Text("Show evaluations")
             }

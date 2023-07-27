@@ -15,64 +15,41 @@ import viewmodel.Display
  * Showing the current instruction, the stack, the variables and the branches that still need to be evaluated.
  */
 @Composable
-fun StateViewer(viewModel: DebuggerViewModel?) {
+fun StateViewer(viewModel: DebuggerViewModel) {
     Column(Modifier.fillMaxSize()) {
-        viewModel?.let { viewModel ->
-            when (viewModel.display) {
-                Display.RESULTS -> Instruction(viewModel.codeAttributes[viewModel.currentCodeAttribute].instructions[viewModel.currentInstruction])
-                Display.EVALUATIONS -> viewModel.evaluation?.let { InstructionEvaluation(it) }
-            }
+        when (viewModel.display) {
+            Display.RESULTS -> viewModel.instruction?.let { Instruction(it) }
+            Display.EVALUATIONS -> viewModel.evaluation?.let { InstructionEvaluation(it) }
         }
 
         Category("Variables", maxHeight = 0.3F) {
-            if (viewModel != null) {
-                when (viewModel.display) {
-                    Display.RESULTS -> DisplayList(
-                        viewModel.codeAttributes[viewModel.currentCodeAttribute].instructions[viewModel.currentInstruction].finalVariablesBefore
-                            ?: emptyList(),
-                    )
-
-                    Display.EVALUATIONS -> DisplayList(viewModel.evaluation?.variablesBefore ?: emptyList())
-                }
-            } else {
-                DisplayList(emptyList<String>())
+            when (viewModel.display) {
+                Display.RESULTS -> DisplayList(viewModel.instruction?.finalVariablesBefore ?: emptyList())
+                Display.EVALUATIONS -> DisplayList(viewModel.evaluation?.variablesBefore ?: emptyList())
             }
         }
 
         Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
             Category("Stack", maxWidth = 0.7F) {
-                if (viewModel != null) {
-                    when (viewModel.display) {
-                        Display.EVALUATIONS -> DisplayList(viewModel.evaluation?.stackBefore?.reversed() ?: emptyList())
-                        Display.RESULTS -> DisplayList(
-                            viewModel.codeAttributes[viewModel.currentCodeAttribute].instructions[viewModel.currentInstruction].finalStackBefore
-                                ?: emptyList(),
-                        )
-                    }
-                } else {
-                    DisplayList(emptyList<String>())
+                when (viewModel.display) {
+                    Display.EVALUATIONS -> DisplayList(viewModel.evaluation?.stackBefore?.reversed() ?: emptyList())
+                    Display.RESULTS -> DisplayList(viewModel.instruction?.finalStackBefore ?: emptyList())
                 }
             }
             Category("Branches") {
-                if (viewModel != null) {
-                    when (viewModel.display) {
-                        Display.EVALUATIONS -> DisplayList(
-                            viewModel.currentBlockEvaluationStack.map { it.startOffset },
-                        )
+                when (viewModel.display) {
+                    Display.EVALUATIONS -> DisplayList(
+                        viewModel.evaluationBlock?.branchEvaluationStack?.map { it.startOffset } ?: emptyList(),
+                    )
 
-                        Display.RESULTS -> {
-                            val instruction =
-                                viewModel.codeAttributes[viewModel.currentCodeAttribute].instructions[viewModel.currentInstruction]
+                    Display.RESULTS -> {
+                        viewModel.instruction?.let { instruction ->
                             DisplayList(
-                                (
-                                    instruction.finalTargetInstructions
-                                        ?: emptyList()
-                                    ) + (instruction.finalOriginInstructions ?: emptyList()),
+                                (instruction.finalTargetInstructions ?: emptyList()) +
+                                    (instruction.finalOriginInstructions ?: emptyList()),
                             )
                         }
                     }
-                } else {
-                    DisplayList(emptyList<String>())
                 }
             }
         }
