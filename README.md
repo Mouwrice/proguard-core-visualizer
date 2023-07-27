@@ -37,7 +37,7 @@ The repository contains some samples in the [examples](examples) directory.
 
 Contributions, issues and feature requests are welcome.
 Feel free to check the [issues](issues) page and the [contributing
-guide](blob/master/CONTRIBUTING.md) if you would like to contribute.
+guide](CONTRIBUTING.md) if you would like to contribute.
 
 ## 📝 License
 
