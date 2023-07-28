@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.3.0 (2023-07-28)
+
+## What's Changed
+* fix(deps): update dependency com.materialkolor:material-kolor to v1.2.1 by @renovate in https://github.com/Mouwrice/proguard-core-visualizer/pull/68
+* feat: remember the status per code attribute instead of having one global state by @Mouwrice in https://github.com/Mouwrice/proguard-core-visualizer/pull/70
+
+
+**Full Changelog**: https://github.com/Mouwrice/proguard-core-visualizer/compare/v0.2.0...v0.3.0
+
 ## [0.2.0](https://github.com/Mouwrice/proguard-core-visualizer/compare/v0.1.1...v0.2.0) (2023-07-27)
 
 
