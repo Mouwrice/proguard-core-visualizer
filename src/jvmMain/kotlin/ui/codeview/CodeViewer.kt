@@ -19,6 +19,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
@@ -143,16 +144,16 @@ fun CodeViewer(viewModel: CodeAttributeViewmodel) {
                 }
             }
         }
-    }
 
-    VerticalScrollbar(
-        modifier = Modifier.fillMaxHeight().padding(all = 4.dp),
-        adapter = rememberScrollbarAdapter(
-            scrollState = state,
-        ),
-        style = defaultScrollbarStyle().copy(
-            unhoverColor = MaterialTheme.colorScheme.outline,
-            hoverColor = MaterialTheme.colorScheme.onSurface,
-        ),
-    )
+        VerticalScrollbar(
+            modifier = Modifier.align(Alignment.CenterEnd).fillMaxHeight().padding(all = 4.dp),
+            adapter = rememberScrollbarAdapter(
+                scrollState = state,
+            ),
+            style = defaultScrollbarStyle().copy(
+                unhoverColor = MaterialTheme.colorScheme.outline,
+                hoverColor = MaterialTheme.colorScheme.onSurface,
+            ),
+        )
+    }
 }
