@@ -11,14 +11,20 @@ import proguard.classfile.attribute.visitor.AllAttributeVisitor
 import proguard.classfile.attribute.visitor.AttributeNameFilter
 import proguard.classfile.visitor.AllClassVisitor
 import proguard.classfile.visitor.AllMethodVisitor
+import proguard.classfile.visitor.ClassNameFilter
 import proguard.classfile.visitor.ClassPoolFiller
+import proguard.classfile.visitor.ClassPrinter
 import proguard.evaluation.PartialEvaluator
 import proguard.evaluation.util.jsonPrinter.JsonPrinter
 import proguard.io.ClassFilter
 import proguard.io.ClassReader
+import proguard.io.DataEntryReader
 import proguard.io.DataEntrySource
+import proguard.io.DexClassReader
+import proguard.io.DirectorySource
 import proguard.io.FileSource
 import proguard.io.JarReader
+import proguard.io.NameFilteredDataEntryReader
 import java.nio.file.Path
 import kotlin.io.path.extension
 
@@ -109,10 +115,66 @@ class FilesViewModel {
         }
     }
 
+    private fun loadApk(path: Path) {
+        val source: DataEntrySource = DirectorySource(
+            path.toFile(),
+        )
+
+        var classReader: DataEntryReader = NameFilteredDataEntryReader(
+            "**.class",
+            ClassReader(
+                false,
+                false,
+                false,
+                false,
+                null,
+                ClassNameFilter("**", null),
+            ),
+        )
+
+        // Convert dex files to a jar first
+        classReader = NameFilteredDataEntryReader(
+            "classes*.dex",
+            DexClassReader(
+                true,
+                ClassPrinter(),
+            ),
+            classReader,
+        )
+
+        source.pumpDataEntries(classReader)
+
+        val tracker = JsonPrinter()
+        val pe = PartialEvaluator.Builder.create()
+            .setEvaluateAllCode(true).setStateTracker(tracker).build()
+        classReader.accept(
+            AllClassVisitor(
+                AllMethodVisitor(
+                    AllAttributeVisitor(
+                        AttributeNameFilter(Attribute.CODE, pe),
+                    ),
+                ),
+            ),
+        )
+
+        try {
+            val file = File(path, StateTracker.fromJson(tracker.json).codeAttributes)
+            addFile(file)
+        } catch (e: Exception) {
+            println("Error while parsing json file: $e")
+        }
+    }
+
     fun loadFile(path: Path) {
-        when (path.extension) {
-            "json" -> loadJson(path)
-            "jar" -> loadJar(path)
+        try {
+            val type = FileTypes.valueOf(path.extension.uppercase())
+            when (type) {
+                FileTypes.JSON -> loadJson(path)
+                FileTypes.JAR -> loadJar(path)
+                FileTypes.APK -> loadApk(path)
+            }
+        } catch (e: IllegalArgumentException) {
+            println("Unsupported file type: $e")
         }
     }
 }
