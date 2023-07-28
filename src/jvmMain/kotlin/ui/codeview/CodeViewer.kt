@@ -25,7 +25,7 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import ui.Colors
-import viewmodel.CodeAttributeViewmodel
+import viewmodel.CodeAttributeViewModel
 import viewmodel.Display
 import java.lang.Integer.max
 
@@ -33,7 +33,7 @@ import java.lang.Integer.max
  * Display all methods and their instructions from the parsed code attributes.
  */
 @Composable
-fun CodeViewer(viewModel: CodeAttributeViewmodel) {
+fun CodeViewer(viewModel: CodeAttributeViewModel) {
     val state = rememberLazyListState()
     val coroutineScope = rememberCoroutineScope()
 

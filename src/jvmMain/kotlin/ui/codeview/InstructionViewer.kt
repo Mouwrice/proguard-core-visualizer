@@ -27,7 +27,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import data.InstructionRecord
 import ui.Colors
-import viewmodel.CodeAttributeViewmodel
+import viewmodel.CodeAttributeViewModel
 import viewmodel.Display
 
 /**
@@ -36,7 +36,7 @@ import viewmodel.Display
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun InstructionViewer(
-    viewModel: CodeAttributeViewmodel,
+    viewModel: CodeAttributeViewModel,
     instruction: InstructionRecord,
     maxOffsetLength: Int,
     color: Color,

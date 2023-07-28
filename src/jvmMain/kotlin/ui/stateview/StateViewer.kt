@@ -7,7 +7,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import viewmodel.CodeAttributeViewmodel
+import viewmodel.CodeAttributeViewModel
 import viewmodel.Display
 
 /**
@@ -15,7 +15,7 @@ import viewmodel.Display
  * Showing the current instruction, the stack, the variables and the branches that still need to be evaluated.
  */
 @Composable
-fun StateViewer(viewModel: CodeAttributeViewmodel?) {
+fun StateViewer(viewModel: CodeAttributeViewModel?) {
     Column(Modifier.fillMaxSize()) {
         viewModel?.let { viewModel ->
             when (viewModel.display) {

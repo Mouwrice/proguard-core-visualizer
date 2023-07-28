@@ -9,7 +9,7 @@ import data.CodeAttributeRecord
 /**
  * A model to store and interact with a single [CodeAttributeRecord].
  */
-class CodeAttributeViewmodel(val codeAttribute: CodeAttributeRecord) {
+class CodeAttributeViewModel(val codeAttribute: CodeAttributeRecord) {
 
     var instructionIndex by mutableStateOf(0)
 
