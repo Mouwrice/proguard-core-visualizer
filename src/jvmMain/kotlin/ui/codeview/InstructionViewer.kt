@@ -2,6 +2,7 @@ package ui.codeview
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -26,7 +27,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import data.InstructionRecord
 import ui.Colors
-import viewmodel.DebuggerViewModel
+import viewmodel.CodeAttributeViewmodel
 import viewmodel.Display
 
 /**
@@ -34,7 +35,13 @@ import viewmodel.Display
  */
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun InstructionViewer(viewModel: DebuggerViewModel, instruction: InstructionRecord, maxOffsetLength: Int, color: Color, inCatch: Boolean) {
+fun InstructionViewer(
+    viewModel: CodeAttributeViewmodel,
+    instruction: InstructionRecord,
+    maxOffsetLength: Int,
+    color: Color,
+    inCatch: Boolean,
+) {
     val dividerColor = if (inCatch) Colors.Red.value else MaterialTheme.colorScheme.onSurfaceVariant
     var expandedSelection by remember {
         mutableStateOf(false)
@@ -52,7 +59,7 @@ fun InstructionViewer(viewModel: DebuggerViewModel, instruction: InstructionReco
         Text(
             offset,
             style = MaterialTheme.typography.bodySmall,
-            modifier = Modifier.padding(start = 4.dp, end = 8.dp),
+            modifier = Modifier.padding(start = 8.dp, end = 8.dp),
             textAlign = TextAlign.End,
         )
         Divider(
@@ -69,32 +76,30 @@ fun InstructionViewer(viewModel: DebuggerViewModel, instruction: InstructionReco
             modifier = Modifier.padding(start = 16.dp),
         )
 
-        viewModel.codeAttribute?.let { codeAttribute ->
-            DropdownMenu(expandedSelection, { expandedSelection = false }) {
-                DropdownMenuItem({ Text("Result") }, onClick = {
-                    expandedSelection = false
-                    val instructionIndex = codeAttribute.instructions.indexOf(instruction)
-                    viewModel.display = Display.RESULTS
-                    viewModel.instructionIndex = instructionIndex
-                })
+        DropdownMenu(expandedSelection, { expandedSelection = false }) {
+            DropdownMenuItem({ Text("Result") }, contentPadding = PaddingValues(4.dp), onClick = {
+                expandedSelection = false
+                val instructionIndex = viewModel.codeAttribute.instructions.indexOf(instruction)
+                viewModel.display = Display.RESULTS
+                viewModel.instructionIndex = instructionIndex
+            })
 
-                codeAttribute.blockEvaluations.withIndex().flatMap { blockIndex ->
-                    // Filter: match instruction
-                    blockIndex.value.evaluations.filter { evaluationIndex ->
-                        evaluationIndex.instructionOffset == instruction.offset
-                    }.withIndex().map { evaluationIndex ->
-                        // Pair of <Block index; evaluation index> with a pair containing the evaluation
-                        Pair(Pair(blockIndex.index, evaluationIndex.index), evaluationIndex.value)
-                    }
-                }.forEach() {
-                    val evalCount = it.second.evaluationCount + 1
-                    DropdownMenuItem({ Text(evalCount.toString()) }, onClick = {
-                        expandedSelection = false
-                        viewModel.display = Display.EVALUATIONS
-                        viewModel.updateEvaluationBlockIndex(it.first.first)
-                        viewModel.evaluationIndex = it.first.second
-                    })
+            viewModel.codeAttribute.blockEvaluations.withIndex().flatMap { blockIndex ->
+                // Filter: match instruction
+                blockIndex.value.evaluations.filter { evaluationIndex ->
+                    evaluationIndex.instructionOffset == instruction.offset
+                }.withIndex().map { evaluationIndex ->
+                    // Pair of <Block index; evaluation index> with a pair containing the evaluation
+                    Pair(Pair(blockIndex.index, evaluationIndex.index), evaluationIndex.value)
                 }
+            }.forEach() {
+                val evalCount = it.second.evaluationCount + 1
+                DropdownMenuItem({ Text(evalCount.toString()) }, onClick = {
+                    expandedSelection = false
+                    viewModel.display = Display.EVALUATIONS
+                    viewModel.updateEvaluationBlockIndex(it.first.first)
+                    viewModel.evaluationIndex = it.first.second
+                })
             }
         }
     }
