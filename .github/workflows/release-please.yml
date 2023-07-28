@@ -21,6 +21,6 @@ jobs:
           package-name: proguard-core-visualizer
           
           
-      - uses: .github/workflows/conveyor-deploy.yml@main
+      - uses: ./.github/workflows/conveyor-deploy.yml@main
         name: Deploy if release created
         if: ${{ steps.release.outputs.release_created }}
