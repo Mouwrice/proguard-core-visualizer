@@ -19,6 +19,7 @@ jobs:
           token: ${{ secrets.RELEASE_PLEASE_PAT }}
           release-type: simple
           package-name: proguard-core-visualizer
+          changelog-notes-type: github
           
           
       - uses: ./.github/workflows/conveyor-deploy.yml@main
