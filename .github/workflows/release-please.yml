@@ -22,6 +22,6 @@ jobs:
           changelog-notes-type: github
           
           
-      - uses: ./.github/workflows/conveyor-deploy.yml@main
+      - uses: ./.github/workflows/conveyor-deploy.yml
         name: Deploy if release created
         if: ${{ steps.release.outputs.release_created }}
