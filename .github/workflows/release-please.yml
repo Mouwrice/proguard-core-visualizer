@@ -14,7 +14,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: google-github-actions/release-please-action@v3
+        id: release
         with:
           token: ${{ secrets.RELEASE_PLEASE_PAT }}
           release-type: simple
           package-name: proguard-core-visualizer
+          
+          
+      - uses: .github/workflows/conveyor-deploy.yml@main
+        name: Deploy if release created
+        if: ${{ steps.release.outputs.release_created }}
