@@ -22,25 +22,10 @@ import androidx.compose.ui.window.application
 import com.darkrockstudios.libraries.mpfilepicker.FilePicker
 import com.jthemedetecor.OsThemeDetector
 import com.materialkolor.AnimatedDynamicMaterialTheme
-import proguard.classfile.ClassPool
-import proguard.classfile.attribute.Attribute.CODE
-import proguard.classfile.attribute.visitor.AllAttributeVisitor
-import proguard.classfile.attribute.visitor.AttributeNameFilter
-import proguard.classfile.visitor.AllClassVisitor
-import proguard.classfile.visitor.AllMethodVisitor
-import proguard.classfile.visitor.ClassPoolFiller
-import proguard.evaluation.PartialEvaluator
-import proguard.evaluation.util.jsonPrinter.JsonPrinter
-import proguard.io.ClassFilter
-import proguard.io.ClassReader
-import proguard.io.DataEntrySource
-import proguard.io.FileSource
-import proguard.io.JarReader
 import ui.Controls
 import ui.fileview.FileViewer
 import ui.stateview.StateViewer
-import viewmodel.DebuggerViewModel
-import java.io.File
+import viewmodel.FilesViewModel
 import java.nio.file.Path
 import java.nio.file.Paths
 import kotlin.io.path.exists
@@ -48,31 +33,18 @@ import kotlin.io.path.inputStream
 
 @Composable
 fun App() {
-    val viewModel by rememberSaveable { mutableStateOf(DebuggerViewModel()) }
+    val viewModel = rememberSaveable { FilesViewModel() }
     var showFilePicker by remember { mutableStateOf(false) }
-    var loadFile by remember { mutableStateOf<Path?>(null) }
-    var loadJsonString by remember { mutableStateOf<Pair<Path, String>?>(null) }
-
-    // State change done here to avoid invalid state issues in the lifecycles.
-    loadFile?.let {
-        viewModel.loadJson(it)
-        loadFile = null
-    }
-
-    loadJsonString?.let {
-        viewModel.loadJson(it.first, it.second)
-        loadJsonString = null
-    }
 
     Box(Modifier.fillMaxSize().padding(all = 16.dp)) {
         Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            Controls(viewModel) {
+            Controls(viewModel.currentCodeAttribute) {
                 showFilePicker = it
             }
 
             Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
                 FileViewer(viewModel)
-                StateViewer(viewModel)
+                StateViewer(viewModel.currentCodeAttribute)
             }
         }
 
@@ -80,49 +52,7 @@ fun App() {
         FilePicker(showFilePicker, fileExtensions = listOf("json", "jar")) { path ->
             showFilePicker = false
             if (path != null) {
-                if (path.path.endsWith(".jar")) {
-                    val classPool = ClassPool()
-
-                    val source: DataEntrySource = FileSource(
-                        File(path.path),
-                    )
-
-                    source.pumpDataEntries(
-                        JarReader(
-                            false,
-                            ClassFilter(
-                                ClassReader(
-                                    false,
-                                    false,
-                                    false,
-                                    false,
-                                    null,
-                                    ClassPoolFiller(classPool),
-                                ),
-                            ),
-                        ),
-                    )
-
-                    val tracker = JsonPrinter()
-                    val pe = PartialEvaluator.Builder.create()
-                        .setEvaluateAllCode(true).setStateTracker(tracker).build()
-                    classPool.accept(
-                        AllClassVisitor(
-                            AllMethodVisitor(
-                                AllAttributeVisitor(
-                                    AttributeNameFilter(CODE, pe),
-                                ),
-                            ),
-                            // "proguard/evaluation/PartialEvaluator",
-                        ),
-                    )
-
-                    loadJsonString = Pair(Path.of(path.path), tracker.json)
-                } else {
-                    // If we already have a view model, load the json file into it.
-                    // Otherwise, create a new view model from the json file.
-                    loadFile = Path.of(path.path)
-                }
+                viewModel.loadFile(Path.of(path.path))
             }
         }
     }

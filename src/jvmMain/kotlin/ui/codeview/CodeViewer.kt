@@ -25,7 +25,7 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import ui.Colors
-import viewmodel.DebuggerViewModel
+import viewmodel.CodeAttributeViewModel
 import viewmodel.Display
 import java.lang.Integer.max
 
@@ -33,7 +33,7 @@ import java.lang.Integer.max
  * Display all methods and their instructions from the parsed code attributes.
  */
 @Composable
-fun CodeViewer(viewModel: DebuggerViewModel) {
+fun CodeViewer(viewModel: CodeAttributeViewModel) {
     val state = rememberLazyListState()
     val coroutineScope = rememberCoroutineScope()
 
@@ -53,8 +53,8 @@ fun CodeViewer(viewModel: DebuggerViewModel) {
 
         coroutineScope.launch {
             // Animate scroll to the first item
-            val index = viewModel.codeAttribute?.instructions?.withIndex()
-                ?.find { it.value.offset == aimOffset[viewModel.display] }
+            val index = viewModel.codeAttribute.instructions.withIndex()
+                .find { it.value.offset == aimOffset[viewModel.display] }
             if (index != null) {
                 val visibleItemCount = state.layoutInfo.visibleItemsInfo.size
                 state.animateScrollToItem(max(0, index.index - visibleItemCount / 2))
@@ -66,81 +66,79 @@ fun CodeViewer(viewModel: DebuggerViewModel) {
         modifier = Modifier.fillMaxSize(),
     ) {
         LazyColumn(state = state) {
-            viewModel.codeAttribute?.let { codeAttribute ->
-                // Get the length of the offset as string of the last instruction of the current code attribute
-                val maxOffsetLength = codeAttribute.instructions.last().offset.toString().length
+            // Get the length of the offset as string of the last instruction of the current code attribute
+            val maxOffsetLength = viewModel.codeAttribute.instructions.last().offset.toString().length
 
-                // Display the instructions of the current code attribute
-                codeAttribute.instructions.forEachIndexed { instructionIndex, instruction ->
-                    val isCurrent = when (viewModel.display) {
-                        Display.EVALUATIONS -> viewModel.evaluation?.instructionOffset == instruction.offset
-                        Display.RESULTS -> viewModel.instructionIndex == instructionIndex
+            // Display the instructions of the current code attribute
+            viewModel.codeAttribute.instructions.forEachIndexed { instructionIndex, instruction ->
+                val isCurrent = when (viewModel.display) {
+                    Display.EVALUATIONS -> viewModel.evaluation?.instructionOffset == instruction.offset
+                    Display.RESULTS -> viewModel.instructionIndex == instructionIndex
+                }
+
+                var inCatch = false
+                // Display a try-catch block, if any
+                viewModel.evaluationBlock?.exceptionHandlerInfo?.let { exceptionHandler ->
+                    // Display the start of a try-catch block
+                    if (exceptionHandler.catchStartOffset == instruction.offset) {
+                        item {
+                            Text(
+                                "Catch ${exceptionHandler.catchType}",
+                                style = MaterialTheme.typography.bodySmall,
+                                fontFamily = FontFamily.Monospace,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .background(Colors.Red.value.copy(alpha = 0.2F))
+                                    .padding(horizontal = 16.dp, vertical = 6.dp),
+                            )
+                        }
+                    }
+                    // Display the end of a try-catch block
+                    if (exceptionHandler.catchEndOffset == instruction.offset) {
+                        item {
+                            Text(
+                                "End catch",
+                                style = MaterialTheme.typography.bodySmall,
+                                fontFamily = FontFamily.Monospace,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .background(Colors.Red.value.copy(alpha = 0.2F))
+                                    .padding(horizontal = 16.dp, vertical = 6.dp),
+                            )
+                        }
                     }
 
-                    var inCatch = false
-                    // Display a try-catch block, if any
-                    viewModel.evaluationBlock?.exceptionHandlerInfo?.let { exceptionHandler ->
-                        // Display the start of a try-catch block
-                        if (exceptionHandler.catchStartOffset == instruction.offset) {
-                            item {
-                                Text(
-                                    "Catch ${exceptionHandler.catchType}",
-                                    style = MaterialTheme.typography.bodySmall,
-                                    fontFamily = FontFamily.Monospace,
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .background(Colors.Red.value.copy(alpha = 0.2F))
-                                        .padding(horizontal = 16.dp, vertical = 6.dp),
-                                )
-                            }
-                        }
-                        // Display the end of a try-catch block
-                        if (exceptionHandler.catchEndOffset == instruction.offset) {
-                            item {
-                                Text(
-                                    "End catch",
-                                    style = MaterialTheme.typography.bodySmall,
-                                    fontFamily = FontFamily.Monospace,
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .background(Colors.Red.value.copy(alpha = 0.2F))
-                                        .padding(horizontal = 16.dp, vertical = 6.dp),
-                                )
-                            }
-                        }
+                    inCatch =
+                        exceptionHandler.catchStartOffset <= instruction.offset && exceptionHandler.catchEndOffset > instruction.offset
+                }
 
-                        inCatch =
-                            exceptionHandler.catchStartOffset <= instruction.offset && exceptionHandler.catchEndOffset > instruction.offset
+                // Display the current instruction
+                item(key = instruction.offset) {
+                    // Highlight if the instruction is the current one
+                    var color = MaterialTheme.colorScheme.surface
+                    if (isCurrent) {
+                        color = when (viewModel.display) {
+                            Display.EVALUATIONS -> Colors.Red.value.copy(alpha = 0.5F)
+                            Display.RESULTS -> Colors.LightGreen.value.copy(alpha = 0.5F)
+                        }
+                    } else if (viewModel.display == Display.RESULTS) {
+                        // Highlight the instruction if it is a target of the current instruction
+                        val currentInstruction = viewModel.codeAttribute.instructions[viewModel.instructionIndex]
+                        if (currentInstruction.finalTargetInstructions?.contains(instruction.offset) == true) {
+                            color = Colors.Yellow.value.copy(alpha = 0.5F)
+                        } else if (currentInstruction.finalOriginInstructions?.contains(instruction.offset) == true) {
+                            color = Colors.Blue.value.copy(alpha = 0.5F)
+                        }
                     }
 
-                    // Display the current instruction
-                    item(key = instruction.offset) {
-                        // Highlight if the instruction is the current one
-                        var color = MaterialTheme.colorScheme.surface
-                        if (isCurrent) {
-                            color = when (viewModel.display) {
-                                Display.EVALUATIONS -> Colors.Red.value.copy(alpha = 0.5F)
-                                Display.RESULTS -> Colors.LightGreen.value.copy(alpha = 0.5F)
-                            }
-                        } else if (viewModel.display == Display.RESULTS) {
-                            // Highlight the instruction if it is a target of the current instruction
-                            val currentInstruction = codeAttribute.instructions[viewModel.instructionIndex]
-                            if (currentInstruction.finalTargetInstructions?.contains(instruction.offset) == true) {
-                                color = Colors.Yellow.value.copy(alpha = 0.5F)
-                            } else if (currentInstruction.finalOriginInstructions?.contains(instruction.offset) == true) {
-                                color = Colors.Blue.value.copy(alpha = 0.5F)
-                            }
-                        }
+                    InstructionViewer(viewModel, instruction, maxOffsetLength, color, inCatch)
+                }
 
-                        InstructionViewer(viewModel, instruction, maxOffsetLength, color, inCatch)
-                    }
-
-                    // There is an error to display at the current instruction
-                    codeAttribute.error?.let { error ->
-                        if (isCurrent && error.instructionOffset == instruction.offset) {
-                            item {
-                                ErrorViewer(error)
-                            }
+                // There is an error to display at the current instruction
+                viewModel.codeAttribute.error?.let { error ->
+                    if (isCurrent && error.instructionOffset == instruction.offset) {
+                        item {
+                            ErrorViewer(error)
                         }
                     }
                 }
