@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.3.1 (2023-07-28)
+
+## What's Changed
+* fix: jsr issue by @jitsedesmet in https://github.com/Mouwrice/proguard-core-visualizer/pull/71
+
+
+**Full Changelog**: https://github.com/Mouwrice/proguard-core-visualizer/compare/v0.3.0...v0.3.1
+
 ## 0.3.0 (2023-07-28)
 
 ## What's Changed
