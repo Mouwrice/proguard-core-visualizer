@@ -20,9 +20,3 @@ jobs:
           release-type: simple
           package-name: proguard-core-visualizer
           changelog-notes-type: github
-          
-      - uses: actions/checkout@v3
-        if: ${{ steps.release.outputs.release_created }}
-      - uses: ./.github/workflows/conveyor-deploy.yml
-        name: Deploy if release created
-        if: ${{ steps.release.outputs.release_created }}
