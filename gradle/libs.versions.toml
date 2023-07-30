@@ -5,7 +5,7 @@ ktlint = "0.50.0"
 [libraries]
 darkrockstudios-mpfilepicker = { module = "com.darkrockstudios:mpfilepicker", version = "1.2.0" }
 google-gson = { module = "com.google.code.gson:gson", version = "2.10.1" }
-materialkolor = { module = "com.materialkolor:material-kolor", version = "1.2.1" }
+materialkolor = { module = "com.materialkolor:material-kolor", version = "1.2.2" }
 dansoftowner-jthemedetecor = { module = "com.github.Dansoftowner:jSystemThemeDetector", version = "3.8" }
 bonsai-core = { module = "cafe.adriel.bonsai:bonsai-core", version = "1.2.0" }
 
