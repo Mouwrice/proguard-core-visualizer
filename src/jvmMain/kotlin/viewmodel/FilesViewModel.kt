@@ -12,13 +12,17 @@ import proguard.classfile.attribute.visitor.AttributeNameFilter
 import proguard.classfile.visitor.AllClassVisitor
 import proguard.classfile.visitor.AllMethodVisitor
 import proguard.classfile.visitor.ClassPoolFiller
+import proguard.classfile.visitor.ClassPrinter
 import proguard.evaluation.PartialEvaluator
 import proguard.evaluation.util.jsonPrinter.JsonPrinter
 import proguard.io.ClassReader
+import proguard.io.DataEntryReader
 import proguard.io.DataEntrySource
 import proguard.io.DexClassReader
+import proguard.io.DirectorySource
 import proguard.io.FileSource
 import proguard.io.JarReader
+import proguard.io.NameFilteredDataEntryReader
 import java.nio.file.Path
 import kotlin.io.path.extension
 
@@ -122,28 +126,32 @@ class FilesViewModel {
     private fun loadApk(path: Path) {
         val classPool = ClassPool()
 
-        val source: DataEntrySource = FileSource(
+        val source: DataEntrySource = DirectorySource(
             path.toFile(),
         )
 
-        source.pumpDataEntries(
-            DexClassReader(
-                true,
-                ClassPoolFiller(classPool),
+        var classReader: DataEntryReader = NameFilteredDataEntryReader(
+            "**.class",
+            ClassReader(
+                false,
+                false,
+                false,
+                false,
+                null,
+                ClassPrinter(),
             ),
         )
 
         // Convert dex files to a jar first
-//        classReader = NameFilteredDataEntryReader(
-//            "*.dex",
-//            DexClassReader(
-//                true,
-//                ClassPoolFiller(classPool),
-//            ),
-//            classReader,
-//        )
-//
-//        source.pumpDataEntries(classReader)
+        classReader = NameFilteredDataEntryReader(
+            "classes*.dex",
+            DexClassReader(
+                true,
+                ClassPrinter(),
+            ),
+        )
+
+        source.pumpDataEntries(classReader)
 
         val tracker = evaluate(classPool)
         parseTracker(path, tracker)
