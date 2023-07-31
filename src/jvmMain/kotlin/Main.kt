@@ -76,7 +76,7 @@ fun main() = application {
     }
 
     Window(
-        title = "Proguard CORE Visualizer $version",
+        title = "ProGuardCORE Visualizer $version",
         icon = appIcon,
         onCloseRequest = ::exitApplication,
     ) {

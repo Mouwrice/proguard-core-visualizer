@@ -1,5 +1,21 @@
 # Changelog
 
+## 0.3.3 (2023-07-30)
+
+## What's Changed
+* fix(deps): update dependency com.materialkolor:material-kolor to v1.2.2 by @renovate in https://github.com/Mouwrice/proguard-core-visualizer/pull/75
+
+
+**Full Changelog**: https://github.com/Mouwrice/proguard-core-visualizer/compare/v0.3.2...v0.3.3
+
+## 0.3.2 (2023-07-28)
+
+## What's Changed
+* fix: set the correct app name by @Mouwrice in https://github.com/Mouwrice/proguard-core-visualizer/pull/73
+
+
+**Full Changelog**: https://github.com/Mouwrice/proguard-core-visualizer/compare/v0.3.1...v0.3.2
+
 ## 0.3.1 (2023-07-28)
 
 ## What's Changed
