@@ -149,6 +149,7 @@ class FilesViewModel {
                 true,
                 ClassPrinter(),
             ),
+            classReader,
         )
 
         source.pumpDataEntries(classReader)
