@@ -93,16 +93,6 @@ class LoadUtil {
             return classPool
         }
 
-        fun readClassFile(path: Path): ClassPool {
-            val classPool = ClassPool()
-
-            val source = FileSource(path.toFile())
-
-            source.pumpDataEntries(ClassReader(false, false, false, false, null, ClassPoolFiller(classPool)))
-
-            return classPool
-        }
-
         fun classMethodMap(classPool: ClassPool): Map<String, Map<String, CodeAttributeViewModel?>> {
             val classMap: MutableMap<String, MutableMap<String, CodeAttributeViewModel?>> = HashMap()
             classPool.accept(

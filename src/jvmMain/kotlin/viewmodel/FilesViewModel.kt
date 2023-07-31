@@ -81,22 +81,11 @@ class FilesViewModel {
         }
     }
 
+    /**
+     * Loads every file type from the [FileTypes] enum except for [FileTypes.JSON].
+     */
     private fun loadJar(path: Path) {
         files = files.plus(Pair(path, LoadUtil.classMethodMap(LoadUtil.readJar(path))))
-    }
-
-    /**
-     * Loads the apk file and tries to evaluate it.
-     */
-    private fun loadApk(path: Path) {
-        files = files.plus(Pair(path, LoadUtil.classMethodMap(LoadUtil.readJar(path))))
-    }
-
-    /**
-     * Loads the class file at the given path and tries to evaluate it.
-     */
-    private fun loadClass(path: Path) {
-        files = files.plus(Pair(path, LoadUtil.classMethodMap(LoadUtil.readClassFile(path))))
     }
 
     fun loadFile(path: Path) {
@@ -104,9 +93,7 @@ class FilesViewModel {
             val type = FileTypes.valueOf(path.extension.uppercase())
             when (type) {
                 FileTypes.JSON -> loadJson(path)
-                FileTypes.JAR -> loadJar(path)
-                FileTypes.APK -> loadApk(path)
-                FileTypes.CLASS -> loadClass(path)
+                FileTypes.JAR, FileTypes.APK, FileTypes.CLASS, FileTypes.AAR, FileTypes.DEX, FileTypes.ZIP -> loadJar(path)
             }
         } catch (e: IllegalArgumentException) {
             println("Unsupported file type: $e")
