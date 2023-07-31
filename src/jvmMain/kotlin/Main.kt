@@ -38,13 +38,13 @@ fun App() {
 
     Box(Modifier.fillMaxSize().padding(all = 16.dp)) {
         Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            Controls(viewModel.currentCodeAttribute) {
+            Controls(viewModel.currentCodeAttributeViewModel) {
                 showFilePicker = it
             }
 
             Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
                 FileViewer(viewModel)
-                StateViewer(viewModel.currentCodeAttribute)
+                StateViewer(viewModel.currentCodeAttributeViewModel)
             }
         }
 

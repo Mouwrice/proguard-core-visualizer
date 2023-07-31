@@ -30,7 +30,7 @@ import androidx.compose.ui.unit.dp
 import cafe.adriel.bonsai.core.node.Branch
 import cafe.adriel.bonsai.core.node.Leaf
 import cafe.adriel.bonsai.core.tree.Tree
-import viewmodel.File
+import java.nio.file.Path
 import kotlin.io.path.name
 
 /**
@@ -38,9 +38,9 @@ import kotlin.io.path.name
  */
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun FileTree(files: List<File>, closeFile: (Int) -> Unit): Tree<Pair<Int, Int>?> {
+fun MethodTree(methods: Map<Path, Map<String, List<String>>>, closeFile: (Path) -> Unit): Tree<Pair<Path, Pair<String, String>>?> {
     return Tree {
-        files.forEachIndexed { fileIndex, file ->
+        methods.toSortedMap().forEach { (path, clazzMap) ->
             Branch(null, customName = {
                 Row(
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -50,7 +50,7 @@ fun FileTree(files: List<File>, closeFile: (Int) -> Unit): Tree<Pair<Int, Int>?>
                     var remove by remember { mutableStateOf(false) }
                     if (remove) {
                         remove = false
-                        closeFile(fileIndex)
+                        closeFile(path)
                     }
 
                     // An IconButton is currently fixed to 48.dp, so we need to make our own.
@@ -80,14 +80,14 @@ fun FileTree(files: List<File>, closeFile: (Int) -> Unit): Tree<Pair<Int, Int>?>
                             shape = MaterialTheme.shapes.extraSmall,
                         ) {
                             Text(
-                                text = file.path.name,
+                                text = path.name,
                                 modifier = Modifier.padding(4.dp),
                                 style = MaterialTheme.typography.labelMedium,
                             )
                         }
                     }) {
                         Text(
-                            file.path.name,
+                            path.name,
                             style = MaterialTheme.typography.labelMedium,
                             overflow = TextOverflow.Ellipsis,
                             softWrap = false,
@@ -95,14 +95,7 @@ fun FileTree(files: List<File>, closeFile: (Int) -> Unit): Tree<Pair<Int, Int>?>
                     }
                 }
             }) {
-                // Clazz name to <attributeIndex, method>
-                val branches = HashMap<String, MutableList<Pair<Int, String>>>()
-                file.codeAttributeViewModels.forEachIndexed { attributesIndex, codeAttributeViewModels ->
-                    branches.getOrPut(codeAttributeViewModels.codeAttribute.clazz) { mutableListOf() }
-                        .add(Pair(attributesIndex, codeAttributeViewModels.codeAttribute.method))
-                }
-
-                branches.forEach { (clazz, methods) ->
+                clazzMap.toSortedMap().forEach { (clazz, methods) ->
                     Branch(null, customName = {
                         TooltipArea(tooltip = {
                             Surface(
@@ -120,7 +113,7 @@ fun FileTree(files: List<File>, closeFile: (Int) -> Unit): Tree<Pair<Int, Int>?>
                     }) {
                         methods.forEach { method ->
                             Leaf(
-                                Pair(fileIndex, method.first),
+                                Pair(path, Pair(clazz, method)),
                                 customName = {
                                     TooltipArea(tooltip = {
                                         Surface(
@@ -129,12 +122,12 @@ fun FileTree(files: List<File>, closeFile: (Int) -> Unit): Tree<Pair<Int, Int>?>
                                             shape = MaterialTheme.shapes.extraSmall,
                                         ) {
                                             Text(
-                                                text = method.second,
+                                                text = method,
                                                 modifier = Modifier.padding(4.dp),
                                                 style = MaterialTheme.typography.labelMedium,
                                             )
                                         }
-                                    }) { Text(method.second, style = MaterialTheme.typography.labelSmall) }
+                                    }) { Text(method, style = MaterialTheme.typography.labelSmall) }
                                 },
                             )
                         }

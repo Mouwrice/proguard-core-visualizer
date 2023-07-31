@@ -4,14 +4,20 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import data.CodeAttributeRecord
 import data.StateTracker
 import proguard.classfile.ClassPool
+import proguard.classfile.Clazz
+import proguard.classfile.Method
 import proguard.classfile.attribute.Attribute
+import proguard.classfile.attribute.CodeAttribute
 import proguard.classfile.attribute.visitor.AllAttributeVisitor
 import proguard.classfile.attribute.visitor.AttributeNameFilter
+import proguard.classfile.attribute.visitor.AttributeVisitor
 import proguard.classfile.visitor.AllClassVisitor
 import proguard.classfile.visitor.AllMethodVisitor
 import proguard.classfile.visitor.ClassPoolFiller
+import proguard.classfile.visitor.FilteredClassVisitor
 import proguard.evaluation.PartialEvaluator
 import proguard.evaluation.util.jsonPrinter.JsonPrinter
 import proguard.io.ClassFilter
@@ -24,32 +30,105 @@ import kotlin.io.path.extension
 
 /**
  * A model to keep track and manage the files that are opened in the visualizer.
+ * When the currentCodeAttribute has not been loaded, this will load it for you
  */
 class FilesViewModel {
-    var files by mutableStateOf(emptyList<File>())
+    var files by mutableStateOf(emptyMap<Path, Map<String, Map<String, CodeAttributeViewModel?>>>())
         private set
 
-    private fun addFile(file: File) {
-        files = files.plus(file)
+    var curPath by mutableStateOf<Path?>(null)
+
+    var curClazz by mutableStateOf<String?>(null)
+
+    var curMethod by mutableStateOf<String?>(null)
+
+    private fun addFile(file: Path, codeAttributes: List<CodeAttributeRecord>) {
+        val some = codeAttributes.groupBy { it.clazz }
+            .mapValues {
+                it.value.groupBy { map -> map.method }.mapValues { map -> CodeAttributeViewModel(map.value[0]) }
+            }
+
+        files = files.plus(Pair(file, some))
     }
 
-    fun closeFile(index: Int) {
-        files.getOrNull(index)?.let {
-            files = files.minus(it)
+    fun closeFile(path: Path) {
+        files = files.minus(path)
+        if (curPath == path) {
+            curPath = null
+            curClazz = null
+            curMethod = null
         }
     }
 
-    private var fileIndex by mutableStateOf(0)
+    val currentCodeAttributeViewModel by derivedStateOf {
+        curPath?.let { path ->
+            curClazz?.let { clazz ->
+                curMethod?.let { method ->
+                    val potentialViewModel = files[curPath]?.get(curClazz)?.get(curMethod)
+                    potentialViewModel?.let { return@derivedStateOf it }
 
-    private val currentFile by derivedStateOf { files.getOrNull(fileIndex) }
+                    // try to construct the viewModel
+                    val classPool = ClassPool()
 
-    private var codeAttributeIndex by mutableStateOf(0)
+                    val source: DataEntrySource = FileSource(
+                        path.toFile(),
+                    )
 
-    val currentCodeAttribute by derivedStateOf { currentFile?.codeAttributeViewModels?.getOrNull(codeAttributeIndex) }
+                    source.pumpDataEntries(
+                        JarReader(
+                            false,
+                            ClassFilter(
+                                ClassReader(
+                                    false,
+                                    false,
+                                    false,
+                                    false,
+                                    null,
+                                    ClassPoolFiller(classPool),
+                                ),
+                            ),
+                        ),
+                    )
 
-    fun selectCodeAttribute(fileIndex: Int, attributeIndex: Int) {
-        this.fileIndex = fileIndex
-        this.codeAttributeIndex = attributeIndex
+                    val tracker = JsonPrinter()
+                    val pe = PartialEvaluator.Builder.create()
+                        .setEvaluateAllCode(true).setStateTracker(tracker).build()
+                    classPool.accept(
+                        FilteredClassVisitor(
+                            clazz,
+                            AllMethodVisitor(
+                                AllAttributeVisitor(
+                                    AttributeNameFilter(
+                                        Attribute.CODE,
+                                        object : AttributeVisitor {
+                                            override fun visitCodeAttribute(
+                                                clazz: Clazz,
+                                                visitedMethod: Method,
+                                                codeAttribute: CodeAttribute,
+                                            ) {
+                                                if (visitedMethod.getName(clazz) == method) {
+                                                    pe.visitCodeAttribute(clazz, visitedMethod, codeAttribute)
+                                                }
+                                            }
+                                        },
+                                    ),
+                                ),
+                            ),
+                        ),
+                    )
+                    try {
+                        val newViewModel = CodeAttributeViewModel(StateTracker.fromJson(tracker.json).codeAttributes[0])
+                        val clazzMap = files.getValue(path)
+                        val methodMap = clazzMap.getValue(clazz)
+                        files = files.plus(Pair(path, clazzMap.plus(Pair(clazz, methodMap.plus(Pair(method, newViewModel))))))
+                        return@derivedStateOf newViewModel
+                    } catch (e: Exception) {
+                        println("Error while parsing json file: $e")
+                    }
+                }
+            }
+        }
+        return@derivedStateOf null
     }
 
     /**
@@ -58,8 +137,7 @@ class FilesViewModel {
     private fun loadJson(path: Path) {
         try {
             val stateTracker = StateTracker.fromJson(path)
-            val file = File(path, stateTracker.codeAttributes)
-            addFile(file)
+            addFile(path, stateTracker.codeAttributes)
         } catch (e: Exception) {
             println("Error while parsing json file: $e")
         }
@@ -88,25 +166,29 @@ class FilesViewModel {
             ),
         )
 
-        val tracker = JsonPrinter()
-        val pe = PartialEvaluator.Builder.create()
-            .setEvaluateAllCode(true).setStateTracker(tracker).build()
+        val classMap: MutableMap<String, MutableMap<String, CodeAttributeViewModel?>> = HashMap()
         classPool.accept(
             AllClassVisitor(
                 AllMethodVisitor(
                     AllAttributeVisitor(
-                        AttributeNameFilter(Attribute.CODE, pe),
+                        AttributeNameFilter(
+                            Attribute.CODE,
+                            object : AttributeVisitor {
+                                override fun visitCodeAttribute(
+                                    clazz: Clazz,
+                                    method: Method,
+                                    codeAttribute: CodeAttribute,
+                                ) {
+                                    classMap.getOrPut(clazz.name) { HashMap() }[method.getName(clazz)] = null
+                                }
+                            },
+                        ),
                     ),
                 ),
             ),
         )
 
-        try {
-            val file = File(path, StateTracker.fromJson(tracker.json).codeAttributes)
-            addFile(file)
-        } catch (e: Exception) {
-            println("Error while parsing json file: $e")
-        }
+        files = files.plus(Pair(path, classMap))
     }
 
     fun loadFile(path: Path) {
