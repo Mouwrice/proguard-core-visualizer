@@ -33,7 +33,7 @@ fun FileViewer(viewModel: FilesViewModel) {
             shape = MaterialTheme.shapes.medium,
         ).clip(MaterialTheme.shapes.medium),
     ) {
-        val tree = FileTree(viewModel.files) { index -> viewModel.closeFile(index) }
+        val tree = MethodTree(viewModel.files.mapValues { it.value.mapValues { inner -> inner.value.keys.toList() } }) { viewModel.closeFile(it) }
         Bonsai(
             tree = tree,
             style = BonsaiStyle(
@@ -48,7 +48,11 @@ fun FileViewer(viewModel: FilesViewModel) {
                 tree.clearSelection()
                 tree.toggleExpansion(node)
                 tree.selectNode(node)
-                node.content?.let { viewModel.selectCodeAttribute(it.first, it.second) }
+                node.content?.let {
+                    viewModel.curPath = it.first
+                    viewModel.curClazz = it.second.first
+                    viewModel.curMethod = it.second.second
+                }
             },
         )
 
@@ -59,7 +63,7 @@ fun FileViewer(viewModel: FilesViewModel) {
         )
 
         Column {
-            viewModel.currentCodeAttribute?.let {
+            viewModel.currentCodeAttributeViewModel?.let {
                 MethodHeader(it.codeAttribute)
                 CodeViewer(it)
             }
