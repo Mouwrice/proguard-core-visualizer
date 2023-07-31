@@ -15,9 +15,13 @@ import proguard.classfile.visitor.FilteredClassVisitor
 import proguard.evaluation.PartialEvaluator
 import proguard.evaluation.util.jsonPrinter.JsonPrinter
 import proguard.io.ClassReader
+import proguard.io.DataEntryReader
 import proguard.io.DataEntrySource
+import proguard.io.DexClassReader
+import proguard.io.DirectorySource
 import proguard.io.FileSource
 import proguard.io.JarReader
+import proguard.io.NameFilteredDataEntryReader
 import viewmodel.CodeAttributeViewModel
 import java.nio.file.Path
 
@@ -42,6 +46,35 @@ class LoadUtil {
                     ),
                 ),
             )
+
+            return classPool
+        }
+
+        fun getClassPoolFromApk(path: Path): ClassPool {
+            val classPool = ClassPool()
+            val source: DataEntrySource = DirectorySource(path.toFile())
+            var classReader: DataEntryReader = NameFilteredDataEntryReader(
+                "**.class",
+                ClassReader(
+                    false,
+                    false,
+                    false,
+                    false,
+                    null,
+                    ClassPoolFiller(classPool),
+                ),
+            )
+
+            // Convert dex files to a jar first
+            classReader = NameFilteredDataEntryReader(
+                "classes*.dex",
+                DexClassReader(
+                    true,
+                    ClassPoolFiller(classPool),
+                ),
+                classReader,
+            )
+            source.pumpDataEntries(JarReader(classReader))
 
             return classPool
         }

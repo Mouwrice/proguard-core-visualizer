@@ -7,21 +7,6 @@ import androidx.compose.runtime.setValue
 import data.CodeAttributeRecord
 import data.LoadUtil
 import data.StateTracker
-import proguard.classfile.ClassPool
-import proguard.classfile.attribute.Attribute
-import proguard.classfile.attribute.visitor.AllAttributeVisitor
-import proguard.classfile.attribute.visitor.AttributeNameFilter
-import proguard.classfile.visitor.AllClassVisitor
-import proguard.classfile.visitor.AllMethodVisitor
-import proguard.classfile.visitor.ClassPrinter
-import proguard.evaluation.PartialEvaluator
-import proguard.evaluation.util.jsonPrinter.JsonPrinter
-import proguard.io.ClassReader
-import proguard.io.DataEntryReader
-import proguard.io.DataEntrySource
-import proguard.io.DexClassReader
-import proguard.io.DirectorySource
-import proguard.io.NameFilteredDataEntryReader
 import java.nio.file.Path
 import kotlin.io.path.extension
 
@@ -84,23 +69,6 @@ class FilesViewModel {
         return@derivedStateOf null
     }
 
-    private fun evaluate(classPool: ClassPool): JsonPrinter {
-        val tracker = JsonPrinter()
-        val pe = PartialEvaluator.Builder.create()
-            .setEvaluateAllCode(true).setStateTracker(tracker).build()
-        classPool.accept(
-            AllClassVisitor(
-                AllMethodVisitor(
-                    AllAttributeVisitor(
-                        AttributeNameFilter(Attribute.CODE, pe),
-                    ),
-                ),
-            ),
-        )
-
-        return tracker
-    }
-
     /**
      * Loads the json file at the given path and add it to the list of files.
      */
@@ -121,35 +89,7 @@ class FilesViewModel {
      * Loads the apk file and tries to evaluate it.
      */
     private fun loadApk(path: Path) {
-        val classPool = ClassPool()
-
-        val source: DataEntrySource = DirectorySource(
-            path.toFile(),
-        )
-
-        var classReader: DataEntryReader = NameFilteredDataEntryReader(
-            "**.class",
-            ClassReader(
-                false,
-                false,
-                false,
-                false,
-                null,
-                ClassPrinter(),
-            ),
-        )
-
-        // Convert dex files to a jar first
-        classReader = NameFilteredDataEntryReader(
-            "classes*.dex",
-            DexClassReader(
-                true,
-                ClassPrinter(),
-            ),
-            classReader,
-        )
-
-        source.pumpDataEntries(classReader)
+        files = files.plus(Pair(path, LoadUtil.classMethodMap(LoadUtil.getClassPoolFromApk(path))))
     }
 
     /**
