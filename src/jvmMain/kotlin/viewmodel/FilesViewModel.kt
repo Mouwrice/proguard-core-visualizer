@@ -49,7 +49,7 @@ class FilesViewModel {
                     val potentialViewModel = files[curPath]?.get(curClazz)?.get(curMethod)
                     potentialViewModel?.let { return@derivedStateOf it }
 
-                    val classPool = LoadUtil.getClassPoolFromJAR(path)
+                    val classPool = LoadUtil.readJar(path)
                     LoadUtil.evalSingleMethod(classPool, clazz, method)?.let {
                         val codeAttribute = it.codeAttributes[0]
                         val newViewModel = CodeAttributeViewModel(codeAttribute)
@@ -82,21 +82,21 @@ class FilesViewModel {
     }
 
     private fun loadJar(path: Path) {
-        files = files.plus(Pair(path, LoadUtil.classMethodMap(LoadUtil.getClassPoolFromJAR(path))))
+        files = files.plus(Pair(path, LoadUtil.classMethodMap(LoadUtil.readJar(path))))
     }
 
     /**
      * Loads the apk file and tries to evaluate it.
      */
     private fun loadApk(path: Path) {
-        files = files.plus(Pair(path, LoadUtil.classMethodMap(LoadUtil.getClassPoolFromApk(path))))
+        files = files.plus(Pair(path, LoadUtil.classMethodMap(LoadUtil.readJar(path))))
     }
 
     /**
      * Loads the class file at the given path and tries to evaluate it.
      */
     private fun loadClass(path: Path) {
-        files = files.plus(Pair(path, LoadUtil.classMethodMap(LoadUtil.getClassPoolFromClass(path))))
+        files = files.plus(Pair(path, LoadUtil.classMethodMap(LoadUtil.readClassFile(path))))
     }
 
     fun loadFile(path: Path) {
