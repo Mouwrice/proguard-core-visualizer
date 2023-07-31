@@ -14,39 +14,82 @@ import proguard.classfile.visitor.ClassPoolFiller
 import proguard.classfile.visitor.FilteredClassVisitor
 import proguard.evaluation.PartialEvaluator
 import proguard.evaluation.util.jsonPrinter.JsonPrinter
-import proguard.io.ClassFilter
 import proguard.io.ClassReader
+import proguard.io.DataEntryNameFilter
+import proguard.io.DataEntryReader
 import proguard.io.DataEntrySource
+import proguard.io.DexClassReader
 import proguard.io.FileSource
+import proguard.io.FilteredDataEntryReader
 import proguard.io.JarReader
+import proguard.io.NameFilteredDataEntryReader
+import proguard.util.ExtensionMatcher
+import proguard.util.OrMatcher
 import viewmodel.CodeAttributeViewModel
+import java.io.IOException
 import java.nio.file.Path
 
 class LoadUtil {
     companion object {
-        fun getClassPoolFromJAR(path: Path): ClassPool {
+        /**
+         * Reads the classes from the specified jar file and returns them as a class
+         * pool.
+         *
+         * ProgramClass instances (for processing) or
+         * LibraryClass instances (more compact).
+         * @return a new class pool with the read classes.
+         */
+        @Throws(IOException::class)
+        fun readJar(
+            path: Path,
+        ): ClassPool {
             val classPool = ClassPool()
 
-            val source: DataEntrySource = FileSource(
-                path.toFile(),
-            )
-
-            source.pumpDataEntries(
-                JarReader(
+            // Parse all classes from the input jar and
+            // collect them in the class pool.
+            val source: DataEntrySource = FileSource(path.toFile())
+            val classPoolFiller = ClassPoolFiller(classPool)
+            var classReader: DataEntryReader = NameFilteredDataEntryReader(
+                "**.class",
+                ClassReader(
                     false,
-                    ClassFilter(
-                        ClassReader(
-                            false,
-                            false,
-                            false,
-                            false,
-                            null,
-                            ClassPoolFiller(classPool),
-                        ),
-                    ),
+                    false,
+                    false,
+                    false,
+                    null,
+                    classPoolFiller,
                 ),
             )
 
+            // Convert dex files to a JAR first.
+            classReader = NameFilteredDataEntryReader(
+                "classes*.dex",
+                DexClassReader(false, classPoolFiller),
+                classReader,
+            )
+
+            // Extract files from an archive if necessary.
+            classReader = FilteredDataEntryReader(
+                DataEntryNameFilter(ExtensionMatcher("aar")),
+                JarReader(
+                    NameFilteredDataEntryReader(
+                        "classes.jar",
+                        JarReader(classReader),
+                    ),
+                ),
+                FilteredDataEntryReader(
+                    DataEntryNameFilter(
+                        OrMatcher(
+                            ExtensionMatcher("jar"),
+                            ExtensionMatcher("zip"),
+                            ExtensionMatcher("apk"),
+                        ),
+                    ),
+                    JarReader(classReader),
+                    classReader,
+                ),
+            )
+            source.pumpDataEntries(classReader)
             return classPool
         }
 
@@ -64,7 +107,11 @@ class LoadUtil {
                                         method: Method,
                                         codeAttribute: CodeAttribute,
                                     ) {
-                                        classMap.getOrPut(clazz.name) { HashMap() }[method.getName(clazz) + method.getDescriptor(clazz)] = null
+                                        classMap.getOrPut(clazz.name) { HashMap() }[
+                                            method.getName(clazz) + method.getDescriptor(
+                                                clazz,
+                                            ),
+                                        ] = null
                                     }
                                 },
                             ),
@@ -77,8 +124,7 @@ class LoadUtil {
 
         fun evalSingleMethod(classPool: ClassPool, clazz: String, method: String): StateTracker? {
             val tracker = JsonPrinter()
-            val pe = PartialEvaluator.Builder.create()
-                .setEvaluateAllCode(true).setStateTracker(tracker).build()
+            val pe = PartialEvaluator.Builder.create().setEvaluateAllCode(true).setStateTracker(tracker).build()
             classPool.accept(
                 FilteredClassVisitor(
                     clazz,
