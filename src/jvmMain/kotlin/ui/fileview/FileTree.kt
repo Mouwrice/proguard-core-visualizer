@@ -111,7 +111,7 @@ fun MethodTree(methods: Map<Path, Map<String, List<String>>>, closeFile: (Path) 
                             }
                         }) { Text(clazz, style = MaterialTheme.typography.labelMedium) }
                     }) {
-                        methods.forEach { method ->
+                        methods.sorted().forEach { method ->
                             Leaf(
                                 Pair(path, Pair(clazz, method)),
                                 customName = {

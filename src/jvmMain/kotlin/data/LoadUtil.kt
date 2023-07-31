@@ -11,6 +11,9 @@ import proguard.classfile.attribute.visitor.AttributeVisitor
 import proguard.classfile.visitor.AllClassVisitor
 import proguard.classfile.visitor.AllMethodVisitor
 import proguard.classfile.visitor.ClassPoolFiller
+import proguard.classfile.visitor.FilteredClassVisitor
+import proguard.evaluation.PartialEvaluator
+import proguard.evaluation.util.jsonPrinter.JsonPrinter
 import proguard.io.ClassFilter
 import proguard.io.ClassReader
 import proguard.io.DataEntrySource
@@ -47,7 +50,7 @@ class LoadUtil {
             return classPool
         }
 
-        fun classMethodMap(classPool: ClassPool) {
+        fun classMethodMap(classPool: ClassPool): Map<String, Map<String, CodeAttributeViewModel?>> {
             val classMap: MutableMap<String, MutableMap<String, CodeAttributeViewModel?>> = HashMap()
             classPool.accept(
                 AllClassVisitor(
@@ -61,7 +64,7 @@ class LoadUtil {
                                         method: Method,
                                         codeAttribute: CodeAttribute,
                                     ) {
-                                        classMap.getOrPut(clazz.name) { HashMap() }[method.getName(clazz)] = null
+                                        classMap.getOrPut(clazz.name) { HashMap() }[method.getName(clazz) + method.getDescriptor(clazz)] = null
                                     }
                                 },
                             ),
@@ -69,6 +72,42 @@ class LoadUtil {
                     ),
                 ),
             )
+            return classMap
+        }
+
+        fun evalSingleMethod(classPool: ClassPool, clazz: String, method: String): StateTracker? {
+            val tracker = JsonPrinter()
+            val pe = PartialEvaluator.Builder.create()
+                .setEvaluateAllCode(true).setStateTracker(tracker).build()
+            classPool.accept(
+                FilteredClassVisitor(
+                    clazz,
+                    AllMethodVisitor(
+                        AllAttributeVisitor(
+                            AttributeNameFilter(
+                                Attribute.CODE,
+                                object : AttributeVisitor {
+                                    override fun visitCodeAttribute(
+                                        clazz: Clazz,
+                                        visitedMethod: Method,
+                                        codeAttribute: CodeAttribute,
+                                    ) {
+                                        if (visitedMethod.getName(clazz) + visitedMethod.getDescriptor(clazz) == method) {
+                                            pe.visitCodeAttribute(clazz, visitedMethod, codeAttribute)
+                                        }
+                                    }
+                                },
+                            ),
+                        ),
+                    ),
+                ),
+            )
+            try {
+                return StateTracker.fromJson(tracker.json)
+            } catch (e: Exception) {
+                println("Error while parsing json file: $e")
+            }
+            return null
         }
     }
 }

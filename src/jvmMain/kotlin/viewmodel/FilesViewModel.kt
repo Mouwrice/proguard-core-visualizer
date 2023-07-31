@@ -5,26 +5,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import data.CodeAttributeRecord
+import data.LoadUtil
 import data.StateTracker
-import proguard.classfile.ClassPool
-import proguard.classfile.Clazz
-import proguard.classfile.Method
-import proguard.classfile.attribute.Attribute
-import proguard.classfile.attribute.CodeAttribute
-import proguard.classfile.attribute.visitor.AllAttributeVisitor
-import proguard.classfile.attribute.visitor.AttributeNameFilter
-import proguard.classfile.attribute.visitor.AttributeVisitor
-import proguard.classfile.visitor.AllClassVisitor
-import proguard.classfile.visitor.AllMethodVisitor
-import proguard.classfile.visitor.ClassPoolFiller
-import proguard.classfile.visitor.FilteredClassVisitor
-import proguard.evaluation.PartialEvaluator
-import proguard.evaluation.util.jsonPrinter.JsonPrinter
-import proguard.io.ClassFilter
-import proguard.io.ClassReader
-import proguard.io.DataEntrySource
-import proguard.io.FileSource
-import proguard.io.JarReader
 import java.nio.file.Path
 import kotlin.io.path.extension
 
@@ -67,63 +49,14 @@ class FilesViewModel {
                     val potentialViewModel = files[curPath]?.get(curClazz)?.get(curMethod)
                     potentialViewModel?.let { return@derivedStateOf it }
 
-                    // try to construct the viewModel
-                    val classPool = ClassPool()
-
-                    val source: DataEntrySource = FileSource(
-                        path.toFile(),
-                    )
-
-                    source.pumpDataEntries(
-                        JarReader(
-                            false,
-                            ClassFilter(
-                                ClassReader(
-                                    false,
-                                    false,
-                                    false,
-                                    false,
-                                    null,
-                                    ClassPoolFiller(classPool),
-                                ),
-                            ),
-                        ),
-                    )
-
-                    val tracker = JsonPrinter()
-                    val pe = PartialEvaluator.Builder.create()
-                        .setEvaluateAllCode(true).setStateTracker(tracker).build()
-                    classPool.accept(
-                        FilteredClassVisitor(
-                            clazz,
-                            AllMethodVisitor(
-                                AllAttributeVisitor(
-                                    AttributeNameFilter(
-                                        Attribute.CODE,
-                                        object : AttributeVisitor {
-                                            override fun visitCodeAttribute(
-                                                clazz: Clazz,
-                                                visitedMethod: Method,
-                                                codeAttribute: CodeAttribute,
-                                            ) {
-                                                if (visitedMethod.getName(clazz) == method) {
-                                                    pe.visitCodeAttribute(clazz, visitedMethod, codeAttribute)
-                                                }
-                                            }
-                                        },
-                                    ),
-                                ),
-                            ),
-                        ),
-                    )
-                    try {
-                        val newViewModel = CodeAttributeViewModel(StateTracker.fromJson(tracker.json).codeAttributes[0])
+                    val classPool = LoadUtil.getClassPoolFromJAR(path)
+                    LoadUtil.evalSingleMethod(classPool, clazz, method)?.let {
+                        val codeAttribute = it.codeAttributes[0]
+                        val newViewModel = CodeAttributeViewModel(codeAttribute)
                         val clazzMap = files.getValue(path)
                         val methodMap = clazzMap.getValue(clazz)
                         files = files.plus(Pair(path, clazzMap.plus(Pair(clazz, methodMap.plus(Pair(method, newViewModel))))))
                         return@derivedStateOf newViewModel
-                    } catch (e: Exception) {
-                        println("Error while parsing json file: $e")
                     }
                 }
             }
@@ -144,51 +77,7 @@ class FilesViewModel {
     }
 
     private fun loadJar(path: Path) {
-        val classPool = ClassPool()
-
-        val source: DataEntrySource = FileSource(
-            path.toFile(),
-        )
-
-        source.pumpDataEntries(
-            JarReader(
-                false,
-                ClassFilter(
-                    ClassReader(
-                        false,
-                        false,
-                        false,
-                        false,
-                        null,
-                        ClassPoolFiller(classPool),
-                    ),
-                ),
-            ),
-        )
-
-        val classMap: MutableMap<String, MutableMap<String, CodeAttributeViewModel?>> = HashMap()
-        classPool.accept(
-            AllClassVisitor(
-                AllMethodVisitor(
-                    AllAttributeVisitor(
-                        AttributeNameFilter(
-                            Attribute.CODE,
-                            object : AttributeVisitor {
-                                override fun visitCodeAttribute(
-                                    clazz: Clazz,
-                                    method: Method,
-                                    codeAttribute: CodeAttribute,
-                                ) {
-                                    classMap.getOrPut(clazz.name) { HashMap() }[method.getName(clazz)] = null
-                                }
-                            },
-                        ),
-                    ),
-                ),
-            ),
-        )
-
-        files = files.plus(Pair(path, classMap))
+        files = files.plus(Pair(path, LoadUtil.classMethodMap(LoadUtil.getClassPoolFromJAR(path))))
     }
 
     fun loadFile(path: Path) {
