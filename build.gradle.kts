@@ -35,7 +35,7 @@ kotlin {
                 implementation(libs.dansoftowner.jthemedetecor)
                 implementation("com.github.Guardsquare:proguard-core:PR104-SNAPSHOT")
                 implementation(libs.bonsai.core)
-                implementation("com.guardsquare:proguard-core-android")
+                implementation(libs.proguard.core.android)
             }
         }
     }

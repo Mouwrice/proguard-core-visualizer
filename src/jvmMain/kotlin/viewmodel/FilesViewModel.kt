@@ -11,20 +11,14 @@ import proguard.classfile.attribute.visitor.AllAttributeVisitor
 import proguard.classfile.attribute.visitor.AttributeNameFilter
 import proguard.classfile.visitor.AllClassVisitor
 import proguard.classfile.visitor.AllMethodVisitor
-import proguard.classfile.visitor.ClassNameFilter
 import proguard.classfile.visitor.ClassPoolFiller
-import proguard.classfile.visitor.ClassPrinter
 import proguard.evaluation.PartialEvaluator
 import proguard.evaluation.util.jsonPrinter.JsonPrinter
-import proguard.io.ClassFilter
 import proguard.io.ClassReader
-import proguard.io.DataEntryReader
 import proguard.io.DataEntrySource
 import proguard.io.DexClassReader
-import proguard.io.DirectorySource
 import proguard.io.FileSource
 import proguard.io.JarReader
-import proguard.io.NameFilteredDataEntryReader
 import java.nio.file.Path
 import kotlin.io.path.extension
 
@@ -58,8 +52,35 @@ class FilesViewModel {
         this.codeAttributeIndex = attributeIndex
     }
 
+    private fun evaluate(classPool: ClassPool): JsonPrinter {
+        val tracker = JsonPrinter()
+        val pe = PartialEvaluator.Builder.create()
+            .setEvaluateAllCode(true).setStateTracker(tracker).build()
+        classPool.accept(
+            AllClassVisitor(
+                AllMethodVisitor(
+                    AllAttributeVisitor(
+                        AttributeNameFilter(Attribute.CODE, pe),
+                    ),
+                ),
+            ),
+        )
+
+        return tracker
+    }
+
+    private fun parseTracker(path: Path, tracker: JsonPrinter) {
+        try {
+            tracker.printState()
+            val file = File(path, StateTracker.fromJson(tracker.json).codeAttributes)
+            addFile(file)
+        } catch (e: Exception) {
+            println("Error while parsing json file: $e")
+        }
+    }
+
     /**
-     * Loads the json file at the given path and returns a new view model.
+     * Loads the json file at the given path and add it to the list of files.
      */
     private fun loadJson(path: Path) {
         try {
@@ -80,89 +101,66 @@ class FilesViewModel {
 
         source.pumpDataEntries(
             JarReader(
-                false,
-                ClassFilter(
-                    ClassReader(
-                        false,
-                        false,
-                        false,
-                        false,
-                        null,
-                        ClassPoolFiller(classPool),
-                    ),
+                ClassReader(
+                    false,
+                    false,
+                    false,
+                    false,
+                    null,
+                    ClassPoolFiller(classPool),
                 ),
             ),
         )
 
-        val tracker = JsonPrinter()
-        val pe = PartialEvaluator.Builder.create()
-            .setEvaluateAllCode(true).setStateTracker(tracker).build()
-        classPool.accept(
-            AllClassVisitor(
-                AllMethodVisitor(
-                    AllAttributeVisitor(
-                        AttributeNameFilter(Attribute.CODE, pe),
-                    ),
-                ),
-            ),
-        )
-
-        try {
-            val file = File(path, StateTracker.fromJson(tracker.json).codeAttributes)
-            addFile(file)
-        } catch (e: Exception) {
-            println("Error while parsing json file: $e")
-        }
+        val tracker = evaluate(classPool)
+        parseTracker(path, tracker)
     }
 
+    /**
+     * Loads the apk file and tries to evaluate it.
+     */
     private fun loadApk(path: Path) {
-        val source: DataEntrySource = DirectorySource(
+        val classPool = ClassPool()
+
+        val source: DataEntrySource = FileSource(
             path.toFile(),
         )
 
-        var classReader: DataEntryReader = NameFilteredDataEntryReader(
-            "**.class",
-            ClassReader(
-                false,
-                false,
-                false,
-                false,
-                null,
-                ClassNameFilter("**", null),
+        source.pumpDataEntries(
+            DexClassReader(
+                true,
+                ClassPoolFiller(classPool),
             ),
         )
 
         // Convert dex files to a jar first
-        classReader = NameFilteredDataEntryReader(
-            "classes*.dex",
-            DexClassReader(
-                true,
-                ClassPrinter(),
-            ),
-            classReader,
-        )
+//        classReader = NameFilteredDataEntryReader(
+//            "*.dex",
+//            DexClassReader(
+//                true,
+//                ClassPoolFiller(classPool),
+//            ),
+//            classReader,
+//        )
+//
+//        source.pumpDataEntries(classReader)
 
-        source.pumpDataEntries(classReader)
+        val tracker = evaluate(classPool)
+        parseTracker(path, tracker)
+    }
 
-        val tracker = JsonPrinter()
-        val pe = PartialEvaluator.Builder.create()
-            .setEvaluateAllCode(true).setStateTracker(tracker).build()
-        classReader.accept(
-            AllClassVisitor(
-                AllMethodVisitor(
-                    AllAttributeVisitor(
-                        AttributeNameFilter(Attribute.CODE, pe),
-                    ),
-                ),
-            ),
-        )
+    /**
+     * Loads the class file at the given path and tries to evaluate it.
+     */
+    private fun loadClass(path: Path) {
+        val classPool = ClassPool()
 
-        try {
-            val file = File(path, StateTracker.fromJson(tracker.json).codeAttributes)
-            addFile(file)
-        } catch (e: Exception) {
-            println("Error while parsing json file: $e")
-        }
+        val source = FileSource(path.toFile())
+
+        source.pumpDataEntries(ClassReader(false, false, false, false, null, ClassPoolFiller(classPool)))
+
+        val tracker = evaluate(classPool)
+        parseTracker(path, tracker)
     }
 
     fun loadFile(path: Path) {
@@ -172,6 +170,7 @@ class FilesViewModel {
                 FileTypes.JSON -> loadJson(path)
                 FileTypes.JAR -> loadJar(path)
                 FileTypes.APK -> loadApk(path)
+                FileTypes.CLASS -> loadClass(path)
             }
         } catch (e: IllegalArgumentException) {
             println("Unsupported file type: $e")
