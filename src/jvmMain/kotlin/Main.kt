@@ -25,6 +25,7 @@ import com.materialkolor.AnimatedDynamicMaterialTheme
 import ui.Controls
 import ui.fileview.FileViewer
 import ui.stateview.StateViewer
+import viewmodel.FileTypes
 import viewmodel.FilesViewModel
 import java.nio.file.Path
 import java.nio.file.Paths
@@ -53,7 +54,7 @@ fun App() {
         }
 
         // Accept json files
-        FilePicker(showFilePicker, fileExtensions = listOf("json", "jar")) { path ->
+        FilePicker(showFilePicker, fileExtensions = FileTypes.entries.map { it.extension }.toList()) { path ->
             showFilePicker = false
             if (path != null) {
                 viewModel.loadFile(Path.of(path.path))

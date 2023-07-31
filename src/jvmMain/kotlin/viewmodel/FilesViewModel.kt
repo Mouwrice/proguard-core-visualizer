@@ -49,13 +49,18 @@ class FilesViewModel {
                     val potentialViewModel = files[curPath]?.get(curClazz)?.get(curMethod)
                     potentialViewModel?.let { return@derivedStateOf it }
 
-                    val classPool = LoadUtil.getClassPoolFromJAR(path)
+                    val classPool = LoadUtil.readJar(path)
                     LoadUtil.evalSingleMethod(classPool, clazz, method)?.let {
                         val codeAttribute = it.codeAttributes[0]
                         val newViewModel = CodeAttributeViewModel(codeAttribute)
                         val clazzMap = files.getValue(path)
                         val methodMap = clazzMap.getValue(clazz)
-                        files = files.plus(Pair(path, clazzMap.plus(Pair(clazz, methodMap.plus(Pair(method, newViewModel))))))
+                        files = files.plus(
+                            Pair(
+                                path,
+                                clazzMap.plus(Pair(clazz, methodMap.plus(Pair(method, newViewModel)))),
+                            ),
+                        )
                         return@derivedStateOf newViewModel
                     }
                 }
@@ -65,7 +70,7 @@ class FilesViewModel {
     }
 
     /**
-     * Loads the json file at the given path and returns a new view model.
+     * Loads the json file at the given path and add it to the list of files.
      */
     private fun loadJson(path: Path) {
         try {
@@ -76,14 +81,22 @@ class FilesViewModel {
         }
     }
 
+    /**
+     * Loads every file type from the [FileTypes] enum except for [FileTypes.JSON].
+     */
     private fun loadJar(path: Path) {
-        files = files.plus(Pair(path, LoadUtil.classMethodMap(LoadUtil.getClassPoolFromJAR(path))))
+        files = files.plus(Pair(path, LoadUtil.classMethodMap(LoadUtil.readJar(path))))
     }
 
     fun loadFile(path: Path) {
-        when (path.extension) {
-            "json" -> loadJson(path)
-            "jar" -> loadJar(path)
+        try {
+            val type = FileTypes.valueOf(path.extension.uppercase())
+            when (type) {
+                FileTypes.JSON -> loadJson(path)
+                FileTypes.JAR, FileTypes.APK, FileTypes.CLASS, FileTypes.AAR, FileTypes.DEX, FileTypes.ZIP -> loadJar(path)
+            }
+        } catch (e: IllegalArgumentException) {
+            println("Unsupported file type: $e")
         }
     }
 }
