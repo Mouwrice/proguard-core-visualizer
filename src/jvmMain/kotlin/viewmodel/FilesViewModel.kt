@@ -4,9 +4,9 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import data.CodeAttributeRecord
 import data.LoadUtil
 import data.StateTracker
+import proguard.classfile.ClassPool
 import java.nio.file.Path
 import kotlin.io.path.extension
 
@@ -15,24 +15,30 @@ import kotlin.io.path.extension
  * When the currentCodeAttribute has not been loaded, this will load it for you
  */
 class FilesViewModel {
-    var files by mutableStateOf(emptyMap<Path, Map<String, Map<String, CodeAttributeViewModel?>>>())
+    /**
+     * Map of path to <pair of <ClassPool; map of class to <map of method to viewModel>>>
+     */
+    var files by mutableStateOf(emptyMap<Path, Pair<ClassPool?, Map<String, Map<String, CodeAttributeViewModel?>>>>())
         private set
 
+    /**
+     * Currently selected path
+     */
     var curPath by mutableStateOf<Path?>(null)
 
+    /**
+     * Currently selected clazz
+     */
     var curClazz by mutableStateOf<String?>(null)
 
+    /**
+     * Currently selected method
+     */
     var curMethod by mutableStateOf<String?>(null)
 
-    private fun addFile(file: Path, codeAttributes: List<CodeAttributeRecord>) {
-        val some = codeAttributes.groupBy { it.clazz }
-            .mapValues {
-                it.value.groupBy { map -> map.method }.mapValues { map -> CodeAttributeViewModel(map.value[0]) }
-            }
-
-        files = files.plus(Pair(file, some))
-    }
-
+    /**
+     * Close a file
+     */
     fun closeFile(path: Path) {
         files = files.toMutableMap().apply { remove(path) }
         if (curPath == path) {
@@ -42,26 +48,29 @@ class FilesViewModel {
         }
     }
 
+    /**
+     * Current viewModel, if not try to load it from the ClassPool
+     */
     val currentCodeAttributeViewModel by derivedStateOf {
         curPath?.let { path ->
             curClazz?.let { clazz ->
                 curMethod?.let { method ->
-                    val potentialViewModel = files[curPath]?.get(curClazz)?.get(curMethod)
-                    potentialViewModel?.let { return@derivedStateOf it }
+                    files[curPath]?.second?.get(curClazz)?.get(curMethod)?.let { return@derivedStateOf it }
 
-                    val classPool = LoadUtil.readJar(path)
-                    LoadUtil.evalSingleMethod(classPool, clazz, method)?.let {
-                        val codeAttribute = it.codeAttributes[0]
-                        val newViewModel = CodeAttributeViewModel(codeAttribute)
-                        val clazzMap = files.getValue(path)
-                        val methodMap = clazzMap.getValue(clazz)
-                        files = files.plus(
-                            Pair(
-                                path,
-                                clazzMap.plus(Pair(clazz, methodMap.plus(Pair(method, newViewModel)))),
-                            ),
-                        )
-                        return@derivedStateOf newViewModel
+                    files[curPath]?.first?.let { classPool ->
+                        LoadUtil.evalSingleMethod(classPool, clazz, method)?.let {
+                            val codeAttribute = it.codeAttributes[0]
+                            val newViewModel = CodeAttributeViewModel(codeAttribute)
+                            val clazzMap = files.getValue(path).second
+                            val methodMap = clazzMap.getValue(clazz)
+                            files = files.plus(
+                                Pair(
+                                    path,
+                                    Pair(classPool, clazzMap.plus(Pair(clazz, methodMap.plus(Pair(method, newViewModel))))),
+                                ),
+                            )
+                            return@derivedStateOf newViewModel
+                        }
                     }
                 }
             }
@@ -75,7 +84,13 @@ class FilesViewModel {
     private fun loadJson(path: Path) {
         try {
             val stateTracker = StateTracker.fromJson(path)
-            addFile(path, stateTracker.codeAttributes)
+
+            val some = stateTracker.codeAttributes.groupBy { it.clazz }
+                .mapValues {
+                    it.value.groupBy { map -> map.method }.mapValues { map -> CodeAttributeViewModel(map.value[0]) }
+                }
+
+            files = files.plus(Pair(path, Pair(null, some)))
         } catch (e: Exception) {
             println("Error while parsing json file: $e")
         }
@@ -85,7 +100,8 @@ class FilesViewModel {
      * Loads every file type from the [FileTypes] enum except for [FileTypes.JSON].
      */
     private fun loadJar(path: Path) {
-        files = files.plus(Pair(path, LoadUtil.classMethodMap(LoadUtil.readJar(path))))
+        val classPool = LoadUtil.readFile(path)
+        files = files.plus(Pair(path, Pair(classPool, LoadUtil.classMethodMap(classPool))))
     }
 
     fun loadFile(path: Path) {

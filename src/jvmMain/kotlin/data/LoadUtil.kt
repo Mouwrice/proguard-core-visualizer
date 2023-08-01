@@ -40,7 +40,7 @@ class LoadUtil {
          * @return a new class pool with the read classes.
          */
         @Throws(IOException::class)
-        fun readJar(
+        fun readFile(
             path: Path,
         ): ClassPool {
             val classPool = ClassPool()
