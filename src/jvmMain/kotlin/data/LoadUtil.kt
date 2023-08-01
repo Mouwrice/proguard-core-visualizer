@@ -12,8 +12,18 @@ import proguard.classfile.visitor.AllClassVisitor
 import proguard.classfile.visitor.AllMethodVisitor
 import proguard.classfile.visitor.ClassPoolFiller
 import proguard.classfile.visitor.FilteredClassVisitor
+import proguard.evaluation.BasicInvocationUnit
 import proguard.evaluation.PartialEvaluator
+import proguard.evaluation.ReferenceTracingValueFactory
 import proguard.evaluation.util.jsonPrinter.JsonPrinter
+import proguard.evaluation.value.ArrayReferenceValueFactory
+import proguard.evaluation.value.BasicValueFactory
+import proguard.evaluation.value.DetailedArrayValueFactory
+import proguard.evaluation.value.IdentifiedValueFactory
+import proguard.evaluation.value.ParticularValueFactory
+import proguard.evaluation.value.RangeValueFactory
+import proguard.evaluation.value.TypedReferenceValueFactory
+import proguard.evaluation.value.ValueFactory
 import proguard.io.ClassReader
 import proguard.io.DataEntryNameFilter
 import proguard.io.DataEntryReader
@@ -40,7 +50,7 @@ class LoadUtil {
          * @return a new class pool with the read classes.
          */
         @Throws(IOException::class)
-        fun readJar(
+        fun readFile(
             path: Path,
         ): ClassPool {
             val classPool = ClassPool()
@@ -122,9 +132,14 @@ class LoadUtil {
             return classMap
         }
 
-        fun evalSingleMethod(classPool: ClassPool, clazz: String, method: String): StateTracker? {
+        fun evalSingleMethod(classPool: ClassPool, clazz: String, method: String, valueFactoryOption: ValueFactoryOption): StateTracker? {
             val tracker = JsonPrinter()
-            val pe = PartialEvaluator.Builder.create().setEvaluateAllCode(true).setStateTracker(tracker).build()
+            val valueFactory = valueFactoryOption.toValueFactory()
+            val pe = PartialEvaluator.Builder.create()
+                .setValueFactory(valueFactory)
+                .setInvocationUnit(BasicInvocationUnit(valueFactory))
+                .setStateTracker(tracker)
+                .build()
             classPool.accept(
                 FilteredClassVisitor(
                     clazz,
@@ -155,5 +170,81 @@ class LoadUtil {
             }
             return null
         }
+    }
+
+    enum class ValueFactoryOption {
+        Basic {
+            override fun toString(): String {
+                return "Basic Value Factory"
+            }
+
+            override fun toValueFactory(): ValueFactory {
+                return BasicValueFactory()
+            }
+        },
+        Particular {
+            override fun toString(): String {
+                return "Particular Value Factory"
+            }
+
+            override fun toValueFactory(): ValueFactory {
+                return ParticularValueFactory()
+            }
+        },
+        Range {
+            override fun toString(): String {
+                return "Range Value Factory"
+            }
+
+            override fun toValueFactory(): ValueFactory {
+                return RangeValueFactory()
+            }
+        },
+        ArrayReference {
+            override fun toString(): String {
+                return "Array Reference Value Factory"
+            }
+
+            override fun toValueFactory(): ValueFactory {
+                return ArrayReferenceValueFactory()
+            }
+        },
+        Identified {
+            override fun toString(): String {
+                return "Identified Value Factory"
+            }
+
+            override fun toValueFactory(): ValueFactory {
+                return IdentifiedValueFactory()
+            }
+        },
+        ReferenceTracing {
+            override fun toString(): String {
+                return "Reference Tracing Value Factory"
+            }
+
+            override fun toValueFactory(): ValueFactory {
+                return ReferenceTracingValueFactory(BasicValueFactory())
+            }
+        },
+        TypedReference {
+            override fun toString(): String {
+                return "Typed Reference Value Factory"
+            }
+
+            override fun toValueFactory(): ValueFactory {
+                return TypedReferenceValueFactory()
+            }
+        },
+        DetailedArrayReference {
+            override fun toString(): String {
+                return "Detailed Array Reference Value Factory"
+            }
+
+            override fun toValueFactory(): ValueFactory {
+                return DetailedArrayValueFactory()
+            }
+        }, ;
+        abstract fun toValueFactory(): ValueFactory
     }
 }

@@ -59,7 +59,7 @@ fun TreeView(viewModel: FilesViewModel, modifier: Modifier = Modifier) {
     LaunchedEffect(viewModel.files) {
         val map: MutableMap<Path, Pair<Boolean, MutableMap<String, Boolean>>> = HashMap()
         viewModel.files.forEach { (path, clazzMap) ->
-            clazzMap.forEach { (clazz, _) ->
+            clazzMap.second.forEach { (clazz, _) ->
                 map.getOrPut(path) { Pair(expandedState[path]?.first ?: false, HashMap()) }.second[clazz] =
                     expandedState[path]?.second?.get(clazz) ?: false
             }
@@ -96,7 +96,7 @@ fun TreeView(viewModel: FilesViewModel, modifier: Modifier = Modifier) {
                         }
                     }
                     if (pathIsOpen == true) {
-                        clazzMap.forEach { (clazz, methodList) ->
+                        clazzMap.second.forEach { (clazz, methodList) ->
                             val clazzIsOpen = expandedState[path]?.second?.get(clazz)
 
                             item {
