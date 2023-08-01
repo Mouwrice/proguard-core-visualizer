@@ -36,12 +36,11 @@ class FilesViewModel {
      */
     var curMethod by mutableStateOf<String?>(null)
 
-    var evaluationMethod by mutableStateOf(LoadUtil.ValueFactoryOption.Basic)
+    var valueFactoryOption by mutableStateOf(LoadUtil.ValueFactoryOption.Basic)
         private set
 
-    fun setEvalMethodAndUpdate(evaluationMethod: LoadUtil.ValueFactoryOption) {
-        this.evaluationMethod = evaluationMethod
-
+    fun setEvalFactoryAndUpdate(evaluationMethod: LoadUtil.ValueFactoryOption) {
+        this.valueFactoryOption = evaluationMethod
         reEvalCurMethod()
     }
 
@@ -62,7 +61,7 @@ class FilesViewModel {
             curClazz?.let { clazz ->
                 curMethod?.let { method ->
                     files[path]?.first?.let { classPool ->
-                        LoadUtil.evalSingleMethod(classPool, clazz, method, evaluationMethod)?.let {
+                        LoadUtil.evalSingleMethod(classPool, clazz, method, valueFactoryOption)?.let {
                             val codeAttribute = it.codeAttributes[0]
                             val newViewModel = CodeAttributeViewModel(codeAttribute)
                             val clazzMap = files.getValue(path).second

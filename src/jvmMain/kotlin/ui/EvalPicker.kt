@@ -34,7 +34,7 @@ fun EvalPicker(viewModel: FilesViewModel) {
                 if (!menuOpened) {
                     Icon(Icons.Rounded.KeyboardArrowRight, contentDescription = "Drawer handle is closed")
                 }
-                Text(if (buttonEnabled) viewModel.evaluationMethod.toString() else "Cannot reevaluate")
+                Text(if (buttonEnabled) viewModel.valueFactoryOption.toString() else "Cannot reevaluate")
             }
         }
         DropdownMenu(menuOpened, { menuOpened = false }) {
@@ -45,7 +45,7 @@ fun EvalPicker(viewModel: FilesViewModel) {
                     },
                     onClick = {
                         menuOpened = false
-                        viewModel.setEvalMethodAndUpdate(evalOption)
+                        viewModel.setEvalFactoryAndUpdate(evalOption)
                     },
                 )
             }
