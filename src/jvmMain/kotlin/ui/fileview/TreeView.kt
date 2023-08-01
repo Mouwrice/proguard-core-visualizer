@@ -52,15 +52,13 @@ import java.util.*
 
 @Composable
 fun TreeView(viewModel: FilesViewModel, modifier: Modifier = Modifier) {
-    val pathMap = viewModel.files
-
     // Map of Path to <path open; Map of <Clazz; clazz open>>
     var expandedState by remember { mutableStateOf(emptyMap<Path, Pair<Boolean, SortedMap<String, Boolean>>>().toSortedMap()) }
 
     // Recompute expandedState if pathMap gets changed
-    LaunchedEffect(pathMap) {
+    LaunchedEffect(viewModel.files) {
         val map: MutableMap<Path, Pair<Boolean, MutableMap<String, Boolean>>> = HashMap()
-        pathMap.forEach { (path, clazzMap) ->
+        viewModel.files.forEach { (path, clazzMap) ->
             clazzMap.forEach { (clazz, _) ->
                 map.getOrPut(path) { Pair(expandedState[path]?.first ?: false, HashMap()) }.second[clazz] =
                     expandedState[path]?.second?.get(clazz) ?: false
@@ -75,7 +73,7 @@ fun TreeView(viewModel: FilesViewModel, modifier: Modifier = Modifier) {
     Box(modifier = modifier) {
         Box(modifier = Modifier.horizontalScroll(horizontalState)) {
             LazyColumn(state = verticalState) {
-                pathMap.forEach { (path, clazzMap) ->
+                viewModel.files.forEach { (path, clazzMap) ->
                     val pathIsOpen = expandedState[path]?.first
 
                     item {
@@ -83,7 +81,9 @@ fun TreeView(viewModel: FilesViewModel, modifier: Modifier = Modifier) {
                             path.toString(),
                             4.dp,
                             if (pathIsOpen == true) IconMode.Open else IconMode.Closed,
-
+                            closeCallback = {
+                                viewModel.closeFile(path)
+                            },
                         ) {
                             expandedState[path]?.let { clazzInfo ->
                                 expandedState = expandedState.plus(
@@ -180,6 +180,7 @@ fun node(
     indentation: Dp,
     iconMode: IconMode,
     modifier: Modifier = Modifier,
+    closeCallback: (() -> Unit)? = null,
     onCLick: () -> Unit,
 ) {
     val backgroundColor = if (iconMode == IconMode.Selected) {
@@ -228,23 +229,26 @@ fun node(
             )
         }
 
-        // An IconButton is currently fixed to 48.dp, so we need to make our own.
-        // https://github.com/androidx/androidx/blob/androidx-main/compose/material/material/src/commonMain/kotlin/androidx/compose/material/IconButton.kt
-        Box(
-            modifier = Modifier.size(16.dp)
-                .clickable(
-                    role = androidx.compose.ui.semantics.Role.Button,
-                    interactionSource = MutableInteractionSource(),
-                    indication = rememberRipple(bounded = false, radius = 12.dp),
-                ) {
-                },
-            contentAlignment = Alignment.Center,
-        ) {
-            Icon(
-                Icons.Default.Close,
-                tint = MaterialTheme.colorScheme.error,
-                contentDescription = "Close file",
-            )
+        if (closeCallback != null) {
+            // An IconButton is currently fixed to 48.dp, so we need to make our own.
+            // https://github.com/androidx/androidx/blob/androidx-main/compose/material/material/src/commonMain/kotlin/androidx/compose/material/IconButton.kt
+            Box(
+                modifier = Modifier.size(16.dp).padding(start = 4.dp)
+                    .clickable(
+                        role = androidx.compose.ui.semantics.Role.Button,
+                        interactionSource = MutableInteractionSource(),
+                        indication = rememberRipple(bounded = false, radius = 12.dp),
+                    ) {
+                        closeCallback()
+                    },
+                contentAlignment = Alignment.Center,
+            ) {
+                Icon(
+                    Icons.Default.Close,
+                    tint = MaterialTheme.colorScheme.error,
+                    contentDescription = "Close file",
+                )
+            }
         }
     }
 }

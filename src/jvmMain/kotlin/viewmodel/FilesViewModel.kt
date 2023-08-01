@@ -34,7 +34,7 @@ class FilesViewModel {
     }
 
     fun closeFile(path: Path) {
-        files = files.minus(path)
+        files = files.toMutableMap().apply { remove(path) }
         if (curPath == path) {
             curPath = null
             curClazz = null
