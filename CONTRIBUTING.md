@@ -62,6 +62,14 @@ More information is provided on their GitHub page.
 Since this is a desktop application, it needs to be packaged into the corresponding format required for the targeted platforms.
 [Conveyor](https://conveyor.hydraulic.dev/10.1/) is a tool that automates this process and has been integrated into the workflow by packaging and deploying the application after a release has been published.
 
+The following two properties in the [conveyor.conf](conveyor.conf) file are used to configure the deployment:
+```properties
+# Where the packages are hosted, packages use this link to check whether updates are available.
+site.base-url = "https://mouwrice.github.io/proguard-core-visualizer/"
+# The repository url, needs to be set as conveyor is license free for open source projects.
+vcs-url = "https://github.com/Mouwrice/proguard-core-visualizer"
+```
+
 #### GitHub pages
 
 Note that conveyor can also create releases, but it is not used as Release Please can do it better.
