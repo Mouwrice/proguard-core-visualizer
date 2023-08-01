@@ -3,40 +3,46 @@ package ui
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.material3.Button
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import viewmodel.CodeAttributeViewModel
 import viewmodel.Display
+import viewmodel.FilesViewModel
 
 @Composable
-fun Controls(viewModel: CodeAttributeViewModel?, setShowFilePicker: (Boolean) -> Unit) {
+fun Controls(viewModel: FilesViewModel) {
     Row(
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         modifier = Modifier.wrapContentSize(align = Alignment.Companion.CenterStart, unbounded = true),
     ) {
-        Button(onClick = { setShowFilePicker(true) }) {
-            Text("Open file")
-        }
+        OpenFileButton(viewModel)
+        EvalPicker(viewModel)
 
-        OutlinedButton(enabled = viewModel != null && viewModel.hasPrevious, onClick = { viewModel?.previous() }) {
+        val currentCodeViewModel = viewModel.currentCodeAttributeViewModel
+        OutlinedButton(
+            enabled = currentCodeViewModel != null && currentCodeViewModel.hasPrevious,
+            onClick = { currentCodeViewModel?.previous() },
+        ) {
             Text("Previous")
         }
 
-        OutlinedButton(enabled = viewModel != null && viewModel.hasNext, onClick = {
-            viewModel?.next()
-        }) {
+        OutlinedButton(
+            enabled = currentCodeViewModel != null && currentCodeViewModel.hasNext,
+            onClick = { currentCodeViewModel?.next() },
+        ) {
             Text("Next")
         }
 
-        OutlinedButton(enabled = viewModel != null, onClick = {
-            viewModel?.switchDisplay()
-        }) {
-            when (viewModel?.display) {
+        OutlinedButton(
+            enabled = currentCodeViewModel != null,
+            onClick = { currentCodeViewModel?.switchDisplay() },
+        ) {
+            when (currentCodeViewModel?.display) {
                 Display.EVALUATIONS -> Text("Show results")
                 Display.RESULTS -> Text("Show evaluations")
                 else -> { Text("Show results") }

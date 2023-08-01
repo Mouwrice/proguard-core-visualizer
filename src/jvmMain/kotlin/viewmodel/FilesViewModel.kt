@@ -36,6 +36,14 @@ class FilesViewModel {
      */
     var curMethod by mutableStateOf<String?>(null)
 
+    var valueFactoryOption by mutableStateOf(LoadUtil.ValueFactoryOption.Basic)
+        private set
+
+    fun setEvalFactoryAndUpdate(evaluationMethod: LoadUtil.ValueFactoryOption) {
+        this.valueFactoryOption = evaluationMethod
+        reEvalCurMethod()
+    }
+
     /**
      * Close a file
      */
@@ -48,17 +56,12 @@ class FilesViewModel {
         }
     }
 
-    /**
-     * Current viewModel, if not try to load it from the ClassPool
-     */
-    val currentCodeAttributeViewModel by derivedStateOf {
+    private fun reEvalCurMethod(): CodeAttributeViewModel? {
         curPath?.let { path ->
             curClazz?.let { clazz ->
                 curMethod?.let { method ->
-                    files[curPath]?.second?.get(curClazz)?.get(curMethod)?.let { return@derivedStateOf it }
-
-                    files[curPath]?.first?.let { classPool ->
-                        LoadUtil.evalSingleMethod(classPool, clazz, method)?.let {
+                    files[path]?.first?.let { classPool ->
+                        LoadUtil.evalSingleMethod(classPool, clazz, method, valueFactoryOption)?.let {
                             val codeAttribute = it.codeAttributes[0]
                             val newViewModel = CodeAttributeViewModel(codeAttribute)
                             val clazzMap = files.getValue(path).second
@@ -66,16 +69,27 @@ class FilesViewModel {
                             files = files.plus(
                                 Pair(
                                     path,
-                                    Pair(classPool, clazzMap.plus(Pair(clazz, methodMap.plus(Pair(method, newViewModel))))),
+                                    Pair(
+                                        classPool,
+                                        clazzMap.plus(Pair(clazz, methodMap.plus(Pair(method, newViewModel)))),
+                                    ),
                                 ),
                             )
-                            return@derivedStateOf newViewModel
+                            return newViewModel
                         }
                     }
                 }
             }
         }
-        return@derivedStateOf null
+        return null
+    }
+
+    /**
+     * Current viewModel, if not try to load it from the ClassPool
+     */
+    val currentCodeAttributeViewModel by derivedStateOf {
+        files[curPath]?.second?.get(curClazz)?.get(curMethod)?.let { return@derivedStateOf it }
+        return@derivedStateOf reEvalCurMethod()
     }
 
     /**
