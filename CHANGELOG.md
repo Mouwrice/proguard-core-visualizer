@@ -1,5 +1,19 @@
 # Changelog
 
+## 0.4.0 (2023-08-01)
+
+## What's Changed
+* feat: lazy evaluation by @jitsedesmet in https://github.com/Mouwrice/proguard-core-visualizer/pull/77
+* feat: support multiple file formats by @Mouwrice in https://github.com/Mouwrice/proguard-core-visualizer/pull/81
+* feat: only evaluate method when clicked on by @jitsedesmet in https://github.com/Mouwrice/proguard-core-visualizer/pull/82
+* refactor: keeping classpool in memory by @jitsedesmet in https://github.com/Mouwrice/proguard-core-visualizer/pull/83
+* ci: set the toolchain to be vendor specific to support macOS builds with conveyor by @Mouwrice in https://github.com/Mouwrice/proguard-core-visualizer/pull/86
+* feat: working implementation for picking value factory by @jitsedesmet in https://github.com/Mouwrice/proguard-core-visualizer/pull/84
+* fix: add icon to the packaged applications by @Mouwrice in https://github.com/Mouwrice/proguard-core-visualizer/pull/87
+
+
+**Full Changelog**: https://github.com/Mouwrice/proguard-core-visualizer/compare/v0.3.3...v0.4.0
+
 ## 0.3.3 (2023-07-30)
 
 ## What's Changed
