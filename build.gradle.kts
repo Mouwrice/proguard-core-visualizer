@@ -15,13 +15,19 @@ repositories {
     maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
 }
 
+java {
+    toolchain {
+        // Java 11 is the minimum supported version for Compose Desktop.
+        // Higher versions seem to not work for the moment.
+        languageVersion.set(JavaLanguageVersion.of(11))
+        vendor.set(JvmVendorSpec.MICROSOFT)
+    }
+}
+
 kotlin {
     jvm {
         withJava()
     }
-    // Java 11 is the minimum supported version for Compose Desktop.
-    // Higher versions seem to not work for the moment.
-    jvmToolchain(11)
 
     sourceSets {
         val jvmMain by getting {
