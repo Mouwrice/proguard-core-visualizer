@@ -3,7 +3,6 @@ package ui.fileview
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -13,10 +12,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.unit.dp
-import cafe.adriel.bonsai.core.Bonsai
-import cafe.adriel.bonsai.core.BonsaiStyle
 import ui.codeview.CodeViewer
 import ui.codeview.MethodHeader
 import viewmodel.FilesViewModel
@@ -33,28 +29,7 @@ fun FileViewer(viewModel: FilesViewModel) {
             shape = MaterialTheme.shapes.medium,
         ).clip(MaterialTheme.shapes.medium),
     ) {
-        val tree = MethodTree(viewModel.files.mapValues { it.value.mapValues { inner -> inner.value.keys.toList() } }) { viewModel.closeFile(it) }
-        Bonsai(
-            tree = tree,
-            style = BonsaiStyle(
-                nodeCollapsedIconColorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onSurface),
-                nodeExpandedIconColorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onSurface),
-                toggleIconColorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onSurface),
-                nodeSelectedBackgroundColor = MaterialTheme.colorScheme.primaryContainer,
-                nodePadding = PaddingValues(horizontal = 2.dp, vertical = 1.dp),
-            ),
-            modifier = Modifier.fillMaxWidth(0.4f).fillMaxHeight(),
-            onClick = { node ->
-                tree.clearSelection()
-                tree.toggleExpansion(node)
-                tree.selectNode(node)
-                node.content?.let {
-                    viewModel.curPath = it.first
-                    viewModel.curClazz = it.second.first
-                    viewModel.curMethod = it.second.second
-                }
-            },
-        )
+        TreeView(viewModel, Modifier.fillMaxWidth(0.4f).fillMaxHeight())
 
         Divider(
             thickness = 1.dp,
