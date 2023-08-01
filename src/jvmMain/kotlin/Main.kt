@@ -37,10 +37,6 @@ fun App() {
     val viewModel = rememberSaveable { FilesViewModel() }
     var showFilePicker by remember { mutableStateOf(false) }
 
-    if (viewModel.files.isEmpty()) {
-        viewModel.loadFile(Path.of("proguard-core-9.0.11.jar"))
-    }
-
     Box(Modifier.fillMaxSize().padding(all = 16.dp)) {
         Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
             Controls(viewModel.currentCodeAttributeViewModel) {
