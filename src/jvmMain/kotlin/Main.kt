@@ -19,13 +19,11 @@ import androidx.compose.ui.res.loadImageBitmap
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
-import com.darkrockstudios.libraries.mpfilepicker.FilePicker
 import com.jthemedetecor.OsThemeDetector
 import com.materialkolor.AnimatedDynamicMaterialTheme
 import ui.Controls
 import ui.fileview.FileViewer
 import ui.stateview.StateViewer
-import viewmodel.FileTypes
 import viewmodel.FilesViewModel
 import java.nio.file.Path
 import java.nio.file.Paths
@@ -35,25 +33,17 @@ import kotlin.io.path.inputStream
 @Composable
 fun App() {
     val viewModel = rememberSaveable { FilesViewModel() }
-    var showFilePicker by remember { mutableStateOf(false) }
+    if (viewModel.files.isEmpty()) {
+        viewModel.loadFile(Path.of("proguard-core-9.0.11.jar"))
+    }
 
     Box(Modifier.fillMaxSize().padding(all = 16.dp)) {
         Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            Controls(viewModel.currentCodeAttributeViewModel) {
-                showFilePicker = it
-            }
+            Controls(viewModel)
 
             Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
                 FileViewer(viewModel)
                 StateViewer(viewModel.currentCodeAttributeViewModel)
-            }
-        }
-
-        // Accept json files
-        FilePicker(showFilePicker, fileExtensions = FileTypes.entries.map { it.extension }.toList()) { path ->
-            showFilePicker = false
-            if (path != null) {
-                viewModel.loadFile(Path.of(path.path))
             }
         }
     }
