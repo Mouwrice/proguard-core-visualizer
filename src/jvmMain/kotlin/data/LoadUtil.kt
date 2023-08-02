@@ -15,7 +15,7 @@ import proguard.classfile.visitor.FilteredClassVisitor
 import proguard.evaluation.BasicInvocationUnit
 import proguard.evaluation.PartialEvaluator
 import proguard.evaluation.ReferenceTracingValueFactory
-import proguard.evaluation.util.jsonPrinter.JsonPrinter
+import proguard.evaluation.util.jsonprinter.JsonPrinter
 import proguard.evaluation.value.ArrayReferenceValueFactory
 import proguard.evaluation.value.BasicValueFactory
 import proguard.evaluation.value.DetailedArrayValueFactory
@@ -132,7 +132,7 @@ class LoadUtil {
             return classMap
         }
 
-        fun evalSingleMethod(classPool: ClassPool, clazz: String, method: String, valueFactoryOption: ValueFactoryOption): StateTracker? {
+        fun evaluateMethod(classPool: ClassPool, clazz: String, method: String, valueFactoryOption: ValueFactoryOption): String {
             val tracker = JsonPrinter()
             val valueFactory = valueFactoryOption.toValueFactory()
             val pe = PartialEvaluator.Builder.create()
@@ -163,8 +163,12 @@ class LoadUtil {
                     ),
                 ),
             )
+            return tracker.json
+        }
+
+        fun trackerFromMethod(classPool: ClassPool, clazz: String, method: String, valueFactoryOption: ValueFactoryOption): StateTracker? {
             try {
-                return StateTracker.fromJson(tracker.json)
+                return StateTracker.fromJson(evaluateMethod(classPool, clazz, method, valueFactoryOption))
             } catch (e: Exception) {
                 println("Error while parsing json file: $e")
             }

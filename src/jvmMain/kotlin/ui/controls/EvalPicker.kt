@@ -1,4 +1,4 @@
-package ui
+package ui.controls
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -20,14 +20,14 @@ import viewmodel.FilesViewModel
 
 @Composable
 fun EvalPicker(viewModel: FilesViewModel) {
-    Box() {
+    Box {
         var menuOpened by remember { mutableStateOf(false) }
         val buttonEnabled = viewModel.files[viewModel.curPath]?.first != null
         OutlinedButton(
             enabled = buttonEnabled,
             onClick = { menuOpened = true },
         ) {
-            Row() {
+            Row {
                 if (menuOpened) {
                     Icon(Icons.Rounded.KeyboardArrowDown, contentDescription = "Drawer handle is open")
                 }
