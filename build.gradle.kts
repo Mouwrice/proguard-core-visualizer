@@ -39,7 +39,7 @@ kotlin {
                 implementation(libs.google.gson)
                 implementation(libs.materialkolor)
                 implementation(libs.dansoftowner.jthemedetecor)
-                implementation("com.github.Guardsquare.proguard-core:proguard-core:PR104-SNAPSHOT")
+                implementation("com.github.Guardsquare.proguard-core:proguard-core:master-SNAPSHOT")
                 implementation(libs.proguard.core.android)
             }
         }
@@ -78,8 +78,4 @@ configurations.all {
     attributes {
         attribute(Attribute.of("ui", String::class.java), "awt")
     }
-
-    // Ensure Gradle always picks up the ‘freshest’ version of the build.
-    // Can be removed once "com.github.Guardsquare:proguard-core:PR104-SNAPSHOT" is released.
-    resolutionStrategy.cacheChangingModulesFor(0, TimeUnit.MINUTES)
 }
