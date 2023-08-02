@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.5.0 (2023-08-02)
+
+## What's Changed
+* ci: force gradle to always use the latest snapshot version by @Mouwrice in https://github.com/Mouwrice/proguard-core-visualizer/pull/93
+* feat: save button by @jitsedesmet in https://github.com/Mouwrice/proguard-core-visualizer/pull/91
+* fix: navigate to specific evaluation functionality restored by @jitsedesmet in https://github.com/Mouwrice/proguard-core-visualizer/pull/92
+
+
+**Full Changelog**: https://github.com/Mouwrice/proguard-core-visualizer/compare/v0.4.0...v0.5.0
+
 ## 0.4.0 (2023-08-01)
 
 ## What's Changed
