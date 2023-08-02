@@ -86,9 +86,9 @@ fun InstructionViewer(
 
             viewModel.codeAttribute.blockEvaluations.withIndex().flatMap { blockIndex ->
                 // Filter: match instruction
-                blockIndex.value.evaluations.filter { evaluationIndex ->
-                    evaluationIndex.instructionOffset == instruction.offset
-                }.withIndex().map { evaluationIndex ->
+                blockIndex.value.evaluations.withIndex().filter { evaluationIndex ->
+                    evaluationIndex.value.instructionOffset == instruction.offset
+                }.map { evaluationIndex ->
                     // Pair of <Block index; evaluation index> with a pair containing the evaluation
                     Pair(Pair(blockIndex.index, evaluationIndex.index), evaluationIndex.value)
                 }
