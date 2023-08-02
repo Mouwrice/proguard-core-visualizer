@@ -39,7 +39,7 @@ kotlin {
                 implementation(libs.google.gson)
                 implementation(libs.materialkolor)
                 implementation(libs.dansoftowner.jthemedetecor)
-                implementation("com.github.Guardsquare:proguard-core:PR104-SNAPSHOT")
+                implementation("com.github.Guardsquare.proguard-core:proguard-core:PR104-SNAPSHOT")
                 implementation(libs.proguard.core.android)
             }
         }
@@ -57,6 +57,11 @@ dependencies {
 compose.desktop {
     application {
         mainClass = "MainKt"
+
+        nativeDistributions {
+            vendor = "GuardSquare"
+            description = " A Compose Multiplatform Desktop application for visualizing the ProGuardCORE jbc evaluation "
+        }
     }
 }
 
@@ -67,10 +72,14 @@ configure<org.jlleitschuh.gradle.ktlint.KtlintExtension> {
     ignoreFailures.set(true)
 }
 
-// Work around temporary Compose bugs.
-// https://github.com/JetBrains/compose-jb/issues/1404#issuecomment-1146894731
 configurations.all {
+    // Work around temporary Compose bugs.
+    // https://github.com/JetBrains/compose-jb/issues/1404#issuecomment-1146894731
     attributes {
         attribute(Attribute.of("ui", String::class.java), "awt")
     }
+
+    // Ensure Gradle always picks up the ‘freshest’ version of the build.
+    // Can be removed once "com.github.Guardsquare:proguard-core:PR104-SNAPSHOT" is released.
+    resolutionStrategy.cacheChangingModulesFor(0, TimeUnit.MINUTES)
 }
