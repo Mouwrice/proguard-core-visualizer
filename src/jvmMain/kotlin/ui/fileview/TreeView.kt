@@ -136,11 +136,11 @@ fun TreeView(viewModel: FilesViewModel, modifier: Modifier = Modifier) {
                         }
                     }
                     if (pathInfo.expanded) {
-                        fun branch(clazzState: ClazzBranchState, registerChange: (ClazzBranchState) -> Unit) {
+                        fun branch(clazzState: ClazzBranchState, indentation: Dp, registerChange: (ClazzBranchState) -> Unit) {
                             item {
                                 node(
                                     clazzState.name,
-                                    12.dp,
+                                    indentation,
                                     if (clazzState.expanded) IconMode.Open else IconMode.Closed,
                                 ) {
                                     registerChange(
@@ -154,11 +154,23 @@ fun TreeView(viewModel: FilesViewModel, modifier: Modifier = Modifier) {
                                 }
                             }
                             if (clazzState.expanded) {
+                                clazzState.subPackage.forEach { (_, subPackage) ->
+                                    branch(subPackage, indentation + 12.dp) {
+                                        registerChange(
+                                            ClazzBranchState(
+                                                clazzState.name,
+                                                clazzState.expanded,
+                                                clazzState.subPackage.plus(Pair(subPackage.name, it)),
+                                                clazzState.methods,
+                                            ),
+                                        )
+                                    }
+                                }
                                 clazzState.methods.forEach { (_, methodInfo) ->
                                     item {
                                         node(
                                             methodInfo.method.name,
-                                            24.dp,
+                                            indentation + 12.dp,
                                             if (viewModel.curPath == methodInfo.path && viewModel.curClazz == methodInfo.clazz && viewModel.curMethod == methodInfo.method) {
                                                 IconMode.Selected
                                             } else {
@@ -174,7 +186,7 @@ fun TreeView(viewModel: FilesViewModel, modifier: Modifier = Modifier) {
                             }
                         }
                         pathInfo.classState.forEach { (_, clazzState) ->
-                            branch(clazzState) {
+                            branch(clazzState, 12.dp) {
                                 treeState = treeState.plus(
                                     Pair(
                                         pathInfo.path.path,
