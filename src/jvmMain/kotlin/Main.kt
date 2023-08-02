@@ -25,6 +25,7 @@ import ui.Controls
 import ui.fileview.FileViewer
 import ui.stateview.StateViewer
 import viewmodel.FilesViewModel
+import java.nio.file.Path
 import java.nio.file.Paths
 import kotlin.io.path.exists
 import kotlin.io.path.inputStream
@@ -32,6 +33,9 @@ import kotlin.io.path.inputStream
 @Composable
 fun App() {
     val viewModel = rememberSaveable { FilesViewModel() }
+    if (viewModel.files.isEmpty()) {
+        viewModel.loadFile(Path.of("proguard-core-9.0.11.jar"))
+    }
 
     Box(Modifier.fillMaxSize().padding(all = 16.dp)) {
         Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {

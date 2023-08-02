@@ -51,14 +51,40 @@ import data.OwnClazz
 import data.OwnMethod
 import viewmodel.FilesViewModel
 import java.nio.file.Path
-import java.util.SortedMap
+
+private data class MethodInfo(val path: LoadedPath, val clazz: OwnClazz, val method: OwnMethod)
+private data class ClazzBranchState(val name: String, val expanded: Boolean, val subPackage: Map<String, ClazzBranchState>, val methods: Map<String, MethodInfo>)
+private data class PathExpandedInfo(val path: LoadedPath, val expanded: Boolean, val classState: Map<String, ClazzBranchState>)
+
+private fun sortByPackage(classes: Map<String, MethodInfo>): Map<String, ClazzBranchState> {
+    fun inner(classes: List<Pair<List<String>, MethodInfo>>): Map<String, ClazzBranchState> {
+        return classes.groupBy { it.first[0] }.map { (packageName, entries) ->
+            Pair(
+                packageName,
+                ClazzBranchState(
+                    packageName,
+                    false,
+                    inner(
+                        entries
+                            .filter { it.first.size > 1 }
+                            .map {
+                                Pair(
+                                    it.first.slice(IntRange(1, it.first.size - 1)),
+                                    it.second,
+                                )
+                            },
+                    ),
+                    entries
+                        .filter { it.first.size == 1 }.associate { Pair(it.first[0], it.second) },
+                ),
+            )
+        }.toMap()
+    }
+    return inner(classes.map { Pair(it.key.split("/"), it.value) })
+}
 
 @Composable
 fun TreeView(viewModel: FilesViewModel, modifier: Modifier = Modifier) {
-    data class MethodInfo(val path: LoadedPath, val clazz: OwnClazz, val method: OwnMethod)
-    data class ClazzBranchState(val name: String, val expanded: Boolean, val subPackage: SortedMap<String, ClazzBranchState>, val methods: List<MethodInfo>)
-    data class PathExpandedInfo(val path: LoadedPath, val expanded: Boolean, val classState: SortedMap<String, ClazzBranchState>)
-
     // Map of Path to <path open; Map of <Clazz; clazz open>>
     var treeState by remember { mutableStateOf(emptyMap<Path, PathExpandedInfo>().toSortedMap()) }
 
@@ -68,14 +94,11 @@ fun TreeView(viewModel: FilesViewModel, modifier: Modifier = Modifier) {
             PathExpandedInfo(
                 loadedPath,
                 treeState[loadedPath.path]?.expanded ?: false,
-                loadedPath.classMap.mapValues { (_, clazz) ->
-                    ClazzBranchState(
-                        clazz.name,
-                        treeState[loadedPath.path]?.classState?.get(clazz.name)?.expanded ?: false,
-                        emptyMap<String, ClazzBranchState>().toSortedMap(),
-                        treeState[loadedPath.path]?.classState?.get(clazz.name)?.methods ?: clazz.methodMap.values.map { MethodInfo(loadedPath, clazz, it) }.sortedBy { it.method.name },
-                    )
-                }.toSortedMap(),
+                sortByPackage(
+                    loadedPath.classMap.flatMap { (key, clazz) ->
+                        clazz.methodMap.values.map { Pair(key, MethodInfo(loadedPath, clazz, it)) }
+                    }.toMap(),
+                ),
             )
         }.toSortedMap()
     }
@@ -113,53 +136,60 @@ fun TreeView(viewModel: FilesViewModel, modifier: Modifier = Modifier) {
                         }
                     }
                     if (pathInfo.expanded) {
-                        pathInfo.classState.forEach { (_, clazzState) ->
+                        fun branch(clazzState: ClazzBranchState, registerChange: (ClazzBranchState) -> Unit) {
                             item {
                                 node(
                                     clazzState.name,
                                     12.dp,
                                     if (clazzState.expanded) IconMode.Open else IconMode.Closed,
                                 ) {
-                                    treeState = treeState.plus(
-                                        Pair(
-                                            pathInfo.path.path,
-                                            PathExpandedInfo(
-                                                pathInfo.path,
-                                                pathInfo.expanded,
-                                                pathInfo.classState.plus(
-                                                    Pair(
-                                                        clazzState.name,
-                                                        ClazzBranchState(
-                                                            clazzState.name,
-                                                            !clazzState.expanded,
-                                                            clazzState.subPackage,
-                                                            clazzState.methods,
-                                                        ),
-                                                    ),
-                                                ).toSortedMap(),
-                                            ),
+                                    registerChange(
+                                        ClazzBranchState(
+                                            clazzState.name,
+                                            !clazzState.expanded,
+                                            clazzState.subPackage,
+                                            clazzState.methods,
                                         ),
-                                    ).toSortedMap()
+                                    )
                                 }
                             }
                             if (clazzState.expanded) {
-                                clazzState.methods.forEach { methodInfo ->
+                                clazzState.methods.forEach { (_, methodInfo) ->
                                     item {
                                         node(
                                             methodInfo.method.name,
                                             24.dp,
-                                            if (viewModel.curPath == pathInfo.path && viewModel.curClazz == methodInfo.clazz && viewModel.curMethod == methodInfo.method) {
+                                            if (viewModel.curPath == methodInfo.path && viewModel.curClazz == methodInfo.clazz && viewModel.curMethod == methodInfo.method) {
                                                 IconMode.Selected
                                             } else {
                                                 IconMode.Unselected
                                             },
                                         ) {
-                                            viewModel.curPath = pathInfo.path
+                                            viewModel.curPath = methodInfo.path
                                             viewModel.curClazz = methodInfo.clazz
                                             viewModel.curMethod = methodInfo.method
                                         }
                                     }
                                 }
+                            }
+                        }
+                        pathInfo.classState.forEach { (_, clazzState) ->
+                            branch(clazzState) {
+                                treeState = treeState.plus(
+                                    Pair(
+                                        pathInfo.path.path,
+                                        PathExpandedInfo(
+                                            pathInfo.path,
+                                            pathInfo.expanded,
+                                            pathInfo.classState.plus(
+                                                Pair(
+                                                    clazzState.name,
+                                                    it,
+                                                ),
+                                            ).toSortedMap(),
+                                        ),
+                                    ),
+                                ).toSortedMap()
                             }
                         }
                     }
