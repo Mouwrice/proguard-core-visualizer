@@ -51,15 +51,16 @@ import data.OwnClazz
 import data.OwnMethod
 import viewmodel.FilesViewModel
 import java.nio.file.Path
+import java.util.SortedMap
 
 @Composable
 fun TreeView(viewModel: FilesViewModel, modifier: Modifier = Modifier) {
     data class MethodInfo(val path: LoadedPath, val clazz: OwnClazz, val method: OwnMethod)
-    data class ClazzBranchState(val name: String, val expanded: Boolean, val subPackage: Map<String, ClazzBranchState>, val methods: List<MethodInfo>)
-    data class PathExpandedInfo(val path: LoadedPath, val expanded: Boolean, val classState: Map<String, ClazzBranchState>)
+    data class ClazzBranchState(val name: String, val expanded: Boolean, val subPackage: SortedMap<String, ClazzBranchState>, val methods: List<MethodInfo>)
+    data class PathExpandedInfo(val path: LoadedPath, val expanded: Boolean, val classState: SortedMap<String, ClazzBranchState>)
 
     // Map of Path to <path open; Map of <Clazz; clazz open>>
-    var treeState by remember { mutableStateOf(emptyMap<Path, PathExpandedInfo>()) }
+    var treeState by remember { mutableStateOf(emptyMap<Path, PathExpandedInfo>().toSortedMap()) }
 
     // Recompute expandedState if pathMap gets changed
     LaunchedEffect(viewModel.files) {
@@ -71,10 +72,10 @@ fun TreeView(viewModel: FilesViewModel, modifier: Modifier = Modifier) {
                     ClazzBranchState(
                         clazz.name,
                         treeState[loadedPath.path]?.classState?.get(clazz.name)?.expanded ?: false,
-                        emptyMap(),
-                        treeState[loadedPath.path]?.classState?.get(clazz.name)?.methods ?: clazz.methodMap.values.map { MethodInfo(loadedPath, clazz, it) },
+                        emptyMap<String, ClazzBranchState>().toSortedMap(),
+                        treeState[loadedPath.path]?.classState?.get(clazz.name)?.methods ?: clazz.methodMap.values.map { MethodInfo(loadedPath, clazz, it) }.sortedBy { it.method.name },
                     )
-                },
+                }.toSortedMap(),
             )
         }.toSortedMap()
     }
@@ -108,7 +109,7 @@ fun TreeView(viewModel: FilesViewModel, modifier: Modifier = Modifier) {
                                             .toSortedMap(),
                                     ),
                                 ),
-                            )
+                            ).toSortedMap()
                         }
                     }
                     if (pathInfo.expanded) {
@@ -135,10 +136,10 @@ fun TreeView(viewModel: FilesViewModel, modifier: Modifier = Modifier) {
                                                             clazzState.methods,
                                                         ),
                                                     ),
-                                                ),
+                                                ).toSortedMap(),
                                             ),
                                         ),
-                                    )
+                                    ).toSortedMap()
                                 }
                             }
                             if (clazzState.expanded) {
