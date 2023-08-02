@@ -15,19 +15,11 @@ repositories {
     maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
 }
 
-java {
-    toolchain {
-        // Java 11 is the minimum supported version for Compose Desktop.
-        // Higher versions seem to not work for the moment.
-        languageVersion.set(JavaLanguageVersion.of(11))
-        vendor.set(JvmVendorSpec.MICROSOFT)
-    }
-}
-
 kotlin {
     jvm {
         withJava()
     }
+    jvmToolchain(17)
 
     sourceSets {
         val jvmMain by getting {
@@ -35,7 +27,6 @@ kotlin {
                 implementation(compose.desktop.currentOs)
                 api(compose.material3)
                 api(compose.materialIconsExtended)
-                implementation(libs.darkrockstudios.mpfilepicker)
                 implementation(libs.google.gson)
                 implementation(libs.materialkolor)
                 implementation(libs.dansoftowner.jthemedetecor)
