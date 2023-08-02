@@ -22,7 +22,9 @@ fun SaveButton(viewModel: FilesViewModel) {
                 viewModel.curClazz?.let { clazz ->
                     viewModel.curMethod?.let { method ->
                         val dialog = FileDialog(ComposeWindow(), "Export evaluation", FileDialog.SAVE)
-                        dialog.file = "$clazz:$method.json".replace("[^a-zA-Z0-9-_.]".toRegex(), "_").replace("_+".toRegex(), "_")
+                        dialog.file = "$clazz.$method.${viewModel.valueFactoryOption}:.json"
+                            .replace("[^a-zA-Z0-9-_.]".toRegex(), "_")
+                            .replace("_+".toRegex(), "_")
                         dialog.isVisible = true
 
                         var file = dialog.file
