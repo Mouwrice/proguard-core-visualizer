@@ -6,8 +6,6 @@ import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -21,6 +19,7 @@ fun Controls(viewModel: FilesViewModel) {
         modifier = Modifier.wrapContentSize(align = Alignment.Companion.CenterStart, unbounded = true),
     ) {
         OpenFileButton(viewModel)
+        SaveButton(viewModel)
         EvalPicker(viewModel)
 
         val currentCodeViewModel = viewModel.currentCodeAttributeViewModel
