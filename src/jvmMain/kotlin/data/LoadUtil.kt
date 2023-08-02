@@ -13,7 +13,7 @@ import proguard.classfile.visitor.AllMethodVisitor
 import proguard.classfile.visitor.ClassPoolFiller
 import proguard.classfile.visitor.FilteredClassVisitor
 import proguard.evaluation.PartialEvaluator
-import proguard.evaluation.util.jsonPrinter.JsonPrinter
+import proguard.evaluation.util.jsonprinter.JsonPrinter
 import proguard.io.ClassFilter
 import proguard.io.ClassReader
 import proguard.io.DataEntrySource

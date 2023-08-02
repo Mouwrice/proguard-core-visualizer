@@ -21,7 +21,7 @@ kotlin {
     }
     // Java 11 is the minimum supported version for Compose Desktop.
     // Higher versions seem to not work for the moment.
-    jvmToolchain(11)
+    jvmToolchain(17)
 
     sourceSets {
         val jvmMain by getting {
@@ -33,7 +33,7 @@ kotlin {
                 implementation(libs.google.gson)
                 implementation(libs.materialkolor)
                 implementation(libs.dansoftowner.jthemedetecor)
-                implementation("com.github.Guardsquare:proguard-core:PR104-SNAPSHOT")
+                implementation("com.github.Guardsquare:proguard-core:master-SNAPSHOT")
                 implementation(libs.bonsai.core)
             }
         }
@@ -51,6 +51,8 @@ dependencies {
 compose.desktop {
     application {
         mainClass = "MainKt"
+        jvmArgs += "-XX:+PrintCompilation"
+        jvmArgs += "-XX:CompileThreshold=1"
     }
 }
 
