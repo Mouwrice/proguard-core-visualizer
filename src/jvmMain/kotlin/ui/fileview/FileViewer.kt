@@ -29,7 +29,7 @@ fun FileViewer(viewModel: FilesViewModel) {
             shape = MaterialTheme.shapes.medium,
         ).clip(MaterialTheme.shapes.medium),
     ) {
-        TreeView(viewModel, Modifier.fillMaxWidth(0.4f).fillMaxHeight())
+        TreeView(viewModel)
 
         Divider(
             thickness = 1.dp,

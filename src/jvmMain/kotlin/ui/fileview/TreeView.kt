@@ -10,6 +10,7 @@ import androidx.compose.foundation.defaultScrollbarStyle
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -51,6 +52,10 @@ import java.nio.file.Path
 import java.util.*
 
 @Composable
+private fun SearchBar() {
+}
+
+@Composable
 fun TreeView(viewModel: FilesViewModel, modifier: Modifier = Modifier) {
     // Map of Path to <path open; Map of <Clazz; clazz open>>
     var expandedState by remember { mutableStateOf(emptyMap<Path, Pair<Boolean, SortedMap<String, Boolean>>>().toSortedMap()) }
@@ -67,12 +72,14 @@ fun TreeView(viewModel: FilesViewModel, modifier: Modifier = Modifier) {
         expandedState = map.mapValues { Pair(it.value.first, it.value.second.toSortedMap()) }.toSortedMap()
     }
 
-    val horizontalState = rememberScrollState(0)
+    val horizontalState = rememberScrollState()
     val verticalState = rememberLazyListState()
 
-    Box(modifier = modifier) {
-        Box(modifier = Modifier.horizontalScroll(horizontalState)) {
-            LazyColumn(state = verticalState) {
+    Column {
+        SearchBar()
+
+        Box(modifier = modifier) {
+            LazyColumn(state = verticalState, modifier = Modifier.horizontalScroll(horizontalState)) {
                 viewModel.files.forEach { (path, clazzMap) ->
                     val pathIsOpen = expandedState[path]?.first
 
@@ -147,29 +154,29 @@ fun TreeView(viewModel: FilesViewModel, modifier: Modifier = Modifier) {
                     }
                 }
             }
+
+            VerticalScrollbar(
+                modifier = Modifier.align(Alignment.CenterEnd).fillMaxHeight().padding(all = 4.dp),
+                adapter = rememberScrollbarAdapter(
+                    scrollState = verticalState,
+                ),
+                style = defaultScrollbarStyle().copy(
+                    unhoverColor = MaterialTheme.colorScheme.outline,
+                    hoverColor = MaterialTheme.colorScheme.onSurface,
+                ),
+            )
+
+            HorizontalScrollbar(
+                modifier = Modifier.align(Alignment.BottomStart).fillMaxWidth().padding(all = 4.dp),
+                adapter = rememberScrollbarAdapter(
+                    scrollState = horizontalState,
+                ),
+                style = defaultScrollbarStyle().copy(
+                    unhoverColor = MaterialTheme.colorScheme.outline,
+                    hoverColor = MaterialTheme.colorScheme.onSurface,
+                ),
+            )
         }
-
-        VerticalScrollbar(
-            modifier = Modifier.align(Alignment.CenterEnd).fillMaxHeight().padding(all = 4.dp),
-            adapter = rememberScrollbarAdapter(
-                scrollState = verticalState,
-            ),
-            style = defaultScrollbarStyle().copy(
-                unhoverColor = MaterialTheme.colorScheme.outline,
-                hoverColor = MaterialTheme.colorScheme.onSurface,
-            ),
-        )
-
-        HorizontalScrollbar(
-            modifier = Modifier.align(Alignment.BottomStart).fillMaxWidth().padding(all = 4.dp),
-            adapter = rememberScrollbarAdapter(
-                scrollState = horizontalState,
-            ),
-            style = defaultScrollbarStyle().copy(
-                unhoverColor = MaterialTheme.colorScheme.outline,
-                hoverColor = MaterialTheme.colorScheme.onSurface,
-            ),
-        )
     }
 }
 
