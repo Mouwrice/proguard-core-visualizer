@@ -39,7 +39,7 @@ kotlin {
                 implementation(libs.google.gson)
                 implementation(libs.materialkolor)
                 implementation(libs.dansoftowner.jthemedetecor)
-                implementation("com.github.Guardsquare.proguard-core:proguard-core:PR104-SNAPSHOT")
+                implementation("com.github.Guardsquare.proguard-core:proguard-core:9.0.10")
                 implementation(libs.proguard.core.android)
             }
         }
