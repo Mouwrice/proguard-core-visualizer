@@ -15,7 +15,7 @@ import proguard.classfile.visitor.FilteredClassVisitor
 import proguard.evaluation.BasicInvocationUnit
 import proguard.evaluation.PartialEvaluator
 import proguard.evaluation.ReferenceTracingValueFactory
-import proguard.evaluation.util.jsonPrinter.JsonPrinter
+import proguard.evaluation.util.jsonprinter.JsonPrinter
 import proguard.evaluation.value.ArrayReferenceValueFactory
 import proguard.evaluation.value.BasicValueFactory
 import proguard.evaluation.value.DetailedArrayValueFactory
