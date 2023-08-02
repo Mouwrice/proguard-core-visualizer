@@ -74,7 +74,7 @@ class LoadUtil {
             // Convert dex files to a JAR first.
             classReader = NameFilteredDataEntryReader(
                 "classes*.dex",
-                DexClassReader(false, classPoolFiller),
+                DexClassReader(true, classPoolFiller),
                 classReader,
             )
 
