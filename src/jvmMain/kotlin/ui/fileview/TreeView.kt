@@ -52,19 +52,26 @@ import java.util.*
 
 @Composable
 fun TreeView(viewModel: FilesViewModel, modifier: Modifier = Modifier) {
+    data class ClazzBranchState(val name: String, val expanded: Boolean)
+    data class PathExpandedInfo(val path: Path, val expanded: Boolean, val classState: Map<String, ClazzBranchState>)
+
     // Map of Path to <path open; Map of <Clazz; clazz open>>
-    var expandedState by remember { mutableStateOf(emptyMap<Path, Pair<Boolean, SortedMap<String, Boolean>>>().toSortedMap()) }
+    var expandedState by remember { mutableStateOf(emptyMap<Path, PathExpandedInfo>().toSortedMap()) }
 
     // Recompute expandedState if pathMap gets changed
     LaunchedEffect(viewModel.files) {
-        val map: MutableMap<Path, Pair<Boolean, MutableMap<String, Boolean>>> = HashMap()
-        viewModel.files.forEach { (path, clazzMap) ->
-            clazzMap.second.forEach { (clazz, _) ->
-                map.getOrPut(path) { Pair(expandedState[path]?.first ?: false, HashMap()) }.second[clazz] =
-                    expandedState[path]?.second?.get(clazz) ?: false
-            }
-        }
-        expandedState = map.mapValues { Pair(it.value.first, it.value.second.toSortedMap()) }.toSortedMap()
+        expandedState = viewModel.files.mapValues { (_, loadedPath) ->
+            PathExpandedInfo(
+                loadedPath.path,
+                expandedState[loadedPath.path]?.expanded ?: false,
+                loadedPath.classMap.mapValues { (_, clazz) ->
+                    ClazzBranchState(
+                        clazz.name,
+                        expandedState[loadedPath.path]?.classState?.get(clazz.name)?.expanded ?: false,
+                    )
+                },
+            )
+        }.toSortedMap()
     }
 
     val horizontalState = rememberScrollState(0)
@@ -73,50 +80,56 @@ fun TreeView(viewModel: FilesViewModel, modifier: Modifier = Modifier) {
     Box(modifier = modifier) {
         Box(modifier = Modifier.horizontalScroll(horizontalState)) {
             LazyColumn(state = verticalState) {
-                viewModel.files.forEach { (path, clazzMap) ->
-                    val pathIsOpen = expandedState[path]?.first
+                viewModel.files.forEach { (_, loadedPath) ->
+                    val pathIsOpen = expandedState[loadedPath.path]?.expanded
 
                     item {
                         node(
-                            path.toString(),
+                            loadedPath.path.toString(),
                             4.dp,
                             if (pathIsOpen == true) IconMode.Open else IconMode.Closed,
                             closeCallback = {
-                                viewModel.closeFile(path)
+                                viewModel.closeFile(loadedPath.path)
                             },
                         ) {
-                            expandedState[path]?.let { clazzInfo ->
+                            expandedState[loadedPath.path]?.let { clazzInfo ->
                                 expandedState = expandedState.plus(
                                     Pair(
-                                        path,
-                                        Pair(!clazzInfo.first, clazzInfo.second.mapValues { false }.toSortedMap()),
+                                        loadedPath.path,
+                                        PathExpandedInfo(
+                                            loadedPath.path,
+                                            !clazzInfo.expanded,
+                                            clazzInfo.classState.mapValues { (_, clazz) -> ClazzBranchState(clazz.name, clazz.expanded) }.toSortedMap(),
+                                        ),
                                     ),
                                 ).toSortedMap()
                             }
                         }
                     }
                     if (pathIsOpen == true) {
-                        clazzMap.second.forEach { (clazz, methodList) ->
-                            val clazzIsOpen = expandedState[path]?.second?.get(clazz)
+                        loadedPath.classMap.forEach { (_, clazz) ->
+                            val clazzIsOpen = expandedState[loadedPath.path]?.classState?.get(clazz.name)?.expanded
 
                             item {
                                 node(
-                                    clazz,
+                                    clazz.name,
                                     12.dp,
                                     if (clazzIsOpen == true) IconMode.Open else IconMode.Closed,
                                 ) {
-                                    expandedState[path]?.let { (openPath, map) ->
-                                        map[clazz]?.let { openClazz ->
+                                    expandedState[loadedPath.path]?.let { pathInfo ->
+                                        pathInfo.classState[clazz.name]?.let { openClazz ->
                                             expandedState = expandedState.plus(
                                                 Pair(
-                                                    path,
-                                                    Pair(
-                                                        openPath,
-                                                        map.plus(
+                                                    loadedPath.path,
+                                                    PathExpandedInfo(
+                                                        pathInfo.path,
+                                                        pathInfo.expanded,
+                                                        pathInfo.classState.plus(
                                                             Pair(
-                                                                clazz, !openClazz,
+                                                                openClazz.name,
+                                                                ClazzBranchState(openClazz.name, !openClazz.expanded),
                                                             ),
-                                                        ).toSortedMap(),
+                                                        ),
                                                     ),
                                                 ),
                                             ).toSortedMap()
@@ -125,18 +138,18 @@ fun TreeView(viewModel: FilesViewModel, modifier: Modifier = Modifier) {
                                 }
                             }
                             if (clazzIsOpen == true) {
-                                methodList.forEach { (method, _) ->
+                                clazz.methodMap.forEach { (_, method) ->
                                     item {
                                         node(
-                                            method,
+                                            method.name,
                                             24.dp,
-                                            if (viewModel.curPath == path && viewModel.curClazz == clazz && viewModel.curMethod == method) {
+                                            if (viewModel.curPath == loadedPath && viewModel.curClazz == clazz && viewModel.curMethod == method) {
                                                 IconMode.Selected
                                             } else {
                                                 IconMode.Unselected
                                             },
                                         ) {
-                                            viewModel.curPath = path
+                                            viewModel.curPath = loadedPath
                                             viewModel.curClazz = clazz
                                             viewModel.curMethod = method
                                         }
