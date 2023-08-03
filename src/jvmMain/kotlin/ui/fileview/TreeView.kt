@@ -216,7 +216,10 @@ fun TreeView(viewModel: FilesViewModel, modifier: Modifier = Modifier) {
                                     node(
                                         method.name,
                                         indentation + 12.dp,
-                                        if (viewModel.curPath == packageState.path && viewModel.curClazz == ownClazz && viewModel.curMethod == method) {
+                                        if (viewModel.curPath?.path == packageState.path.path &&
+                                            viewModel.curClazz?.name == ownClazz.name &&
+                                            viewModel.curMethod?.name == method.name
+                                        ) {
                                             IconMode.Selected
                                         } else {
                                             IconMode.Unselected
