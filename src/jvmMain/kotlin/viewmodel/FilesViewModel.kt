@@ -63,7 +63,7 @@ class FilesViewModel {
             curClazz?.let { clazz ->
                 curMethod?.let { method ->
                     path.classPool?.let { classPool ->
-                        LoadUtil.evalSingleMethod(classPool, clazz.name, method.name, valueFactoryOption)?.let {
+                        LoadUtil.trackerFromMethod(classPool, clazz.name, method.name, valueFactoryOption)?.let {
                             val codeAttribute = it.codeAttributes[0]
                             val newViewModel = CodeAttributeViewModel(codeAttribute)
                             files = files.plus(

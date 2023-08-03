@@ -78,7 +78,7 @@ class LoadUtil {
             // Convert dex files to a JAR first.
             classReader = NameFilteredDataEntryReader(
                 "classes*.dex",
-                DexClassReader(false, classPoolFiller),
+                DexClassReader(true, classPoolFiller),
                 classReader,
             )
 
@@ -138,7 +138,7 @@ class LoadUtil {
             }
         }
 
-        fun evalSingleMethod(classPool: ClassPool, clazz: String, method: String, valueFactoryOption: ValueFactoryOption): StateTracker? {
+        fun evaluateMethod(classPool: ClassPool, clazz: String, method: String, valueFactoryOption: ValueFactoryOption): String {
             val tracker = JsonPrinter()
             val valueFactory = valueFactoryOption.toValueFactory()
             val pe = PartialEvaluator.Builder.create()
@@ -169,8 +169,12 @@ class LoadUtil {
                     ),
                 ),
             )
+            return tracker.json
+        }
+
+        fun trackerFromMethod(classPool: ClassPool, clazz: String, method: String, valueFactoryOption: ValueFactoryOption): StateTracker? {
             try {
-                return StateTracker.fromJson(tracker.json)
+                return StateTracker.fromJson(evaluateMethod(classPool, clazz, method, valueFactoryOption))
             } catch (e: Exception) {
                 println("Error while parsing json file: $e")
             }

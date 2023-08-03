@@ -21,7 +21,7 @@ import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import com.jthemedetecor.OsThemeDetector
 import com.materialkolor.AnimatedDynamicMaterialTheme
-import ui.Controls
+import ui.controls.Controls
 import ui.fileview.FileViewer
 import ui.stateview.StateViewer
 import viewmodel.FilesViewModel
