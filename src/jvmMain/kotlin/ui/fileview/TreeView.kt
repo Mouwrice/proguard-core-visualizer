@@ -46,25 +46,126 @@ import androidx.compose.ui.text.style.TextIndent
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import data.LoadedClass
+import data.LoadedPath
 import viewmodel.FilesViewModel
 import java.nio.file.Path
-import java.util.*
+import java.util.SortedMap
+
+// Can be either a package or a class
+private data class PackageState(
+    val name: String,
+    val expanded: Boolean,
+    val path: LoadedPath,
+    val isFileEntry: Boolean,
+
+    // Need to make distinction because of for example:
+    // data.BranchTargetRecord.ErrorRecord
+    // data.BranchTargetRecord
+    val subPackages: SortedMap<String, PackageState>,
+    val containingClasses: SortedMap<String, PackageState>,
+
+    val clazz: LoadedClass?,
+) {
+    /**
+     * Collapse this Package and all children.
+     */
+    fun collapseRecursive(): PackageState {
+        return PackageState(
+            name,
+            false,
+            path,
+            isFileEntry,
+            subPackages.mapValues { it.value.collapseRecursive() }.toSortedMap(),
+            containingClasses.mapValues { it.value.collapseRecursive() }.toSortedMap(),
+            clazz,
+        )
+    }
+
+    /**
+     * Toggle expanded state, always makes sure children are collapsed.
+     */
+    fun toggleExpanded(): PackageState {
+        return PackageState(
+            name,
+            !expanded,
+            path,
+            isFileEntry,
+            subPackages.mapValues { it.value.collapseRecursive() }.toSortedMap(),
+            containingClasses.mapValues { it.value.collapseRecursive() }.toSortedMap(),
+            clazz,
+        )
+    }
+}
+
+private fun sortByPackage(path: LoadedPath, classes: Map<String, LoadedClass>, classState: Map<String, PackageState>?): SortedMap<String, PackageState> {
+    /**
+     * Inner helper method for recursion.
+     * Groups together all classes by their packages.
+     */
+    fun inner(classes: List<Pair<List<String>, LoadedClass>>, classState: Map<String, PackageState>?): SortedMap<String, PackageState> {
+        // Classes is a list of to be handled classes, a pair of what packages remain and the class itself
+        return classes.groupBy { it.first[0] }.map { (packageName, entries) ->
+            // All entries share the first element of their name list
+            Pair(
+                packageName,
+                PackageState(
+                    packageName,
+                    classState?.get(packageName)?.expanded ?: false,
+                    path,
+                    false,
+                    inner(
+                        entries
+                            // If the child is a package, it has the current package, at least one next package and in the end, a class.
+                            .filter { it.first.size > 2 }
+                            .map {
+                                Pair(
+                                    it.first.slice(IntRange(1, it.first.size - 1)),
+                                    it.second,
+                                )
+                            },
+                        classState?.get(packageName)?.subPackages,
+                    ),
+                    inner(
+                        entries
+                            // If the child is a class, it has the current package, followed by the class name.
+                            .filter { it.first.size == 2 }
+                            .map {
+                                Pair(
+                                    it.first.slice(IntRange(1, it.first.size - 1)),
+                                    it.second,
+                                )
+                            },
+                        classState?.get(packageName)?.containingClasses,
+                    ),
+
+                    // The current "package" is not followed, this is not a package, but a class, put it in.
+                    entries
+                        .filter { it.first.size == 1 }.getOrNull(0)?.second,
+                ),
+            )
+        }.toMap().toSortedMap()
+    }
+    return inner(classes.map { Pair(it.key.split("/"), it.value) }, classState)
+}
 
 @Composable
 fun TreeView(viewModel: FilesViewModel, modifier: Modifier = Modifier) {
-    // Map of Path to <path open; Map of <Clazz; clazz open>>
-    var expandedState by remember { mutableStateOf(emptyMap<Path, Pair<Boolean, SortedMap<String, Boolean>>>().toSortedMap()) }
+    var treeState by remember { mutableStateOf(emptyMap<Path, PackageState>().toSortedMap()) }
 
-    // Recompute expandedState if pathMap gets changed
+    // Recompute expandedState if pathMap gets changed, Not using derived state since the new state depends on the old one.
     LaunchedEffect(viewModel.files) {
-        val map: MutableMap<Path, Pair<Boolean, MutableMap<String, Boolean>>> = HashMap()
-        viewModel.files.forEach { (path, clazzMap) ->
-            clazzMap.second.forEach { (clazz, _) ->
-                map.getOrPut(path) { Pair(expandedState[path]?.first ?: false, HashMap()) }.second[clazz] =
-                    expandedState[path]?.second?.get(clazz) ?: false
-            }
-        }
-        expandedState = map.mapValues { Pair(it.value.first, it.value.second.toSortedMap()) }.toSortedMap()
+        treeState = viewModel.files.mapValues { (_, loadedPath) ->
+            PackageState(
+                loadedPath.path.toString(),
+                treeState[loadedPath.path]?.expanded ?: false,
+                loadedPath,
+                true,
+                sortByPackage(loadedPath, loadedPath.classMap.filterKeys { it.contains("/") }, treeState[loadedPath.path]?.subPackages),
+                sortByPackage(loadedPath, loadedPath.classMap.filterKeys { !it.contains("/") }, treeState[loadedPath.path]?.containingClasses),
+                null,
+            )
+        }.toSortedMap()
     }
 
     val horizontalState = rememberScrollState(0)
@@ -73,77 +174,93 @@ fun TreeView(viewModel: FilesViewModel, modifier: Modifier = Modifier) {
     Box(modifier = modifier) {
         Box(modifier = Modifier.horizontalScroll(horizontalState)) {
             LazyColumn(state = verticalState) {
-                viewModel.files.forEach { (path, clazzMap) ->
-                    val pathIsOpen = expandedState[path]?.first
-
+                /**
+                 * Tree branch composable, displays a single packed and its children.
+                 */
+                fun TreeBranch(packageState: PackageState, indentation: Dp, registerChange: (PackageState) -> Unit) {
+                    // Display package name
                     item {
                         node(
-                            path.toString(),
-                            4.dp,
-                            if (pathIsOpen == true) IconMode.Open else IconMode.Closed,
-                            closeCallback = {
-                                viewModel.closeFile(path)
+                            packageState.name,
+                            indentation,
+                            if (packageState.expanded) IconMode.Open else IconMode.Closed,
+                            // If the entry is a file, you can close it
+                            closeCallback = if (packageState.isFileEntry) {
+                                {
+                                    viewModel.closeFile(packageState.path.path)
+                                }
+                            } else {
+                                null
                             },
                         ) {
-                            expandedState[path]?.let { clazzInfo ->
-                                expandedState = expandedState.plus(
-                                    Pair(
-                                        path,
-                                        Pair(!clazzInfo.first, clazzInfo.second.mapValues { false }.toSortedMap()),
+                            registerChange(packageState.toggleExpanded())
+                        }
+                    }
+                    // If expanded, show children
+                    if (packageState.expanded) {
+                        // Show all subpackages first
+                        packageState.subPackages.forEach { (subPackageName, subPackage) ->
+                            TreeBranch(subPackage, indentation + 12.dp) {
+                                registerChange(
+                                    PackageState(
+                                        packageState.name,
+                                        packageState.expanded,
+                                        packageState.path,
+                                        packageState.isFileEntry,
+                                        packageState.subPackages.plus(Pair(subPackageName, it)).toSortedMap(),
+                                        packageState.containingClasses,
+                                        packageState.clazz,
                                     ),
-                                ).toSortedMap()
+                                )
+                            }
+                        }
+                        // Then all classes within this package
+                        packageState.containingClasses.forEach { (subPackageName, subPackage) ->
+                            TreeBranch(subPackage, indentation + 12.dp) {
+                                registerChange(
+                                    PackageState(
+                                        packageState.name,
+                                        packageState.expanded,
+                                        packageState.path,
+                                        packageState.isFileEntry,
+                                        packageState.subPackages,
+                                        packageState.containingClasses.plus(Pair(subPackageName, it)).toSortedMap(),
+                                        packageState.clazz,
+                                    ),
+                                )
+                            }
+                        }
+
+                        // Lastly, show the methods of the current class (the above 2 maps should be empty in this case)
+                        packageState.clazz?.let { ownClazz ->
+                            ownClazz.methodMap.forEach { (_, method) ->
+                                item {
+                                    node(
+                                        method.name,
+                                        indentation + 12.dp,
+                                        // Go through name since selection of a method that need to be evaluated will change the method instance
+                                        if (viewModel.curPath?.path == packageState.path.path &&
+                                            viewModel.curClazz?.name == ownClazz.name &&
+                                            viewModel.curMethod?.name == method.name
+                                        ) {
+                                            IconMode.Selected
+                                        } else {
+                                            IconMode.Unselected
+                                        },
+                                    ) {
+                                        viewModel.curPath = packageState.path
+                                        viewModel.curClazz = ownClazz
+                                        viewModel.curMethod = method
+                                    }
+                                }
                             }
                         }
                     }
-                    if (pathIsOpen == true) {
-                        clazzMap.second.forEach { (clazz, methodList) ->
-                            val clazzIsOpen = expandedState[path]?.second?.get(clazz)
-
-                            item {
-                                node(
-                                    clazz,
-                                    12.dp,
-                                    if (clazzIsOpen == true) IconMode.Open else IconMode.Closed,
-                                ) {
-                                    expandedState[path]?.let { (openPath, map) ->
-                                        map[clazz]?.let { openClazz ->
-                                            expandedState = expandedState.plus(
-                                                Pair(
-                                                    path,
-                                                    Pair(
-                                                        openPath,
-                                                        map.plus(
-                                                            Pair(
-                                                                clazz, !openClazz,
-                                                            ),
-                                                        ).toSortedMap(),
-                                                    ),
-                                                ),
-                                            ).toSortedMap()
-                                        }
-                                    }
-                                }
-                            }
-                            if (clazzIsOpen == true) {
-                                methodList.forEach { (method, _) ->
-                                    item {
-                                        node(
-                                            method,
-                                            24.dp,
-                                            if (viewModel.curPath == path && viewModel.curClazz == clazz && viewModel.curMethod == method) {
-                                                IconMode.Selected
-                                            } else {
-                                                IconMode.Unselected
-                                            },
-                                        ) {
-                                            viewModel.curPath = path
-                                            viewModel.curClazz = clazz
-                                            viewModel.curMethod = method
-                                        }
-                                    }
-                                }
-                            }
-                        }
+                }
+                // Display all file branches
+                treeState.forEach { (path, packageInfo) ->
+                    TreeBranch(packageInfo, 4.dp) {
+                        treeState = treeState.plus(Pair(path, it)).toSortedMap()
                     }
                 }
             }

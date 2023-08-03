@@ -22,7 +22,7 @@ import viewmodel.FilesViewModel
 fun EvalPicker(viewModel: FilesViewModel) {
     Box {
         var menuOpened by remember { mutableStateOf(false) }
-        val buttonEnabled = viewModel.files[viewModel.curPath]?.first != null
+        val buttonEnabled = viewModel.curPath?.classPool != null
         OutlinedButton(
             enabled = buttonEnabled,
             onClick = { menuOpened = true },

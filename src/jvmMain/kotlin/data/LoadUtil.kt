@@ -39,6 +39,10 @@ import viewmodel.CodeAttributeViewModel
 import java.io.IOException
 import java.nio.file.Path
 
+data class LoadedMethod(val name: String, val codeAttributeViewModel: CodeAttributeViewModel?)
+data class LoadedClass(val name: String, val methodMap: Map<String, LoadedMethod>)
+data class LoadedPath(val path: Path, val classPool: ClassPool?, val classMap: Map<String, LoadedClass>)
+
 class LoadUtil {
     companion object {
         /**
@@ -103,7 +107,7 @@ class LoadUtil {
             return classPool
         }
 
-        fun classMethodMap(classPool: ClassPool): Map<String, Map<String, CodeAttributeViewModel?>> {
+        fun classMethodMap(classPool: ClassPool): Map<String, LoadedClass> {
             val classMap: MutableMap<String, MutableMap<String, CodeAttributeViewModel?>> = HashMap()
             classPool.accept(
                 AllClassVisitor(
@@ -129,7 +133,9 @@ class LoadUtil {
                     ),
                 ),
             )
-            return classMap
+            return classMap.mapValues { (clazz, methodMap) ->
+                LoadedClass(clazz, methodMap.mapValues { LoadedMethod(it.key, it.value) })
+            }
         }
 
         fun evaluateMethod(classPool: ClassPool, clazz: String, method: String, valueFactoryOption: ValueFactoryOption): String {
