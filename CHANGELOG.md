@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.6.0 (2023-08-03)
+
+## What's Changed
+* fix: read dex files instead of just converting by @Mouwrice in https://github.com/Mouwrice/proguard-core-visualizer/pull/99
+* chore(deps): remove mpfilepicker and strict jvmtoolchain settings by @Mouwrice in https://github.com/Mouwrice/proguard-core-visualizer/pull/98
+* feat: package collapsible tree view by @jitsedesmet in https://github.com/Mouwrice/proguard-core-visualizer/pull/97
+* feat: async loading of files by @jitsedesmet in https://github.com/Mouwrice/proguard-core-visualizer/pull/101
+* feat: add a (regex capable) search bar to the outline by @Mouwrice in https://github.com/Mouwrice/proguard-core-visualizer/pull/103
+
+
+**Full Changelog**: https://github.com/Mouwrice/proguard-core-visualizer/compare/v0.5.0...v0.6.0
+
 ## 0.5.0 (2023-08-02)
 
 ## What's Changed
