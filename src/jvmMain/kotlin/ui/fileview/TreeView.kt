@@ -92,9 +92,9 @@ fun TreeView(viewModel: FilesViewModel, modifier: Modifier = Modifier) {
         Box {
             LazyColumn(state = verticalState, modifier = Modifier.horizontalScroll(horizontalState)) {
                 // Display all file branches
-                treeState.forEach { (path, packageState) ->
+                treeState.forEach { (_, packageState) ->
                     val nodes = packageState.buildTreeBranch(viewModel, searchQuery, 4.dp) {
-                        treeState = treeState.plus(Pair(path, it)).toSortedMap()
+                        treeState = treeState.plus(Pair(packageState.path.path, it)).toSortedMap()
                     }
                     items(nodes) {
                         Node(it)

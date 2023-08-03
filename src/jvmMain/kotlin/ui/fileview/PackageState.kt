@@ -156,9 +156,9 @@ data class PackageState(
         }
 
         // There are no children to display
-        if (childPackages.isEmpty() && childClasses.isEmpty() && childMethods.isEmpty() && searchQuery != "") {
+        if (childPackages.isEmpty() && childClasses.isEmpty() && childMethods.isEmpty()) {
             // The node is hidden if it has no children to display and does not contain the search query
-            if (!name.contains(searchQuery.toRegex())) {
+            if (searchQuery != "" && !name.contains(searchQuery.toRegex())) {
                 return emptyList()
             }
         }
