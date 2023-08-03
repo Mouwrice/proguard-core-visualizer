@@ -32,6 +32,7 @@ kotlin {
                 implementation(libs.dansoftowner.jthemedetecor)
                 implementation("com.github.Guardsquare.proguard-core:proguard-core:master-SNAPSHOT")
                 implementation(libs.proguard.core.android)
+                implementation("com.guardsquare:proguard-assembler:1.0.0")
             }
         }
     }
