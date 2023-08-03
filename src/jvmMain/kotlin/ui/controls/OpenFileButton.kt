@@ -37,7 +37,7 @@ fun OpenFileButton(viewModel: FilesViewModel) {
             onCloseRequest = { directory, file ->
                 isOpen = false
                 if (directory != null && file != null) {
-                    CoroutineScope(Dispatchers.IO).launch {
+                    CoroutineScope(Dispatchers.Default).launch {
                         loadCount++
                         try {
                             viewModel.loadFile(Path.of(directory, file))
