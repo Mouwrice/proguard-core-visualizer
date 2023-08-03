@@ -21,7 +21,7 @@ fun SaveButton(viewModel: FilesViewModel) {
     var isOpen by remember { mutableStateOf(false) }
 
     if (isOpen) {
-        viewModel.files[viewModel.curPath]?.first?.let { classPool ->
+        viewModel.curPath?.classPool?.let { classPool ->
             viewModel.curClazz?.let { clazz ->
                 viewModel.curMethod?.let { method ->
                     var fileName = "$clazz.$method.${viewModel.valueFactoryOption}:.json"
@@ -37,7 +37,7 @@ fun SaveButton(viewModel: FilesViewModel) {
                                     fileName += ".json"
                                 }
                                 val jsonString =
-                                    LoadUtil.evaluateMethod(classPool, clazz, method, viewModel.valueFactoryOption)
+                                    LoadUtil.evaluateMethod(classPool, clazz.name, method.name, viewModel.valueFactoryOption)
                                 File(directory, file).writeText(jsonString)
                             }
                         },
@@ -48,7 +48,7 @@ fun SaveButton(viewModel: FilesViewModel) {
     }
 
     OutlinedButton(
-        enabled = viewModel.files[viewModel.curPath]?.first != null,
+        enabled = viewModel.curPath?.classPool != null,
         onClick = { isOpen = true },
     ) {
         Icon(Icons.Rounded.Save, contentDescription = "Save configuration")
