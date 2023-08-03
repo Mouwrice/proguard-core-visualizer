@@ -66,7 +66,31 @@ private data class PackageState(
     val containingClasses: SortedMap<String, PackageState>,
 
     val clazz: OwnClazz?,
-)
+) {
+    fun colapseRecursive(): PackageState {
+        return PackageState(
+            name,
+            false,
+            path,
+            isFileEntry,
+            subPackages.mapValues { it.value.colapseRecursive() }.toSortedMap(),
+            containingClasses.mapValues { it.value.colapseRecursive() }.toSortedMap(),
+            clazz,
+        )
+    }
+
+    fun toggleExpanded(): PackageState {
+        return PackageState(
+            name,
+            !expanded,
+            path,
+            isFileEntry,
+            subPackages.mapValues { it.value.colapseRecursive() }.toSortedMap(),
+            containingClasses.mapValues { it.value.colapseRecursive() }.toSortedMap(),
+            clazz,
+        )
+    }
+}
 
 private fun sortByPackage(path: LoadedPath, classes: Map<String, OwnClazz>, classState: Map<String, PackageState>?): SortedMap<String, PackageState> {
     fun inner(classes: List<Pair<List<String>, OwnClazz>>, classState: Map<String, PackageState>?): SortedMap<String, PackageState> {
@@ -147,22 +171,12 @@ fun TreeView(viewModel: FilesViewModel, modifier: Modifier = Modifier) {
                             closeCallback = if (packageState.isFileEntry) {
                                 {
                                     viewModel.closeFile(packageState.path.path)
-                                } 
+                                }
                             } else {
                                 null
                             },
                         ) {
-                            registerChange(
-                                PackageState(
-                                    packageState.name,
-                                    !packageState.expanded,
-                                    packageState.path,
-                                    packageState.isFileEntry,
-                                    packageState.subPackages,
-                                    packageState.containingClasses,
-                                    packageState.clazz,
-                                ),
-                            )
+                            registerChange(packageState.toggleExpanded())
                         }
                     }
                     if (packageState.expanded) {
