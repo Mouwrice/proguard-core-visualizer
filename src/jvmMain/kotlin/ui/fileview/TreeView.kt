@@ -1,37 +1,21 @@
 package ui.fileview
 
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.HorizontalScrollbar
-import androidx.compose.foundation.TooltipArea
 import androidx.compose.foundation.VerticalScrollbar
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.defaultScrollbarStyle
 import androidx.compose.foundation.horizontalScroll
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.onClick
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.rememberScrollbarAdapter
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.rounded.KeyboardArrowDown
-import androidx.compose.material.icons.rounded.KeyboardArrowRight
-import androidx.compose.material.icons.rounded.RadioButtonChecked
-import androidx.compose.material.icons.rounded.RadioButtonUnchecked
-import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
@@ -42,13 +26,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.scale
-import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.style.TextIndent
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import data.LoadedClass
 import data.LoadedPath
 import viewmodel.FilesViewModel
@@ -73,7 +51,7 @@ data class PackageState(
     /**
      * Collapse this Package and all children.
      */
-    fun collapseRecursive(): PackageState {
+    private fun collapseRecursive(): PackageState {
         return PackageState(
             name,
             false,
@@ -101,12 +79,19 @@ data class PackageState(
     }
 }
 
-private fun sortByPackage(path: LoadedPath, classes: Map<String, LoadedClass>, classState: Map<String, PackageState>?): SortedMap<String, PackageState> {
+private fun sortByPackage(
+    path: LoadedPath,
+    classes: Map<String, LoadedClass>,
+    classState: Map<String, PackageState>?,
+): SortedMap<String, PackageState> {
     /**
      * Inner helper method for recursion.
      * Groups together all classes by their packages.
      */
-    fun inner(classes: List<Pair<List<String>, LoadedClass>>, classState: Map<String, PackageState>?): SortedMap<String, PackageState> {
+    fun inner(
+        classes: List<Pair<List<String>, LoadedClass>>,
+        classState: Map<String, PackageState>?,
+    ): SortedMap<String, PackageState> {
         // Classes is a list of to be handled classes, a pair of what packages remain and the class itself
         return classes.groupBy { it.first[0] }.map { (packageName, entries) ->
             // All entries share the first element of their name list
@@ -164,6 +149,9 @@ private fun SearchBar(text: String, onValueChange: (String) -> Unit = {}) {
     )
 }
 
+/**
+ * The top level tree view, contains the search bar and the tree itself.
+ */
 @Composable
 fun TreeView(viewModel: FilesViewModel, modifier: Modifier = Modifier) {
     // The query to search in the tree, if empty, no search is performed
@@ -179,8 +167,16 @@ fun TreeView(viewModel: FilesViewModel, modifier: Modifier = Modifier) {
                 treeState[loadedPath.path]?.expanded ?: false,
                 loadedPath,
                 true,
-                sortByPackage(loadedPath, loadedPath.classMap.filterKeys { it.contains("/") }, treeState[loadedPath.path]?.subPackages),
-                sortByPackage(loadedPath, loadedPath.classMap.filterKeys { !it.contains("/") }, treeState[loadedPath.path]?.containingClasses),
+                sortByPackage(
+                    loadedPath,
+                    loadedPath.classMap.filterKeys { it.contains("/") },
+                    treeState[loadedPath.path]?.subPackages,
+                ),
+                sortByPackage(
+                    loadedPath,
+                    loadedPath.classMap.filterKeys { !it.contains("/") },
+                    treeState[loadedPath.path]?.containingClasses,
+                ),
                 null,
             )
         }.toSortedMap()
@@ -198,93 +194,13 @@ fun TreeView(viewModel: FilesViewModel, modifier: Modifier = Modifier) {
 
         Box {
             LazyColumn(state = verticalState, modifier = Modifier.horizontalScroll(horizontalState)) {
-                /**
-                 * Tree branch composable, displays a single packed and its children.
-                 */
-                fun TreeBranch(packageState: PackageState, indentation: Dp, registerChange: (PackageState) -> Unit) {
-                    // Display package name
-                    item {
-                        node(
-                            packageState.name,
-                            indentation,
-                            if (packageState.expanded) IconMode.Open else IconMode.Closed,
-                            // If the entry is a file, you can close it
-                            closeCallback = if (packageState.isFileEntry) {
-                                {
-                                    viewModel.closeFile(packageState.path.path)
-                                }
-                            } else {
-                                null
-                            },
-                        ) {
-                            registerChange(packageState.toggleExpanded())
-                        }
-                    }
-                    // If expanded, show children
-                    if (packageState.expanded) {
-                        // Show all subpackages first
-                        packageState.subPackages.forEach { (subPackageName, subPackage) ->
-                            TreeBranch(subPackage, indentation + 12.dp) {
-                                registerChange(
-                                    PackageState(
-                                        packageState.name,
-                                        packageState.expanded,
-                                        packageState.path,
-                                        packageState.isFileEntry,
-                                        packageState.subPackages.plus(Pair(subPackageName, it)).toSortedMap(),
-                                        packageState.containingClasses,
-                                        packageState.clazz,
-                                    ),
-                                )
-                            }
-                        }
-                        // Then all classes within this package
-                        packageState.containingClasses.forEach { (subPackageName, subPackage) ->
-                            TreeBranch(subPackage, indentation + 12.dp) {
-                                registerChange(
-                                    PackageState(
-                                        packageState.name,
-                                        packageState.expanded,
-                                        packageState.path,
-                                        packageState.isFileEntry,
-                                        packageState.subPackages,
-                                        packageState.containingClasses.plus(Pair(subPackageName, it)).toSortedMap(),
-                                        packageState.clazz,
-                                    ),
-                                )
-                            }
-                        }
-
-                        // Lastly, show the methods of the current class (the above 2 maps should be empty in this case)
-                        packageState.clazz?.let { ownClazz ->
-                            ownClazz.methodMap.forEach { (_, method) ->
-                                item {
-                                    node(
-                                        method.name,
-                                        indentation + 12.dp,
-                                        // Go through name since selection of a method that need to be evaluated will change the method instance
-                                        if (viewModel.curPath?.path == packageState.path.path &&
-                                            viewModel.curClazz?.name == ownClazz.name &&
-                                            viewModel.curMethod?.name == method.name
-                                        ) {
-                                            IconMode.Selected
-                                        } else {
-                                            IconMode.Unselected
-                                        },
-                                    ) {
-                                        viewModel.curPath = packageState.path
-                                        viewModel.curClazz = ownClazz
-                                        viewModel.curMethod = method
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
                 // Display all file branches
                 treeState.forEach { (path, packageInfo) ->
-                    TreeBranch(packageInfo, 4.dp) {
+                    val nodes = buildTreeBranch(viewModel, packageInfo, 4.dp) {
                         treeState = treeState.plus(Pair(path, it)).toSortedMap()
+                    }
+                    items(nodes) {
+                        Node(it)
                     }
                 }
             }
@@ -312,91 +228,4 @@ fun TreeView(viewModel: FilesViewModel, modifier: Modifier = Modifier) {
             )
         }
     }
-}
-
-@OptIn(ExperimentalFoundationApi::class)
-@Composable
-fun node(
-    content: String,
-    indentation: Dp,
-    iconMode: IconMode,
-    modifier: Modifier = Modifier,
-    closeCallback: (() -> Unit)? = null,
-    onCLick: () -> Unit,
-) {
-    val backgroundColor = if (iconMode == IconMode.Selected) {
-        MaterialTheme.colorScheme.outlineVariant
-    } else {
-        MaterialTheme.colorScheme.surface
-    }
-    Row(
-        modifier.padding(start = indentation).background(backgroundColor, shape = MaterialTheme.shapes.small)
-            .padding(start = 4.dp, top = 4.dp, bottom = 4.dp, end = 8.dp).onClick { onCLick() },
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        when (iconMode) {
-            IconMode.Open -> Icon(Icons.Rounded.KeyboardArrowDown, contentDescription = "Drawer handle is open")
-            IconMode.Closed -> Icon(Icons.Rounded.KeyboardArrowRight, contentDescription = "Drawer handle is closed")
-            IconMode.Selected -> Icon(
-                Icons.Rounded.RadioButtonChecked,
-                contentDescription = "Icon checked",
-                Modifier.scale(0.5F),
-                tint = MaterialTheme.colorScheme.primary,
-            )
-
-            IconMode.Unselected -> Icon(
-                Icons.Rounded.RadioButtonUnchecked,
-                contentDescription = "Icon unchecked",
-                Modifier.scale(0.5F),
-            )
-        }
-
-        TooltipArea(tooltip = {
-            Surface(
-                modifier = Modifier.shadow(4.dp),
-                color = MaterialTheme.colorScheme.surfaceVariant,
-                shape = MaterialTheme.shapes.extraSmall,
-            ) {
-                Text(
-                    text = content,
-                    modifier = Modifier.padding(4.dp),
-                    style = MaterialTheme.typography.labelMedium,
-                )
-            }
-        }) {
-            Text(
-                content,
-                style = TextStyle(textIndent = TextIndent(0.sp, 12.sp)),
-            )
-        }
-
-        if (closeCallback != null) {
-            // An IconButton is currently fixed to 48.dp, so we need to make our own.
-            // https://github.com/androidx/androidx/blob/androidx-main/compose/material/material/src/commonMain/kotlin/androidx/compose/material/IconButton.kt
-            Box(
-                modifier = Modifier.size(16.dp).padding(start = 4.dp)
-                    .clickable(
-                        role = androidx.compose.ui.semantics.Role.Button,
-                        interactionSource = MutableInteractionSource(),
-                        indication = rememberRipple(bounded = false, radius = 12.dp),
-                    ) {
-                        closeCallback()
-                    },
-                contentAlignment = Alignment.Center,
-            ) {
-                Icon(
-                    Icons.Default.Close,
-                    tint = MaterialTheme.colorScheme.error,
-                    contentDescription = "Close file",
-                )
-            }
-        }
-    }
-}
-
-enum class IconMode {
-    Open,
-    Closed,
-    Selected,
-    Unselected,
 }
