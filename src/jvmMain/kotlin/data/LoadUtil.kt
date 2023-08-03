@@ -39,9 +39,9 @@ import viewmodel.CodeAttributeViewModel
 import java.io.IOException
 import java.nio.file.Path
 
-data class OwnMethod(val name: String, val codeAttributeViewModel: CodeAttributeViewModel?)
-data class OwnClazz(val name: String, val methodMap: Map<String, OwnMethod>)
-data class LoadedPath(val path: Path, val classPool: ClassPool?, val classMap: Map<String, OwnClazz>)
+data class LoadedMethod(val name: String, val codeAttributeViewModel: CodeAttributeViewModel?)
+data class LoadedClass(val name: String, val methodMap: Map<String, LoadedMethod>)
+data class LoadedPath(val path: Path, val classPool: ClassPool?, val classMap: Map<String, LoadedClass>)
 
 class LoadUtil {
     companion object {
@@ -107,7 +107,7 @@ class LoadUtil {
             return classPool
         }
 
-        fun classMethodMap(classPool: ClassPool): Map<String, OwnClazz> {
+        fun classMethodMap(classPool: ClassPool): Map<String, LoadedClass> {
             val classMap: MutableMap<String, MutableMap<String, CodeAttributeViewModel?>> = HashMap()
             classPool.accept(
                 AllClassVisitor(
@@ -134,7 +134,7 @@ class LoadUtil {
                 ),
             )
             return classMap.mapValues { (clazz, methodMap) ->
-                OwnClazz(clazz, methodMap.mapValues { OwnMethod(it.key, it.value) })
+                LoadedClass(clazz, methodMap.mapValues { LoadedMethod(it.key, it.value) })
             }
         }
 

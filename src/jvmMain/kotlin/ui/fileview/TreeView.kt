@@ -46,8 +46,8 @@ import androidx.compose.ui.text.style.TextIndent
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import data.LoadedClass
 import data.LoadedPath
-import data.OwnClazz
 import viewmodel.FilesViewModel
 import java.nio.file.Path
 import java.util.SortedMap
@@ -65,36 +65,46 @@ private data class PackageState(
     val subPackages: SortedMap<String, PackageState>,
     val containingClasses: SortedMap<String, PackageState>,
 
-    val clazz: OwnClazz?,
+    val clazz: LoadedClass?,
 ) {
-    fun colapseRecursive(): PackageState {
+    /**
+     * Collapse this Package and all children.
+     */
+    fun collapseRecursive(): PackageState {
         return PackageState(
             name,
             false,
             path,
             isFileEntry,
-            subPackages.mapValues { it.value.colapseRecursive() }.toSortedMap(),
-            containingClasses.mapValues { it.value.colapseRecursive() }.toSortedMap(),
+            subPackages.mapValues { it.value.collapseRecursive() }.toSortedMap(),
+            containingClasses.mapValues { it.value.collapseRecursive() }.toSortedMap(),
             clazz,
         )
     }
 
+    /**
+     * Toggle expanded state, always makes sure children are collapsed.
+     */
     fun toggleExpanded(): PackageState {
         return PackageState(
             name,
             !expanded,
             path,
             isFileEntry,
-            subPackages.mapValues { it.value.colapseRecursive() }.toSortedMap(),
-            containingClasses.mapValues { it.value.colapseRecursive() }.toSortedMap(),
+            subPackages.mapValues { it.value.collapseRecursive() }.toSortedMap(),
+            containingClasses.mapValues { it.value.collapseRecursive() }.toSortedMap(),
             clazz,
         )
     }
 }
 
-private fun sortByPackage(path: LoadedPath, classes: Map<String, OwnClazz>, classState: Map<String, PackageState>?): SortedMap<String, PackageState> {
-    fun inner(classes: List<Pair<List<String>, OwnClazz>>, classState: Map<String, PackageState>?): SortedMap<String, PackageState> {
-        // Classes is  a list of to be handled classes, a pair of what packages remaining and the class itself
+private fun sortByPackage(path: LoadedPath, classes: Map<String, LoadedClass>, classState: Map<String, PackageState>?): SortedMap<String, PackageState> {
+    /**
+     * Inner helper method for recursion.
+     * Groups together all classes by their packages.
+     */
+    fun inner(classes: List<Pair<List<String>, LoadedClass>>, classState: Map<String, PackageState>?): SortedMap<String, PackageState> {
+        // Classes is a list of to be handled classes, a pair of what packages remain and the class itself
         return classes.groupBy { it.first[0] }.map { (packageName, entries) ->
             // All entries share the first element of their name list
             Pair(
@@ -106,6 +116,7 @@ private fun sortByPackage(path: LoadedPath, classes: Map<String, OwnClazz>, clas
                     false,
                     inner(
                         entries
+                            // If the child is a package, it has the current package, at least one next package and in the end, a class.
                             .filter { it.first.size > 2 }
                             .map {
                                 Pair(
@@ -117,6 +128,7 @@ private fun sortByPackage(path: LoadedPath, classes: Map<String, OwnClazz>, clas
                     ),
                     inner(
                         entries
+                            // If the child is a class, it has the current package, followed by the class name.
                             .filter { it.first.size == 2 }
                             .map {
                                 Pair(
@@ -127,6 +139,7 @@ private fun sortByPackage(path: LoadedPath, classes: Map<String, OwnClazz>, clas
                         classState?.get(packageName)?.containingClasses,
                     ),
 
+                    // The current "package" is not followed, this is not a package, but a class, put it in.
                     entries
                         .filter { it.first.size == 1 }.getOrNull(0)?.second,
                 ),
@@ -138,10 +151,9 @@ private fun sortByPackage(path: LoadedPath, classes: Map<String, OwnClazz>, clas
 
 @Composable
 fun TreeView(viewModel: FilesViewModel, modifier: Modifier = Modifier) {
-    // Map of Path to <path open; Map of <Clazz; clazz open>>
     var treeState by remember { mutableStateOf(emptyMap<Path, PackageState>().toSortedMap()) }
 
-    // Recompute expandedState if pathMap gets changed
+    // Recompute expandedState if pathMap gets changed, Not using derived state since the new state depends on the old one.
     LaunchedEffect(viewModel.files) {
         treeState = viewModel.files.mapValues { (_, loadedPath) ->
             PackageState(
@@ -162,12 +174,17 @@ fun TreeView(viewModel: FilesViewModel, modifier: Modifier = Modifier) {
     Box(modifier = modifier) {
         Box(modifier = Modifier.horizontalScroll(horizontalState)) {
             LazyColumn(state = verticalState) {
-                fun treeBranch(packageState: PackageState, indentation: Dp, registerChange: (PackageState) -> Unit) {
+                /**
+                 * Tree branch composable, displays a single packed and its children.
+                 */
+                fun TreeBranch(packageState: PackageState, indentation: Dp, registerChange: (PackageState) -> Unit) {
+                    // Display package name
                     item {
                         node(
                             packageState.name,
                             indentation,
                             if (packageState.expanded) IconMode.Open else IconMode.Closed,
+                            // If the entry is a file, you can close it
                             closeCallback = if (packageState.isFileEntry) {
                                 {
                                     viewModel.closeFile(packageState.path.path)
@@ -179,9 +196,11 @@ fun TreeView(viewModel: FilesViewModel, modifier: Modifier = Modifier) {
                             registerChange(packageState.toggleExpanded())
                         }
                     }
+                    // If expanded, show children
                     if (packageState.expanded) {
+                        // Show all subpackages first
                         packageState.subPackages.forEach { (subPackageName, subPackage) ->
-                            treeBranch(subPackage, indentation + 12.dp) {
+                            TreeBranch(subPackage, indentation + 12.dp) {
                                 registerChange(
                                     PackageState(
                                         packageState.name,
@@ -195,8 +214,9 @@ fun TreeView(viewModel: FilesViewModel, modifier: Modifier = Modifier) {
                                 )
                             }
                         }
+                        // Then all classes within this package
                         packageState.containingClasses.forEach { (subPackageName, subPackage) ->
-                            treeBranch(subPackage, indentation + 12.dp) {
+                            TreeBranch(subPackage, indentation + 12.dp) {
                                 registerChange(
                                     PackageState(
                                         packageState.name,
@@ -210,6 +230,8 @@ fun TreeView(viewModel: FilesViewModel, modifier: Modifier = Modifier) {
                                 )
                             }
                         }
+
+                        // Lastly, show the methods of the current class (the above 2 maps should be empty in this case)
                         packageState.clazz?.let { ownClazz ->
                             ownClazz.methodMap.forEach { (_, method) ->
                                 item {
@@ -235,8 +257,9 @@ fun TreeView(viewModel: FilesViewModel, modifier: Modifier = Modifier) {
                         }
                     }
                 }
+                // Display all file branches
                 treeState.forEach { (path, packageInfo) ->
-                    treeBranch(packageInfo, 4.dp) {
+                    TreeBranch(packageInfo, 4.dp) {
                         treeState = treeState.plus(Pair(path, it)).toSortedMap()
                     }
                 }

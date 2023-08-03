@@ -5,9 +5,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import data.LoadUtil
+import data.LoadedClass
+import data.LoadedMethod
 import data.LoadedPath
-import data.OwnClazz
-import data.OwnMethod
 import data.StateTracker
 import java.nio.file.Path
 import kotlin.io.path.extension
@@ -31,12 +31,12 @@ class FilesViewModel {
     /**
      * Currently selected clazz
      */
-    var curClazz by mutableStateOf<OwnClazz?>(null)
+    var curClazz by mutableStateOf<LoadedClass?>(null)
 
     /**
      * Currently selected method
      */
-    var curMethod by mutableStateOf<OwnMethod?>(null)
+    var curMethod by mutableStateOf<LoadedMethod?>(null)
 
     var valueFactoryOption by mutableStateOf(LoadUtil.ValueFactoryOption.Basic)
         private set
@@ -74,12 +74,12 @@ class FilesViewModel {
                                         path.classMap.plus(
                                             Pair(
                                                 clazz.name,
-                                                OwnClazz(
+                                                LoadedClass(
                                                     clazz.name,
                                                     clazz.methodMap.plus(
                                                         Pair(
                                                             method.name,
-                                                            OwnMethod(method.name, newViewModel),
+                                                            LoadedMethod(method.name, newViewModel),
                                                         ),
                                                     ),
                                                 ),
@@ -116,12 +116,12 @@ class FilesViewModel {
                 .codeAttributes
                 .groupBy { it.clazz }
                 .mapValues { (clazzName, clazzEntries) ->
-                    OwnClazz(
+                    LoadedClass(
                         clazzName,
                         clazzEntries
                             .groupBy { map -> map.method }
                             .mapValues { (method, methodEntries) ->
-                                OwnMethod(method, CodeAttributeViewModel(methodEntries[0]))
+                                LoadedMethod(method, CodeAttributeViewModel(methodEntries[0]))
                             },
                     )
                 }
