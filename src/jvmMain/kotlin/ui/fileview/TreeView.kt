@@ -48,54 +48,66 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import data.LoadedPath
 import data.OwnClazz
-import data.OwnMethod
 import viewmodel.FilesViewModel
 import java.nio.file.Path
+import java.util.SortedMap
 
-private data class ClassInfo(val path: LoadedPath, val expanded: Boolean, val clazz: OwnClazz, val methods: Map<String, OwnMethod>)
-
-private data class ClazzBranchState(
+// Can be either a package or a class
+private data class PackageState(
     val name: String,
     val expanded: Boolean,
-    val subPackage: Map<String, ClazzBranchState>,
-    val containingClasses: Map<String, ClassInfo>,
-)
-private data class PathExpandedInfo(val path: LoadedPath, val expanded: Boolean, val classState: Map<String, ClazzBranchState>)
+    val path: LoadedPath,
+    val isFileEntry: Boolean,
 
-private fun sortByPackage(classes: Map<String, ClassInfo>, classState: Map<String, ClazzBranchState>?): Map<String, ClazzBranchState> {
-    fun inner(classes: List<Pair<List<String>, ClassInfo>>, classState: Map<String, ClazzBranchState>?): Map<String, ClazzBranchState> {
+    // Need to make distinction because of for example:
+    // data.BranchTargetRecord.ErrorRecord
+    // data.BranchTargetRecord
+    val subPackages: SortedMap<String, PackageState>,
+    val containingClasses: SortedMap<String, PackageState>,
+
+    val clazz: OwnClazz?,
+)
+
+private fun sortByPackage(path: LoadedPath, classes: Map<String, OwnClazz>, classState: Map<String, PackageState>?): SortedMap<String, PackageState> {
+    fun inner(classes: List<Pair<List<String>, OwnClazz>>, classState: Map<String, PackageState>?): SortedMap<String, PackageState> {
+        // Classes is  a list of to be handled classes, a pair of what packages remaining and the class itself
         return classes.groupBy { it.first[0] }.map { (packageName, entries) ->
+            // All entries share the first element of their name list
             Pair(
                 packageName,
-                ClazzBranchState(
+                PackageState(
                     packageName,
                     classState?.get(packageName)?.expanded ?: false,
+                    path,
+                    false,
                     inner(
                         entries
-                            .filter { it.first.size > 1 }
+                            .filter { it.first.size > 2 }
                             .map {
                                 Pair(
                                     it.first.slice(IntRange(1, it.first.size - 1)),
                                     it.second,
                                 )
                             },
-                        classState?.get(packageName)?.subPackage,
+                        classState?.get(packageName)?.subPackages,
                     ),
+                    inner(
+                        entries
+                            .filter { it.first.size == 2 }
+                            .map {
+                                Pair(
+                                    it.first.slice(IntRange(1, it.first.size - 1)),
+                                    it.second,
+                                )
+                            },
+                        classState?.get(packageName)?.containingClasses,
+                    ),
+
                     entries
-                        .filter { it.first.size == 1 }.associate { (className, classInfo) ->
-                            Pair(
-                                className[0],
-                                ClassInfo(
-                                    classInfo.path,
-                                    classState?.get(packageName)?.containingClasses?.get(className[0])?.expanded ?: false,
-                                    classInfo.clazz,
-                                    classInfo.methods,
-                                ),
-                            )
-                        },
+                        .filter { it.first.size == 1 }.getOrNull(0)?.second,
                 ),
             )
-        }.toMap()
+        }.toMap().toSortedMap()
     }
     return inner(classes.map { Pair(it.key.split("/"), it.value) }, classState)
 }
@@ -103,38 +115,19 @@ private fun sortByPackage(classes: Map<String, ClassInfo>, classState: Map<Strin
 @Composable
 fun TreeView(viewModel: FilesViewModel, modifier: Modifier = Modifier) {
     // Map of Path to <path open; Map of <Clazz; clazz open>>
-    var treeState by remember { mutableStateOf(emptyMap<Path, PathExpandedInfo>().toSortedMap()) }
+    var treeState by remember { mutableStateOf(emptyMap<Path, PackageState>().toSortedMap()) }
 
     // Recompute expandedState if pathMap gets changed
     LaunchedEffect(viewModel.files) {
-        // val filesMap = mutableMapOf<Path, PathExpandedInfo>()
-        // viewModel.files.forEach { (path, loadedPath) ->
-        //    val newPackageMap = mutableMapOf<String, ClazzBranchState>()
-        //    loadedPath.classMap.forEach { clazzName, clazz ->
-        //        val packages = clazzName.split("/")
-        //        var oldPackageMap = treeState[path]?.classState
-        //        for (pack in packages) {
-        //            val curNode = oldPackageMap?.get(pack)
-        //            oldPackageMap = curNode?.subPackage
-        //            newPackageMap
-        //                .getOrPut(pack, { ClazzBranchState("", false, emptyMap(), emptyMap()) })
-        //        }
-        //    }
-//
-        //    filesMap.put(path, PathExpandedInfo(loadedPath, treeState[loadedPath.path]?.expanded ?: false, newPackageMap))
-        // }
-
         treeState = viewModel.files.mapValues { (_, loadedPath) ->
-            PathExpandedInfo(
-                loadedPath,
+            PackageState(
+                loadedPath.path.toString(),
                 treeState[loadedPath.path]?.expanded ?: false,
-                sortByPackage(
-                    loadedPath.classMap.map { (key, clazz) ->
-                        // Expanded state is later corrected
-                        Pair(key, ClassInfo(loadedPath, false, clazz, clazz.methodMap))
-                    }.toMap(),
-                    treeState[loadedPath.path]?.classState,
-                ),
+                loadedPath,
+                true,
+                sortByPackage(loadedPath, loadedPath.classMap.filterKeys { it.contains("/") }, treeState[loadedPath.path]?.subPackages),
+                sortByPackage(loadedPath, loadedPath.classMap.filterKeys { !it.contains("/") }, treeState[loadedPath.path]?.containingClasses),
+                null,
             )
         }.toSortedMap()
     }
@@ -145,134 +138,88 @@ fun TreeView(viewModel: FilesViewModel, modifier: Modifier = Modifier) {
     Box(modifier = modifier) {
         Box(modifier = Modifier.horizontalScroll(horizontalState)) {
             LazyColumn(state = verticalState) {
-                treeState.forEach { (_, pathInfo) ->
+                fun treeBranch(packageState: PackageState, indentation: Dp, registerChange: (PackageState) -> Unit) {
                     item {
                         node(
-                            pathInfo.path.path.toString(),
-                            4.dp,
-                            if (pathInfo.expanded) IconMode.Open else IconMode.Closed,
-                            closeCallback = {
-                                viewModel.closeFile(pathInfo.path.path)
+                            packageState.name,
+                            indentation,
+                            if (packageState.expanded) IconMode.Open else IconMode.Closed,
+                            closeCallback = if (packageState.isFileEntry) {
+                                {
+                                    viewModel.closeFile(packageState.path.path)
+                                } 
+                            } else {
+                                null
                             },
                         ) {
-                            treeState = treeState.plus(
-                                Pair(
-                                    pathInfo.path.path,
-                                    PathExpandedInfo(
-                                        pathInfo.path,
-                                        !pathInfo.expanded,
-                                        pathInfo.classState
-                                            .mapValues { (_, clazz) ->
-                                                ClazzBranchState(clazz.name, false, clazz.subPackage, clazz.containingClasses)
-                                            }
-                                            .toSortedMap(),
-                                    ),
+                            registerChange(
+                                PackageState(
+                                    packageState.name,
+                                    !packageState.expanded,
+                                    packageState.path,
+                                    packageState.isFileEntry,
+                                    packageState.subPackages,
+                                    packageState.containingClasses,
+                                    packageState.clazz,
                                 ),
-                            ).toSortedMap()
+                            )
                         }
                     }
-                    if (pathInfo.expanded) {
-                        fun classInfo(classInfo: ClassInfo, indentation: Dp, registerChange: (ClassInfo) -> Unit) {
-                            // Class
-                            item {
-                                node(
-                                    classInfo.clazz.name,
-                                    indentation,
-                                    if (classInfo.expanded) IconMode.Open else IconMode.Closed,
-                                ) {
-                                    registerChange(
-                                        ClassInfo(
-                                            classInfo.path,
-                                            !classInfo.expanded,
-                                            classInfo.clazz,
-                                            classInfo.methods,
-                                        ),
-                                    )
-                                }
+                    if (packageState.expanded) {
+                        packageState.subPackages.forEach { (subPackageName, subPackage) ->
+                            treeBranch(subPackage, indentation + 12.dp) {
+                                registerChange(
+                                    PackageState(
+                                        packageState.name,
+                                        packageState.expanded,
+                                        packageState.path,
+                                        packageState.isFileEntry,
+                                        packageState.subPackages.plus(Pair(subPackageName, it)).toSortedMap(),
+                                        packageState.containingClasses,
+                                        packageState.clazz,
+                                    ),
+                                )
                             }
-                            classInfo.methods.forEach { (_, method) ->
+                        }
+                        packageState.containingClasses.forEach { (subPackageName, subPackage) ->
+                            treeBranch(subPackage, indentation + 12.dp) {
+                                registerChange(
+                                    PackageState(
+                                        packageState.name,
+                                        packageState.expanded,
+                                        packageState.path,
+                                        packageState.isFileEntry,
+                                        packageState.subPackages,
+                                        packageState.containingClasses.plus(Pair(subPackageName, it)).toSortedMap(),
+                                        packageState.clazz,
+                                    ),
+                                )
+                            }
+                        }
+                        packageState.clazz?.let { ownClazz ->
+                            ownClazz.methodMap.forEach { (_, method) ->
                                 item {
                                     node(
                                         method.name,
                                         indentation + 12.dp,
-                                        if (viewModel.curPath == classInfo.path && viewModel.curClazz == classInfo.clazz && viewModel.curMethod == method) {
+                                        if (viewModel.curPath == packageState.path && viewModel.curClazz == ownClazz && viewModel.curMethod == method) {
                                             IconMode.Selected
                                         } else {
                                             IconMode.Unselected
                                         },
                                     ) {
-                                        viewModel.curPath = classInfo.path
-                                        viewModel.curClazz = classInfo.clazz
+                                        viewModel.curPath = packageState.path
+                                        viewModel.curClazz = ownClazz
                                         viewModel.curMethod = method
                                     }
                                 }
                             }
                         }
-                        fun subDirBranch(clazzState: ClazzBranchState, indentation: Dp, registerChange: (ClazzBranchState) -> Unit) {
-                            // This branch
-                            item {
-                                node(
-                                    clazzState.name,
-                                    indentation,
-                                    if (clazzState.expanded) IconMode.Open else IconMode.Closed,
-                                ) {
-                                    registerChange(
-                                        ClazzBranchState(
-                                            clazzState.name,
-                                            !clazzState.expanded,
-                                            clazzState.subPackage,
-                                            clazzState.containingClasses,
-                                        ),
-                                    )
-                                }
-                            }
-                            if (clazzState.expanded) {
-                                // Subbranches
-                                clazzState.subPackage.forEach { (_, subPackage) ->
-                                    subDirBranch(subPackage, indentation + 12.dp) {
-                                        registerChange(
-                                            ClazzBranchState(
-                                                clazzState.name,
-                                                clazzState.expanded,
-                                                clazzState.subPackage.plus(Pair(subPackage.name, it)),
-                                                clazzState.containingClasses,
-                                            ),
-                                        )
-                                    }
-                                }
-                                clazzState.containingClasses.forEach { (_, classInfo) ->
-                                    classInfo(classInfo, indentation) {
-                                        registerChange(
-                                            ClazzBranchState(
-                                                clazzState.name,
-                                                clazzState.expanded,
-                                                clazzState.subPackage,
-                                                clazzState.containingClasses.plus(Pair(classInfo.clazz.name, it)),
-                                            ),
-                                        )
-                                    }
-                                }
-                            }
-                        }
-                        pathInfo.classState.forEach { (_, clazzState) ->
-                            subDirBranch(clazzState, 12.dp) {
-                                treeState = treeState.plus(
-                                    Pair(
-                                        pathInfo.path.path,
-                                        PathExpandedInfo(
-                                            pathInfo.path,
-                                            pathInfo.expanded,
-                                            pathInfo.classState.plus(
-                                                Pair(
-                                                    clazzState.name,
-                                                    it,
-                                                ),
-                                            ).toSortedMap(),
-                                        ),
-                                    ),
-                                ).toSortedMap()
-                            }
-                        }
+                    }
+                }
+                treeState.forEach { (path, packageInfo) ->
+                    treeBranch(packageInfo, 4.dp) {
+                        treeState = treeState.plus(Pair(path, it)).toSortedMap()
                     }
                 }
             }
