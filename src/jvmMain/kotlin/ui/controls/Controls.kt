@@ -2,6 +2,7 @@ package ui.controls
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
@@ -16,7 +17,7 @@ import viewmodel.FilesViewModel
 fun Controls(viewModel: FilesViewModel) {
     Row(
         horizontalArrangement = Arrangement.spacedBy(8.dp),
-        modifier = Modifier.wrapContentSize(align = Alignment.Companion.CenterStart, unbounded = true),
+        modifier = Modifier.wrapContentSize(align = Alignment.Companion.CenterStart, unbounded = true).height(40.dp),
     ) {
         OpenFileButton(viewModel)
         SaveButton(viewModel)
