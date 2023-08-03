@@ -216,6 +216,7 @@ fun TreeView(viewModel: FilesViewModel, modifier: Modifier = Modifier) {
                                     node(
                                         method.name,
                                         indentation + 12.dp,
+                                        // Go through name since selection of a method that need to be evaluated will change the method instance
                                         if (viewModel.curPath?.path == packageState.path.path &&
                                             viewModel.curClazz?.name == ownClazz.name &&
                                             viewModel.curMethod?.name == method.name
