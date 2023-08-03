@@ -28,10 +28,12 @@ import androidx.compose.material.icons.rounded.KeyboardArrowRight
 import androidx.compose.material.icons.rounded.RadioButtonChecked
 import androidx.compose.material.icons.rounded.RadioButtonUnchecked
 import androidx.compose.material.ripple.rememberRipple
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -51,12 +53,23 @@ import viewmodel.FilesViewModel
 import java.nio.file.Path
 import java.util.*
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun SearchBar() {
+private fun SearchBar(text: String, onValueChange: (String) -> Unit = {}) {
+    TextField(
+        value = text,
+        onValueChange = onValueChange,
+        label = { Text("Search") },
+        modifier = Modifier.fillMaxWidth(),
+        textStyle = MaterialTheme.typography.labelSmall,
+    )
 }
 
 @Composable
 fun TreeView(viewModel: FilesViewModel, modifier: Modifier = Modifier) {
+    // The query to search in the tree, if empty, no search is performed
+    var searchQuery by remember { mutableStateOf("") }
+
     // Map of Path to <path open; Map of <Clazz; clazz open>>
     var expandedState by remember { mutableStateOf(emptyMap<Path, Pair<Boolean, SortedMap<String, Boolean>>>().toSortedMap()) }
 
@@ -75,10 +88,14 @@ fun TreeView(viewModel: FilesViewModel, modifier: Modifier = Modifier) {
     val horizontalState = rememberScrollState()
     val verticalState = rememberLazyListState()
 
-    Column {
-        SearchBar()
+    Column(modifier = modifier) {
+        if (viewModel.files.isNotEmpty()) {
+            SearchBar(searchQuery) {
+                searchQuery = it
+            }
+        }
 
-        Box(modifier = modifier) {
+        Box {
             LazyColumn(state = verticalState, modifier = Modifier.horizontalScroll(horizontalState)) {
                 viewModel.files.forEach { (path, clazzMap) ->
                     val pathIsOpen = expandedState[path]?.first
