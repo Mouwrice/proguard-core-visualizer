@@ -62,14 +62,14 @@ private data class ClazzBranchState(
 )
 private data class PathExpandedInfo(val path: LoadedPath, val expanded: Boolean, val classState: Map<String, ClazzBranchState>)
 
-private fun sortByPackage(classes: Map<String, ClassInfo>): Map<String, ClazzBranchState> {
-    fun inner(classes: List<Pair<List<String>, ClassInfo>>): Map<String, ClazzBranchState> {
+private fun sortByPackage(classes: Map<String, ClassInfo>, classState: Map<String, ClazzBranchState>?): Map<String, ClazzBranchState> {
+    fun inner(classes: List<Pair<List<String>, ClassInfo>>, classState: Map<String, ClazzBranchState>?): Map<String, ClazzBranchState> {
         return classes.groupBy { it.first[0] }.map { (packageName, entries) ->
             Pair(
                 packageName,
                 ClazzBranchState(
                     packageName,
-                    false,
+                    classState?.get(packageName)?.expanded ?: false,
                     inner(
                         entries
                             .filter { it.first.size > 1 }
@@ -79,14 +79,25 @@ private fun sortByPackage(classes: Map<String, ClassInfo>): Map<String, ClazzBra
                                     it.second,
                                 )
                             },
+                        classState?.get(packageName)?.subPackage,
                     ),
                     entries
-                        .filter { it.first.size == 1 }.associate { Pair(it.first[0], it.second) },
+                        .filter { it.first.size == 1 }.associate { (className, classInfo) ->
+                            Pair(
+                                className[0],
+                                ClassInfo(
+                                    classInfo.path,
+                                    classState?.get(packageName)?.containingClasses?.get(className[0])?.expanded ?: false,
+                                    classInfo.clazz,
+                                    classInfo.methods,
+                                ),
+                            )
+                        },
                 ),
             )
         }.toMap()
     }
-    return inner(classes.map { Pair(it.key.split("/"), it.value) })
+    return inner(classes.map { Pair(it.key.split("/"), it.value) }, classState)
 }
 
 @Composable
@@ -96,14 +107,33 @@ fun TreeView(viewModel: FilesViewModel, modifier: Modifier = Modifier) {
 
     // Recompute expandedState if pathMap gets changed
     LaunchedEffect(viewModel.files) {
+        // val filesMap = mutableMapOf<Path, PathExpandedInfo>()
+        // viewModel.files.forEach { (path, loadedPath) ->
+        //    val newPackageMap = mutableMapOf<String, ClazzBranchState>()
+        //    loadedPath.classMap.forEach { clazzName, clazz ->
+        //        val packages = clazzName.split("/")
+        //        var oldPackageMap = treeState[path]?.classState
+        //        for (pack in packages) {
+        //            val curNode = oldPackageMap?.get(pack)
+        //            oldPackageMap = curNode?.subPackage
+        //            newPackageMap
+        //                .getOrPut(pack, { ClazzBranchState("", false, emptyMap(), emptyMap()) })
+        //        }
+        //    }
+//
+        //    filesMap.put(path, PathExpandedInfo(loadedPath, treeState[loadedPath.path]?.expanded ?: false, newPackageMap))
+        // }
+
         treeState = viewModel.files.mapValues { (_, loadedPath) ->
             PathExpandedInfo(
                 loadedPath,
                 treeState[loadedPath.path]?.expanded ?: false,
                 sortByPackage(
                     loadedPath.classMap.map { (key, clazz) ->
+                        // Expanded state is later corrected
                         Pair(key, ClassInfo(loadedPath, false, clazz, clazz.methodMap))
                     }.toMap(),
+                    treeState[loadedPath.path]?.classState,
                 ),
             )
         }.toSortedMap()
