@@ -52,12 +52,18 @@ import data.OwnMethod
 import viewmodel.FilesViewModel
 import java.nio.file.Path
 
-private data class MethodInfo(val path: LoadedPath, val clazz: OwnClazz, val method: OwnMethod)
-private data class ClazzBranchState(val name: String, val expanded: Boolean, val subPackage: Map<String, ClazzBranchState>, val methods: Map<String, MethodInfo>)
+private data class ClassInfo(val path: LoadedPath, val expanded: Boolean, val clazz: OwnClazz, val methods: Map<String, OwnMethod>)
+
+private data class ClazzBranchState(
+    val name: String,
+    val expanded: Boolean,
+    val subPackage: Map<String, ClazzBranchState>,
+    val containingClasses: Map<String, ClassInfo>,
+)
 private data class PathExpandedInfo(val path: LoadedPath, val expanded: Boolean, val classState: Map<String, ClazzBranchState>)
 
-private fun sortByPackage(classes: Map<String, MethodInfo>): Map<String, ClazzBranchState> {
-    fun inner(classes: List<Pair<List<String>, MethodInfo>>): Map<String, ClazzBranchState> {
+private fun sortByPackage(classes: Map<String, ClassInfo>): Map<String, ClazzBranchState> {
+    fun inner(classes: List<Pair<List<String>, ClassInfo>>): Map<String, ClazzBranchState> {
         return classes.groupBy { it.first[0] }.map { (packageName, entries) ->
             Pair(
                 packageName,
@@ -95,8 +101,8 @@ fun TreeView(viewModel: FilesViewModel, modifier: Modifier = Modifier) {
                 loadedPath,
                 treeState[loadedPath.path]?.expanded ?: false,
                 sortByPackage(
-                    loadedPath.classMap.flatMap { (key, clazz) ->
-                        clazz.methodMap.values.map { Pair(key, MethodInfo(loadedPath, clazz, it)) }
+                    loadedPath.classMap.map { (key, clazz) ->
+                        Pair(key, ClassInfo(loadedPath, false, clazz, clazz.methodMap))
                     }.toMap(),
                 ),
             )
@@ -127,7 +133,7 @@ fun TreeView(viewModel: FilesViewModel, modifier: Modifier = Modifier) {
                                         !pathInfo.expanded,
                                         pathInfo.classState
                                             .mapValues { (_, clazz) ->
-                                                ClazzBranchState(clazz.name, false, clazz.subPackage, clazz.methods)
+                                                ClazzBranchState(clazz.name, false, clazz.subPackage, clazz.containingClasses)
                                             }
                                             .toSortedMap(),
                                     ),
@@ -136,7 +142,44 @@ fun TreeView(viewModel: FilesViewModel, modifier: Modifier = Modifier) {
                         }
                     }
                     if (pathInfo.expanded) {
-                        fun branch(clazzState: ClazzBranchState, indentation: Dp, registerChange: (ClazzBranchState) -> Unit) {
+                        fun classInfo(classInfo: ClassInfo, indentation: Dp, registerChange: (ClassInfo) -> Unit) {
+                            // Class
+                            item {
+                                node(
+                                    classInfo.clazz.name,
+                                    indentation,
+                                    if (classInfo.expanded) IconMode.Open else IconMode.Closed,
+                                ) {
+                                    registerChange(
+                                        ClassInfo(
+                                            classInfo.path,
+                                            !classInfo.expanded,
+                                            classInfo.clazz,
+                                            classInfo.methods,
+                                        ),
+                                    )
+                                }
+                            }
+                            classInfo.methods.forEach { (_, method) ->
+                                item {
+                                    node(
+                                        method.name,
+                                        indentation + 12.dp,
+                                        if (viewModel.curPath == classInfo.path && viewModel.curClazz == classInfo.clazz && viewModel.curMethod == method) {
+                                            IconMode.Selected
+                                        } else {
+                                            IconMode.Unselected
+                                        },
+                                    ) {
+                                        viewModel.curPath = classInfo.path
+                                        viewModel.curClazz = classInfo.clazz
+                                        viewModel.curMethod = method
+                                    }
+                                }
+                            }
+                        }
+                        fun subDirBranch(clazzState: ClazzBranchState, indentation: Dp, registerChange: (ClazzBranchState) -> Unit) {
+                            // This branch
                             item {
                                 node(
                                     clazzState.name,
@@ -148,45 +191,41 @@ fun TreeView(viewModel: FilesViewModel, modifier: Modifier = Modifier) {
                                             clazzState.name,
                                             !clazzState.expanded,
                                             clazzState.subPackage,
-                                            clazzState.methods,
+                                            clazzState.containingClasses,
                                         ),
                                     )
                                 }
                             }
                             if (clazzState.expanded) {
+                                // Subbranches
                                 clazzState.subPackage.forEach { (_, subPackage) ->
-                                    branch(subPackage, indentation + 12.dp) {
+                                    subDirBranch(subPackage, indentation + 12.dp) {
                                         registerChange(
                                             ClazzBranchState(
                                                 clazzState.name,
                                                 clazzState.expanded,
                                                 clazzState.subPackage.plus(Pair(subPackage.name, it)),
-                                                clazzState.methods,
+                                                clazzState.containingClasses,
                                             ),
                                         )
                                     }
                                 }
-                                clazzState.methods.forEach { (_, methodInfo) ->
-                                    item {
-                                        node(
-                                            methodInfo.method.name,
-                                            indentation + 12.dp,
-                                            if (viewModel.curPath == methodInfo.path && viewModel.curClazz == methodInfo.clazz && viewModel.curMethod == methodInfo.method) {
-                                                IconMode.Selected
-                                            } else {
-                                                IconMode.Unselected
-                                            },
-                                        ) {
-                                            viewModel.curPath = methodInfo.path
-                                            viewModel.curClazz = methodInfo.clazz
-                                            viewModel.curMethod = methodInfo.method
-                                        }
+                                clazzState.containingClasses.forEach { (_, classInfo) ->
+                                    classInfo(classInfo, indentation) {
+                                        registerChange(
+                                            ClazzBranchState(
+                                                clazzState.name,
+                                                clazzState.expanded,
+                                                clazzState.subPackage,
+                                                clazzState.containingClasses.plus(Pair(classInfo.clazz.name, it)),
+                                            ),
+                                        )
                                     }
                                 }
                             }
                         }
                         pathInfo.classState.forEach { (_, clazzState) ->
-                            branch(clazzState, 12.dp) {
+                            subDirBranch(clazzState, 12.dp) {
                                 treeState = treeState.plus(
                                     Pair(
                                         pathInfo.path.path,
