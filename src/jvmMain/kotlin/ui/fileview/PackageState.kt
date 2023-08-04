@@ -77,6 +77,13 @@ data class PackageState(
             } else {
                 null
             },
+            editCallback = if (isFileEntry && path.content != null) {
+                {
+                    viewModel.editFile(path.path, path.content)
+                }
+            } else {
+                null
+            },
             onClick = {
                 registerChange(toggleExpanded())
             },
@@ -150,9 +157,10 @@ data class PackageState(
                                     viewModel.curMethod = method
                                     viewModel.currentScratchFileType = null
                                 },
-                                query = searchQuery.toRegex(),
+                            query = searchQuery.toRegex(),
                             ),
                         )
+
                     }
                 }
             }

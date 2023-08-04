@@ -15,7 +15,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import ui.codeview.CodeViewer
 import ui.codeview.MethodHeader
-import ui.jbcEditor.Editor
+import ui.editor.Editor
 import viewmodel.FilesViewModel
 
 /**

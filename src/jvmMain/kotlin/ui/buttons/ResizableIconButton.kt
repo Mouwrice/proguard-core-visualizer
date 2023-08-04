@@ -20,15 +20,23 @@ import androidx.compose.ui.unit.dp
  * https://github.com/androidx/androidx/blob/androidx-main/compose/material/material/src/commonMain/kotlin/androidx/compose/material/IconButton.kt
  */
 @Composable
-fun ResizableIconButton(icon: ImageVector, tint: Color = MaterialTheme.colorScheme.onSurface, contentDescription: String, modifier: Modifier = Modifier, onClick: () -> Unit) {
-    //
+fun ResizableIconButton(
+    icon: ImageVector,
+    tint: Color = MaterialTheme.colorScheme.onSurface,
+    contentDescription: String,
+    modifier: Modifier = Modifier,
+    callBack: () -> Unit,
+) {
     Box(
         modifier = modifier
             .clickable(
                 role = Role.Button,
                 interactionSource = MutableInteractionSource(),
                 indication = rememberRipple(bounded = false, radius = 12.dp),
-                onClick = onClick,
+                onClick = {
+                    println("click")
+                    callBack()
+                },
             ),
         contentAlignment = Alignment.Center,
     ) {

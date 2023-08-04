@@ -10,7 +10,7 @@ enum class FileTypes(val extension: String, val canRead: Boolean, val canWrite: 
     CLASS("class", true, false),
     DEX("dex", true, false),
     JAR("jar", true, false),
-    JSON("json", true, false),
+    JSON("json", true, true),
     ZIP("zip", true, false),
 
     // Following specs: https://github.com/Guardsquare/proguard-assembler/blob/master/docs/md/specification.md

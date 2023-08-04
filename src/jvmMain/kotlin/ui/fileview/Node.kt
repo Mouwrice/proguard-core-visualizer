@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.onClick
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.rounded.KeyboardArrowDown
 import androidx.compose.material.icons.rounded.KeyboardArrowRight
 import androidx.compose.material.icons.rounded.RadioButtonChecked
@@ -40,6 +41,7 @@ data class NodeState(
     val iconMode: IconMode,
     val modifier: Modifier = Modifier,
     val closeCallback: (() -> Unit)? = null,
+    val editCallback: (() -> Unit)? = null,
     val onClick: () -> Unit,
     val query: Regex,
 )
@@ -119,16 +121,23 @@ fun Node(
             )
         }
 
+        if (state.editCallback != null) {
+            ResizableIconButton(
+                icon = Icons.Default.Edit,
+                contentDescription = "Edit file",
+                modifier = Modifier.padding(horizontal = 8.dp).size(16.dp),
+                callBack = state.editCallback,
+            )
+        }
+
         if (state.closeCallback != null) {
-            println(state.closeCallback)
             ResizableIconButton(
                 icon = Icons.Default.Close,
                 tint = MaterialTheme.colorScheme.error,
                 contentDescription = "Close file",
                 modifier = Modifier.padding(horizontal = 8.dp).size(16.dp),
-            ) {
-                state.closeCallback
-            }
+                callBack = state.closeCallback,
+            )
         }
     }
 }

@@ -15,17 +15,7 @@ import proguard.classfile.visitor.ClassPoolFiller
 import proguard.classfile.visitor.FilteredClassVisitor
 import proguard.evaluation.BasicInvocationUnit
 import proguard.evaluation.PartialEvaluator
-import proguard.evaluation.ParticularReferenceValueFactory
-import proguard.evaluation.ReferenceTracingValueFactory
 import proguard.evaluation.util.jsonprinter.JsonPrinter
-import proguard.evaluation.value.ArrayReferenceValueFactory
-import proguard.evaluation.value.BasicValueFactory
-import proguard.evaluation.value.DetailedArrayValueFactory
-import proguard.evaluation.value.IdentifiedValueFactory
-import proguard.evaluation.value.ParticularValueFactory
-import proguard.evaluation.value.RangeValueFactory
-import proguard.evaluation.value.TypedReferenceValueFactory
-import proguard.evaluation.value.ValueFactory
 import proguard.io.ClassReader
 import proguard.io.DataEntry
 import proguard.io.DataEntryNameFilter
@@ -47,7 +37,17 @@ import kotlin.io.path.name
 
 data class LoadedMethod(val name: String, val codeAttributeViewModel: CodeAttributeViewModel?)
 data class LoadedClass(val name: String, val methodMap: Map<String, LoadedMethod>)
-data class LoadedPath(val path: Path, val classPool: ClassPool?, val classMap: Map<String, LoadedClass>)
+
+/**
+ * Representation of a loaded and parsed file.
+ * @param content The original content of the file which is used for the editor.
+ */
+data class LoadedPath(
+    val path: Path,
+    val classPool: ClassPool?,
+    val classMap: Map<String, LoadedClass>,
+    val content: String? = null,
+)
 
 class LoadUtil {
     companion object {
@@ -143,21 +143,6 @@ class LoadUtil {
             return programClassPool
         }
 
-        // fun parseKotlin() {
-        //     val compiler = KotlinCompilation()
-//
-        //     compiler.apply {
-        //         this.sources = source.filterNot { it is AssemblerSource }.map { it.asSourceFile() }
-        //         this.inheritClassPath = false
-        //         this.workingDir = Files.createTempDirectory("ClassPoolBuilder").toFile()
-        //         this.javacArguments = javacArguments.toMutableList()
-        //         this.kotlincArguments = kotlincArguments
-        //         this.verbose = false
-        //         this.jdkHome = jdkHome
-        //     }
-//
-        // }
-
         fun classMethodMap(classPool: ClassPool): Map<String, LoadedClass> {
             val classMap: MutableMap<String, MutableMap<String, CodeAttributeViewModel?>> = HashMap()
             classPool.accept(
@@ -189,9 +174,14 @@ class LoadUtil {
             }
         }
 
-        fun evaluateMethod(classPool: ClassPool, clazz: String, method: String, valueFactoryOption: ValueFactoryOption): String {
+        fun evaluateMethod(
+            classPool: ClassPool,
+            clazz: String,
+            method: String,
+            valueFactoryType: ValueFactoryType,
+        ): String {
             val tracker = JsonPrinter()
-            val valueFactory = valueFactoryOption.toValueFactory()
+            val valueFactory = valueFactoryType.toValueFactory()
             val pe = PartialEvaluator.Builder.create()
                 .setValueFactory(valueFactory)
                 .setInvocationUnit(BasicInvocationUnit(valueFactory))
@@ -223,98 +213,18 @@ class LoadUtil {
             return tracker.json
         }
 
-        fun trackerFromMethod(classPool: ClassPool, clazz: String, method: String, valueFactoryOption: ValueFactoryOption): StateTracker? {
+        fun trackerFromMethod(
+            classPool: ClassPool,
+            clazz: String,
+            method: String,
+            valueFactoryType: ValueFactoryType,
+        ): StateTracker? {
             try {
-                return StateTracker.fromJson(evaluateMethod(classPool, clazz, method, valueFactoryOption))
+                return StateTracker.fromJson(evaluateMethod(classPool, clazz, method, valueFactoryType))
             } catch (e: Exception) {
                 println("Error while parsing json file: $e")
             }
             return null
         }
-    }
-
-    enum class ValueFactoryOption {
-        Basic {
-            override fun toString(): String {
-                return "Basic Value Factory"
-            }
-
-            override fun toValueFactory(): ValueFactory {
-                return BasicValueFactory()
-            }
-        },
-        Particular {
-            override fun toString(): String {
-                return "Particular Value Factory"
-            }
-
-            override fun toValueFactory(): ValueFactory {
-                return ParticularValueFactory()
-            }
-        },
-        Range {
-            override fun toString(): String {
-                return "Range Value Factory"
-            }
-
-            override fun toValueFactory(): ValueFactory {
-                return RangeValueFactory()
-            }
-        },
-        ArrayReference {
-            override fun toString(): String {
-                return "Array Reference Value Factory"
-            }
-
-            override fun toValueFactory(): ValueFactory {
-                return ArrayReferenceValueFactory()
-            }
-        },
-        Identified {
-            override fun toString(): String {
-                return "Identified Value Factory"
-            }
-
-            override fun toValueFactory(): ValueFactory {
-                return IdentifiedValueFactory()
-            }
-        },
-        ReferenceTracing {
-            override fun toString(): String {
-                return "Reference Tracing Value Factory"
-            }
-
-            override fun toValueFactory(): ValueFactory {
-                return ReferenceTracingValueFactory(BasicValueFactory())
-            }
-        },
-        TypedReference {
-            override fun toString(): String {
-                return "Typed Reference Value Factory"
-            }
-
-            override fun toValueFactory(): ValueFactory {
-                return TypedReferenceValueFactory()
-            }
-        },
-        DetailedArrayReference {
-            override fun toString(): String {
-                return "Detailed Array Reference Value Factory"
-            }
-
-            override fun toValueFactory(): ValueFactory {
-                return DetailedArrayValueFactory()
-            }
-        },
-        ParticularReferenceValue {
-            override fun toString(): String {
-                return "Particular Reference Value Factory"
-            }
-
-            override fun toValueFactory(): ValueFactory {
-                return ParticularReferenceValueFactory()
-            }
-        }, ;
-        abstract fun toValueFactory(): ValueFactory
     }
 }
