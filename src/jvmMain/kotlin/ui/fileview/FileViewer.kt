@@ -15,6 +15,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import ui.codeview.CodeViewer
 import ui.codeview.MethodHeader
+import ui.editor.Editor
 import viewmodel.FilesViewModel
 
 /**
@@ -37,10 +38,14 @@ fun FileViewer(viewModel: FilesViewModel) {
             modifier = Modifier.fillMaxHeight().width(1.dp),
         )
 
-        Column {
-            viewModel.currentCodeAttributeViewModel?.let {
-                MethodHeader(it.codeAttribute)
-                CodeViewer(it)
+        if (viewModel.currentScratchFileType != null) {
+            Editor(viewModel)
+        } else {
+            Column {
+                viewModel.currentCodeAttributeViewModel?.let {
+                    MethodHeader(it.codeAttribute)
+                    CodeViewer(it)
+                }
             }
         }
     }

@@ -15,7 +15,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import data.LoadUtil
+import data.ValueFactoryType
 import viewmodel.FilesViewModel
 
 @Composable
@@ -34,11 +34,11 @@ fun EvalPicker(viewModel: FilesViewModel) {
                 if (!menuOpened) {
                     Icon(Icons.Rounded.KeyboardArrowRight, contentDescription = "Drawer handle is closed")
                 }
-                Text(if (buttonEnabled) viewModel.valueFactoryOption.toString() else "Cannot reevaluate")
+                Text(if (buttonEnabled) viewModel.valueFactoryType.toString() else "Cannot reevaluate")
             }
         }
         DropdownMenu(menuOpened, { menuOpened = false }) {
-            LoadUtil.ValueFactoryOption.entries.sorted().forEach { evalOption ->
+            ValueFactoryType.entries.sorted().forEach { evalOption ->
                 DropdownMenuItem(
                     {
                         Text(evalOption.toString())

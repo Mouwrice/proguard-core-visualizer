@@ -12,6 +12,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.BitmapPainter
@@ -21,6 +22,7 @@ import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import com.jthemedetecor.OsThemeDetector
 import com.materialkolor.AnimatedDynamicMaterialTheme
+import ui.ExceptionPopup
 import ui.controls.Controls
 import ui.fileview.FileViewer
 import ui.stateview.StateViewer
@@ -30,15 +32,14 @@ import kotlin.io.path.exists
 import kotlin.io.path.inputStream
 
 @Composable
-fun App() {
-    val viewModel = rememberSaveable { FilesViewModel() }
-
+fun App(viewModel: FilesViewModel) {
     Box(Modifier.fillMaxSize().padding(all = 16.dp)) {
         Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
             Controls(viewModel)
 
             Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
                 FileViewer(viewModel)
+
                 StateViewer(viewModel.currentCodeAttributeViewModel)
             }
         }
@@ -61,6 +62,8 @@ fun main() = application {
             ?.use { BitmapPainter(loadImageBitmap(it)) }
     }
 
+    val viewModel = rememberSaveable { FilesViewModel() }
+
     Window(
         title = "ProGuardCORE Visualizer $version",
         icon = appIcon,
@@ -69,7 +72,15 @@ fun main() = application {
         AppTheme(
             seedColor = Color.Blue,
         ) {
-            App()
+            Box {
+                App(viewModel)
+
+                // Top level error handling
+                if (viewModel.exception != null) {
+                    viewModel.exception?.printStackTrace()
+                    ExceptionPopup(viewModel, Modifier.align(Alignment.Center))
+                }
+            }
         }
     }
 }

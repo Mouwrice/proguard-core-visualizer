@@ -1,5 +1,6 @@
 package data
 
+import com.guardsquare.proguard.assembler.io.JbcReader
 import proguard.classfile.ClassPool
 import proguard.classfile.Clazz
 import proguard.classfile.Method
@@ -14,17 +15,9 @@ import proguard.classfile.visitor.ClassPoolFiller
 import proguard.classfile.visitor.FilteredClassVisitor
 import proguard.evaluation.BasicInvocationUnit
 import proguard.evaluation.PartialEvaluator
-import proguard.evaluation.ReferenceTracingValueFactory
 import proguard.evaluation.util.jsonprinter.JsonPrinter
-import proguard.evaluation.value.ArrayReferenceValueFactory
-import proguard.evaluation.value.BasicValueFactory
-import proguard.evaluation.value.DetailedArrayValueFactory
-import proguard.evaluation.value.IdentifiedValueFactory
-import proguard.evaluation.value.ParticularValueFactory
-import proguard.evaluation.value.RangeValueFactory
-import proguard.evaluation.value.TypedReferenceValueFactory
-import proguard.evaluation.value.ValueFactory
 import proguard.io.ClassReader
+import proguard.io.DataEntry
 import proguard.io.DataEntryNameFilter
 import proguard.io.DataEntryReader
 import proguard.io.DataEntrySource
@@ -33,18 +26,51 @@ import proguard.io.FileSource
 import proguard.io.FilteredDataEntryReader
 import proguard.io.JarReader
 import proguard.io.NameFilteredDataEntryReader
+import proguard.io.StreamingDataEntry
 import proguard.util.ExtensionMatcher
 import proguard.util.OrMatcher
 import viewmodel.CodeAttributeViewModel
 import java.io.IOException
+import java.nio.file.Files
 import java.nio.file.Path
+import kotlin.io.path.name
 
 data class LoadedMethod(val name: String, val codeAttributeViewModel: CodeAttributeViewModel?)
 data class LoadedClass(val name: String, val methodMap: Map<String, LoadedMethod>)
-data class LoadedPath(val path: Path, val classPool: ClassPool?, val classMap: Map<String, LoadedClass>)
+
+/**
+ * Representation of a loaded and parsed file.
+ * @param content The original content of the file which is used for the editor.
+ */
+data class LoadedPath(
+    val path: Path,
+    val classPool: ClassPool?,
+    val classMap: Map<String, LoadedClass>,
+    val content: String? = null,
+)
 
 class LoadUtil {
     companion object {
+        fun loadJar(
+            path: Path,
+        ): ClassPool {
+            if (path.endsWith(".${FileTypes.JBC.extension}")) {
+                return parseJbcString(path.name, Files.readString(path))
+            }
+
+            return loadJar(FileSource(path.toFile()))
+        }
+
+        fun loadJar(
+            entry: DataEntry,
+        ): ClassPool {
+            return loadJar { reader ->
+                reader?.read(
+                    entry,
+                )
+            }
+        }
+
         /**
          * Reads the classes from the specified jar file and returns them as a class
          * pool.
@@ -54,14 +80,13 @@ class LoadUtil {
          * @return a new class pool with the read classes.
          */
         @Throws(IOException::class)
-        fun readFile(
-            path: Path,
+        fun loadJar(
+            source: DataEntrySource,
         ): ClassPool {
             val classPool = ClassPool()
 
             // Parse all classes from the input jar and
             // collect them in the class pool.
-            val source: DataEntrySource = FileSource(path.toFile())
             val classPoolFiller = ClassPoolFiller(classPool)
             var classReader: DataEntryReader = NameFilteredDataEntryReader(
                 "**.class",
@@ -107,6 +132,17 @@ class LoadUtil {
             return classPool
         }
 
+        fun parseJbcString(name: String, jbcString: String): ClassPool {
+            val programClassPool = ClassPool()
+
+            val jbcReader: DataEntryReader = JbcReader(
+                ClassPoolFiller(programClassPool),
+            )
+            jbcReader.read(StreamingDataEntry(name, jbcString.byteInputStream()))
+
+            return programClassPool
+        }
+
         fun classMethodMap(classPool: ClassPool): Map<String, LoadedClass> {
             val classMap: MutableMap<String, MutableMap<String, CodeAttributeViewModel?>> = HashMap()
             classPool.accept(
@@ -138,9 +174,14 @@ class LoadUtil {
             }
         }
 
-        fun evaluateMethod(classPool: ClassPool, clazz: String, method: String, valueFactoryOption: ValueFactoryOption): String {
+        fun evaluateMethod(
+            classPool: ClassPool,
+            clazz: String,
+            method: String,
+            valueFactoryType: ValueFactoryType,
+        ): String {
             val tracker = JsonPrinter()
-            val valueFactory = valueFactoryOption.toValueFactory()
+            val valueFactory = valueFactoryType.toValueFactory()
             val pe = PartialEvaluator.Builder.create()
                 .setValueFactory(valueFactory)
                 .setInvocationUnit(BasicInvocationUnit(valueFactory))
@@ -172,89 +213,18 @@ class LoadUtil {
             return tracker.json
         }
 
-        fun trackerFromMethod(classPool: ClassPool, clazz: String, method: String, valueFactoryOption: ValueFactoryOption): StateTracker? {
+        fun trackerFromMethod(
+            classPool: ClassPool,
+            clazz: String,
+            method: String,
+            valueFactoryType: ValueFactoryType,
+        ): StateTracker? {
             try {
-                return StateTracker.fromJson(evaluateMethod(classPool, clazz, method, valueFactoryOption))
+                return StateTracker.fromJson(evaluateMethod(classPool, clazz, method, valueFactoryType))
             } catch (e: Exception) {
                 println("Error while parsing json file: $e")
             }
             return null
         }
-    }
-
-    enum class ValueFactoryOption {
-        Basic {
-            override fun toString(): String {
-                return "Basic Value Factory"
-            }
-
-            override fun toValueFactory(): ValueFactory {
-                return BasicValueFactory()
-            }
-        },
-        Particular {
-            override fun toString(): String {
-                return "Particular Value Factory"
-            }
-
-            override fun toValueFactory(): ValueFactory {
-                return ParticularValueFactory()
-            }
-        },
-        Range {
-            override fun toString(): String {
-                return "Range Value Factory"
-            }
-
-            override fun toValueFactory(): ValueFactory {
-                return RangeValueFactory()
-            }
-        },
-        ArrayReference {
-            override fun toString(): String {
-                return "Array Reference Value Factory"
-            }
-
-            override fun toValueFactory(): ValueFactory {
-                return ArrayReferenceValueFactory()
-            }
-        },
-        Identified {
-            override fun toString(): String {
-                return "Identified Value Factory"
-            }
-
-            override fun toValueFactory(): ValueFactory {
-                return IdentifiedValueFactory()
-            }
-        },
-        ReferenceTracing {
-            override fun toString(): String {
-                return "Reference Tracing Value Factory"
-            }
-
-            override fun toValueFactory(): ValueFactory {
-                return ReferenceTracingValueFactory(BasicValueFactory())
-            }
-        },
-        TypedReference {
-            override fun toString(): String {
-                return "Typed Reference Value Factory"
-            }
-
-            override fun toValueFactory(): ValueFactory {
-                return TypedReferenceValueFactory()
-            }
-        },
-        DetailedArrayReference {
-            override fun toString(): String {
-                return "Detailed Array Reference Value Factory"
-            }
-
-            override fun toValueFactory(): ValueFactory {
-                return DetailedArrayValueFactory()
-            }
-        }, ;
-        abstract fun toValueFactory(): ValueFactory
     }
 }

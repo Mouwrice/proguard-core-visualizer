@@ -4,8 +4,10 @@ import androidx.compose.foundation.HorizontalScrollbar
 import androidx.compose.foundation.VerticalScrollbar
 import androidx.compose.foundation.defaultScrollbarStyle
 import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -14,7 +16,13 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.rememberScrollbarAdapter
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Add
+import androidx.compose.material.icons.rounded.EditNote
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -27,8 +35,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import data.FileTypes
+import ui.buttons.ResizableIconButton
 import viewmodel.FilesViewModel
 import java.nio.file.Path
+import kotlin.io.path.name
 
 /**
  * The input field for the search query.
@@ -55,6 +66,8 @@ fun TreeView(viewModel: FilesViewModel, modifier: Modifier = Modifier) {
     var searchQuery by remember { mutableStateOf("") }
 
     var treeState by remember { mutableStateOf(emptyMap<Path, PackageState>().toSortedMap()) }
+
+    var newScratchFile by remember { mutableStateOf(false) }
 
     // Recompute expandedState if pathMap gets changed, Not using derived state since the new state depends on the old one.
     LaunchedEffect(viewModel.files) {
@@ -90,9 +103,9 @@ fun TreeView(viewModel: FilesViewModel, modifier: Modifier = Modifier) {
         }
 
         Box {
-            LazyColumn(state = verticalState, modifier = Modifier.horizontalScroll(horizontalState)) {
-                // Display all file branches
-                treeState.forEach { (_, packageState) ->
+            LazyColumn(state = verticalState, modifier = Modifier.horizontalScroll(horizontalState).padding(bottom = 16.dp)) {
+                // Display all non-scratch file branches
+                treeState.filter { !it.key.name.startsWith("scratch-file") }.forEach { (_, packageState) ->
                     val nodes = packageState.buildTreeBranch(viewModel, searchQuery, 4.dp) {
                         treeState = treeState.plus(Pair(packageState.path.path, it)).toSortedMap()
                     }
@@ -100,6 +113,58 @@ fun TreeView(viewModel: FilesViewModel, modifier: Modifier = Modifier) {
                         Node(it)
                     }
                 }
+
+                // region scratch files
+                item {
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                    ) {
+                        Icon(Icons.Rounded.EditNote, contentDescription = "Scratch files")
+                        Text("Scratch files")
+                        Box {
+                            ResizableIconButton(
+                                icon = Icons.Rounded.Add,
+                                contentDescription = "Add scratch file",
+                            ) {
+                                newScratchFile = true
+                            }
+
+                            DropdownMenu(
+                                expanded = newScratchFile,
+                                onDismissRequest = { newScratchFile = false },
+                            ) {
+                                FileTypes.entries.filter { it.canWrite }.forEach { fileType ->
+                                    DropdownMenuItem(
+                                        text = {
+                                            Text(
+                                                text = fileType.name,
+                                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                                                style = MaterialTheme.typography.bodySmall,
+                                            )
+                                        },
+                                        onClick = {
+                                            viewModel.currentScratchFileType = fileType
+                                            newScratchFile = false
+                                        },
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+
+                // Display all non-scratch file branches
+                treeState.filter { it.key.name.startsWith("scratch-file") }.forEach { (_, packageState) ->
+                    val nodes = packageState.buildTreeBranch(viewModel, searchQuery, 4.dp) {
+                        treeState = treeState.plus(Pair(packageState.path.path, it)).toSortedMap()
+                    }
+                    items(nodes) {
+                        Node(it)
+                    }
+                }
+
+                // endregion
             }
 
             VerticalScrollbar(

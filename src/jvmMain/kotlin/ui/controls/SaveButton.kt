@@ -24,7 +24,7 @@ fun SaveButton(viewModel: FilesViewModel) {
         viewModel.curPath?.classPool?.let { classPool ->
             viewModel.curClazz?.let { clazz ->
                 viewModel.curMethod?.let { method ->
-                    var fileName = "$clazz.$method.${viewModel.valueFactoryOption}:.json"
+                    var fileName = "$clazz.$method.${viewModel.valueFactoryType}:.json"
                         .replace("[^a-zA-Z0-9-_.]".toRegex(), "_")
                         .replace("_+".toRegex(), "_")
 
@@ -37,7 +37,7 @@ fun SaveButton(viewModel: FilesViewModel) {
                                     fileName += ".json"
                                 }
                                 val jsonString =
-                                    LoadUtil.evaluateMethod(classPool, clazz.name, method.name, viewModel.valueFactoryOption)
+                                    LoadUtil.evaluateMethod(classPool, clazz.name, method.name, viewModel.valueFactoryType)
                                 File(directory, file).writeText(jsonString)
                             }
                         },
