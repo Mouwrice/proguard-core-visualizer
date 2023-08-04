@@ -31,7 +31,29 @@ The latest release is available for download on the following page:
 
 If you have never heard of ProGuard then this tool might not be for you 😃
 
-The repository contains some samples in the [examples](examples) directory.
+If you want to see what evaluating instructions looks like, we got your back.
+The visualizer provides a visual representation of the evaluations made by the [partial evaluator](https://guardsquare.github.io/proguard-core/partialevaluator.html) from ProGuard Core.
+It does this through the [JsonPrinter API](https://github.com/Guardsquare/proguard-core/blob/master/base/src/main/java/proguard/evaluation/util/jsonprinter/JsonPrinter.java)
+provided by ProGuard Core.
+
+In general, we can help you:
+* Step through the partial evaluation step-by-step while keeping track of:
+the stack, the variables, the to-be-evaluated-branch start offsets, whether an instruction is generalized and whether an instruction is skipped.
+* View the final result from the evaluator for each instruction, see the stack, the variables, origin instructions and target instructions.
+* Navigate freely through the evaluations by simply clicking the instructions to view desired evaluation.
+* Navigate a large file through our search bar, go where you need to be quickly.
+* Save the JSON debug file of an evaluation.
+
+JSON and JBC files can be edited using an integrated editor through scratch files. 
+Simply create a scratch file and start editing it.
+
+Lastly for AAR, APK, CLASS, DEX, JAR, ZIP and JBC files, we allow evaluation of using a value factory of choice.
+This way you can make sure you choose the value factory that's just write for you. 
+
+The repository contains some samples of files that can be opened in the [examples](examples) directory.
+
+NOTE: we do not support the visualization of the subroutine evaluations caused by JSR.
+Whenever a JSR instruction is evaluated, we just skip over the subroutine evaluation.
 
 ## 🤝 Contributing
 
