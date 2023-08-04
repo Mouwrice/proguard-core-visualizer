@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -40,7 +41,7 @@ fun Editor(viewModel: FilesViewModel) {
                 cursorColor = MaterialTheme.colorScheme.primary,
             ),
             shape = MaterialTheme.shapes.medium,
-            modifier = Modifier.fillMaxHeight(0.9f),
+            modifier = Modifier.fillMaxHeight(0.9f).fillMaxWidth(),
         )
 
         Row {

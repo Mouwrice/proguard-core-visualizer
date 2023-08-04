@@ -33,10 +33,7 @@ fun ResizableIconButton(
                 role = Role.Button,
                 interactionSource = MutableInteractionSource(),
                 indication = rememberRipple(bounded = false, radius = 12.dp),
-                onClick = {
-                    println("click")
-                    callBack()
-                },
+                onClick = callBack,
             ),
         contentAlignment = Alignment.Center,
     ) {

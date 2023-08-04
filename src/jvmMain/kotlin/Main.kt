@@ -4,10 +4,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.AlertDialog
-import androidx.compose.material.Button
-import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.Text
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
@@ -16,6 +12,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.BitmapPainter
@@ -25,6 +22,7 @@ import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import com.jthemedetecor.OsThemeDetector
 import com.materialkolor.AnimatedDynamicMaterialTheme
+import ui.ExceptionPopup
 import ui.controls.Controls
 import ui.fileview.FileViewer
 import ui.stateview.StateViewer
@@ -33,38 +31,8 @@ import java.nio.file.Paths
 import kotlin.io.path.exists
 import kotlin.io.path.inputStream
 
-@OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun App() {
-    val viewModel = rememberSaveable { FilesViewModel() }
-
-    // Top level error handling
-    if (viewModel.exception != null) {
-        var detailedView by remember { mutableStateOf(false) }
-
-        AlertDialog(
-            onDismissRequest = { viewModel.exception = null },
-            buttons = {
-                Row(Modifier.padding(10.dp)) {
-                    Button(
-                        {
-                            viewModel.exception?.printStackTrace()
-                            viewModel.exception = null
-                            detailedView = false
-                        },
-                        modifier = Modifier.padding(10.dp),
-                    ) {
-                        Text("Sad Vibes Bro")
-                    }
-                }
-            },
-            title = { Text("An exception occurred.") },
-            text = {
-                Text(viewModel.exception?.message ?: "")
-            },
-        )
-    }
-
+fun App(viewModel: FilesViewModel) {
     Box(Modifier.fillMaxSize().padding(all = 16.dp)) {
         Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
             Controls(viewModel)
@@ -94,6 +62,8 @@ fun main() = application {
             ?.use { BitmapPainter(loadImageBitmap(it)) }
     }
 
+    val viewModel = rememberSaveable { FilesViewModel() }
+
     Window(
         title = "ProGuardCORE Visualizer $version",
         icon = appIcon,
@@ -102,7 +72,15 @@ fun main() = application {
         AppTheme(
             seedColor = Color.Blue,
         ) {
-            App()
+            Box {
+                App(viewModel)
+
+                // Top level error handling
+                if (viewModel.exception != null) {
+                    viewModel.exception?.printStackTrace()
+                    ExceptionPopup(viewModel, Modifier.align(Alignment.Center))
+                }
+            }
         }
     }
 }
