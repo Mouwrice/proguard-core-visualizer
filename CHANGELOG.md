@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.7.0 (2023-08-04)
+
+## What's Changed
+* docs: readme by @jitsedesmet in https://github.com/Mouwrice/proguard-core-visualizer/pull/105
+* feat: editor component by @jitsedesmet in https://github.com/Mouwrice/proguard-core-visualizer/pull/102
+
+
+**Full Changelog**: https://github.com/Mouwrice/proguard-core-visualizer/compare/v0.6.0...v0.7.0
+
 ## 0.6.0 (2023-08-03)
 
 ## What's Changed
