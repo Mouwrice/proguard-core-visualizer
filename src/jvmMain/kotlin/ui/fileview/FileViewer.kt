@@ -2,6 +2,7 @@ package ui.fileview
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -12,6 +13,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
+import ui.codeview.CodeViewer
+import ui.codeview.MethodHeader
 import ui.jbcEditor.Editor
 import viewmodel.FilesViewModel
 
@@ -35,13 +38,16 @@ fun FileViewer(viewModel: FilesViewModel) {
             modifier = Modifier.fillMaxHeight().width(1.dp),
         )
 
-        Editor(viewModel)
-
-        // Column {
-        //    viewModel.currentCodeAttributeViewModel?.let {
-        //        MethodHeader(it.codeAttribute)
-        //        CodeViewer(it)
-        //    }
-        // }
+        when (viewModel.showEditor) {
+            true -> Editor(viewModel)
+            false -> {
+                Column {
+                    viewModel.currentCodeAttributeViewModel?.let {
+                        MethodHeader(it.codeAttribute)
+                        CodeViewer(it)
+                    }
+                }
+            }
+        }
     }
 }
