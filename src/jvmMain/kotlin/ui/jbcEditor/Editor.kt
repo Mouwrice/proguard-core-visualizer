@@ -47,7 +47,15 @@ fun Editor(viewModel: FilesViewModel) {
         ExtendedFloatingActionButton(
             containerColor = MaterialTheme.colorScheme.primary,
             modifier = Modifier.padding(8.dp).align(Alignment.BottomEnd),
-            onClick = { viewModel.currentScratchFileType?.let { viewModel.loadScratch(text, it) } },
+            onClick = {
+                viewModel.currentScratchFileType?.let {
+                    try {
+                        viewModel.loadScratch(text, it)
+                    } catch (exception: Exception) {
+                        viewModel.exception = exception
+                    }
+                }
+            },
         ) {
             Text("Submit")
         }

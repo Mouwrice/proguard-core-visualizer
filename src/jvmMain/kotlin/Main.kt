@@ -4,6 +4,10 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.AlertDialog
+import androidx.compose.material.Button
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.Text
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
@@ -29,9 +33,37 @@ import java.nio.file.Paths
 import kotlin.io.path.exists
 import kotlin.io.path.inputStream
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun App() {
     val viewModel = rememberSaveable { FilesViewModel() }
+
+    // Top level error handling
+    if (viewModel.exception != null) {
+        var detailedView by remember { mutableStateOf(false) }
+
+        AlertDialog(
+            onDismissRequest = { viewModel.exception = null },
+            buttons = {
+                Row(Modifier.padding(10.dp)) {
+                    Button(
+                        {
+                            viewModel.exception?.printStackTrace()
+                            viewModel.exception = null
+                            detailedView = false
+                        },
+                        modifier = Modifier.padding(10.dp),
+                    ) {
+                        Text("Sad Vibes Bro")
+                    }
+                }
+            },
+            title = { Text("An exception occurred.") },
+            text = {
+                Text(viewModel.exception?.message ?: "")
+            },
+        )
+    }
 
     Box(Modifier.fillMaxSize().padding(all = 16.dp)) {
         Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {

@@ -47,6 +47,8 @@ class FilesViewModel {
 
     private var scratchCount by mutableStateOf(0)
 
+    var exception by mutableStateOf<Exception?>(null)
+
     /**
      * The current file type of scratch file in the editor
      * `null` if no scratch file is open
