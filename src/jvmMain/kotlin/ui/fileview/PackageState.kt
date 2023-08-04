@@ -80,6 +80,7 @@ data class PackageState(
             onClick = {
                 registerChange(toggleExpanded())
             },
+            query = searchQuery.toRegex(),
         )
 
         val childPackages = mutableListOf<NodeState>()
@@ -148,6 +149,7 @@ data class PackageState(
                                     viewModel.curClazz = ownClazz
                                     viewModel.curMethod = method
                                 },
+                                query = searchQuery.toRegex(),
                             ),
                         )
                     }
