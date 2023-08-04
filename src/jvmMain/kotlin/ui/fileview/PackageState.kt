@@ -148,6 +148,7 @@ data class PackageState(
                                     viewModel.curPath = path
                                     viewModel.curClazz = ownClazz
                                     viewModel.curMethod = method
+                                    viewModel.currentScratchFileType = null
                                 },
                                 query = searchQuery.toRegex(),
                             ),

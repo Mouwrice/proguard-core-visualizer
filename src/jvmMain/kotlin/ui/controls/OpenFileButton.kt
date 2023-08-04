@@ -77,7 +77,7 @@ private fun FileDialog(
             }
         }
         dialog.filenameFilter = FilenameFilter { _, name ->
-            FileTypes.entries.toList().any { name.endsWith(it.extension) }
+            FileTypes.entries.filter { it.canRead }.any { name.endsWith(it.extension) }
         }
 
         dialog
