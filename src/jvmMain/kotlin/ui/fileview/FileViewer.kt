@@ -38,14 +38,13 @@ fun FileViewer(viewModel: FilesViewModel) {
             modifier = Modifier.fillMaxHeight().width(1.dp),
         )
 
-        when (viewModel.showEditor) {
-            true -> Editor(viewModel)
-            false -> {
-                Column {
-                    viewModel.currentCodeAttributeViewModel?.let {
-                        MethodHeader(it.codeAttribute)
-                        CodeViewer(it)
-                    }
+        if (viewModel.currentScratchFileType != null) {
+            Editor(viewModel)
+        } else {
+            Column {
+                viewModel.currentCodeAttributeViewModel?.let {
+                    MethodHeader(it.codeAttribute)
+                    CodeViewer(it)
                 }
             }
         }

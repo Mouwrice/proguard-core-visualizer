@@ -15,6 +15,7 @@ import proguard.classfile.visitor.ClassPoolFiller
 import proguard.classfile.visitor.FilteredClassVisitor
 import proguard.evaluation.BasicInvocationUnit
 import proguard.evaluation.PartialEvaluator
+import proguard.evaluation.ParticularReferenceValueFactory
 import proguard.evaluation.ReferenceTracingValueFactory
 import proguard.evaluation.util.jsonprinter.JsonPrinter
 import proguard.evaluation.value.ArrayReferenceValueFactory
@@ -303,6 +304,15 @@ class LoadUtil {
 
             override fun toValueFactory(): ValueFactory {
                 return DetailedArrayValueFactory()
+            }
+        },
+        ParticularReferenceValue {
+            override fun toString(): String {
+                return "Particular Reference Value Factory"
+            }
+
+            override fun toValueFactory(): ValueFactory {
+                return ParticularReferenceValueFactory()
             }
         }, ;
         abstract fun toValueFactory(): ValueFactory

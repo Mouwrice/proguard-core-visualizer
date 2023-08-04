@@ -38,10 +38,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import data.FileTypes
 import ui.buttons.ResizableIconButton
-import viewmodel.FileTypes
 import viewmodel.FilesViewModel
 import java.nio.file.Path
+import kotlin.io.path.name
 
 /**
  * The input field for the search query.
@@ -106,8 +107,8 @@ fun TreeView(viewModel: FilesViewModel, modifier: Modifier = Modifier) {
 
         Box {
             LazyColumn(state = verticalState, modifier = Modifier.horizontalScroll(horizontalState)) {
-                // Display all file branches
-                treeState.forEach { (_, packageState) ->
+                // Display all non-scratch file branches
+                treeState.filter { !it.key.name.startsWith("scratch-file") }.forEach { (_, packageState) ->
                     val nodes = packageState.buildTreeBranch(viewModel, searchQuery, 4.dp) {
                         treeState = treeState.plus(Pair(packageState.path.path, it)).toSortedMap()
                     }
@@ -116,7 +117,7 @@ fun TreeView(viewModel: FilesViewModel, modifier: Modifier = Modifier) {
                     }
                 }
 
-                // Scratch file section
+                // region scratch files
                 item {
                     Row(
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -136,7 +137,7 @@ fun TreeView(viewModel: FilesViewModel, modifier: Modifier = Modifier) {
                                 expanded = newScratchFile,
                                 onDismissRequest = { newScratchFile = false },
                             ) {
-                                FileTypes.entries.forEach { fileType ->
+                                FileTypes.entries.filter { it.canWrite }.forEach { fileType ->
                                     DropdownMenuItem(
                                         text = {
                                             Text(
@@ -146,10 +147,8 @@ fun TreeView(viewModel: FilesViewModel, modifier: Modifier = Modifier) {
                                             )
                                         },
                                         onClick = {
-                                            viewModel.showEditor = !viewModel.showEditor
+                                            viewModel.currentScratchFileType = fileType
                                             newScratchFile = false
-                                            println("Add scratch file function to viewmodel")
-                                            // TODO: Add scratch file function to viewmodel
                                         },
                                     )
                                 }
@@ -157,6 +156,18 @@ fun TreeView(viewModel: FilesViewModel, modifier: Modifier = Modifier) {
                         }
                     }
                 }
+
+                // Display all non-scratch file branches
+                treeState.filter { it.key.name.startsWith("scratch-file") }.forEach { (_, packageState) ->
+                    val nodes = packageState.buildTreeBranch(viewModel, searchQuery, 4.dp) {
+                        treeState = treeState.plus(Pair(packageState.path.path, it)).toSortedMap()
+                    }
+                    items(nodes) {
+                        Node(it)
+                    }
+                }
+
+                // endregion
             }
 
             VerticalScrollbar(

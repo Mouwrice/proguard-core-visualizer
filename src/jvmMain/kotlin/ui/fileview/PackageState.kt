@@ -130,27 +130,27 @@ data class PackageState(
             // Display the methods of the current class (the above 2 maps should be empty in this case)
             clazz?.let { ownClazz ->
                 ownClazz.methodMap.toSortedMap().forEach { (_, method) ->
-                    // Show all methods if the search query is empty
-                    // or only show methods that match the search query
-                    if (searchQuery == "" || method.name.contains(searchQuery.toRegex())) {
-                        childMethods.add(
-                            NodeState(
-                                method.name,
-                                indentation + 12.dp,
-                                // Go through name since selection of a method that need to be evaluated will change the method instance
-                                iconMode = if (viewModel.curPath?.path == path.path && viewModel.curClazz?.name == ownClazz.name && viewModel.curMethod?.name == method.name) {
-                                    IconMode.Selected
-                                } else {
-                                    IconMode.Unselected
-                                },
-                                onClick = {
-                                    viewModel.curPath = path
-                                    viewModel.curClazz = ownClazz
-                                    viewModel.curMethod = method
-                                },
-                            ),
-                        )
-                    }
+                // Show all methods if the search query is empty
+                // or only show methods that match the search query
+                if (searchQuery == "" || method.name.contains(searchQuery.toRegex())) {
+                    childMethods.add(
+                        NodeState(
+                            method.name,
+                            indentation + 12.dp,
+                            // Go through name since selection of a method that need to be evaluated will change the method instance
+                            iconMode = if (viewModel.curPath?.path == path.path && viewModel.curClazz?.name == ownClazz.name && viewModel.curMethod?.name == method.name) {
+                                IconMode.Selected
+                            } else {
+                                IconMode.Unselected
+                            },
+                            onClick = {
+                                viewModel.curPath = path
+                                viewModel.curClazz = ownClazz
+                                viewModel.curMethod = method
+                                viewModel.currentScratchFileType = null
+                            },
+                        ),
+                    )}
                 }
             }
         }

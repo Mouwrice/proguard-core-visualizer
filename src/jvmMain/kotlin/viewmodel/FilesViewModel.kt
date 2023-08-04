@@ -45,14 +45,13 @@ class FilesViewModel {
     var valueFactoryOption by mutableStateOf(LoadUtil.ValueFactoryOption.Basic)
         private set
 
-    var scratchCount by mutableStateOf(0)
-        private set
+    private var scratchCount by mutableStateOf(0)
 
     /**
-     * Whether the editor should be shown.
-     * The editor currently is a scratchpad for writing jbc code.
+     * The current file type of scratch file in the editor
+     * `null` if no scratch file is open
      */
-    var showEditor by mutableStateOf(false)
+    var currentScratchFileType by mutableStateOf<FileTypes?>(null)
 
     fun setEvalFactoryAndUpdate(evaluationMethod: LoadUtil.ValueFactoryOption) {
         this.valueFactoryOption = evaluationMethod
@@ -167,7 +166,7 @@ class FilesViewModel {
         loadClassPool(path, LoadUtil.loadJar(path))
     }
 
-    private fun loadJBC(path: Path, content: String) {
+    private fun loadJbc(path: Path, content: String) {
         val classPool = LoadUtil.parseJbcString(path.name, content)
         files = files.plus(
             Pair(
@@ -181,7 +180,7 @@ class FilesViewModel {
         val path = Path.of("scratch-file$scratchCount.${fileType.extension}")
         when (fileType) {
             FileTypes.JSON -> loadJson(path, StateTracker.fromJson(content))
-            FileTypes.JBC -> loadJBC(path, content)
+            FileTypes.JBC -> loadJbc(path, content)
             FileTypes.JAR, FileTypes.APK, FileTypes.CLASS, FileTypes.AAR, FileTypes.DEX, FileTypes.ZIP ->
                 loadClassPool(
                     path,

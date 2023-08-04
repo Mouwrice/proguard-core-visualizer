@@ -1,54 +1,55 @@
 package ui.jbcEditor
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Text
-import androidx.compose.material3.Button
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.TextField
+import androidx.compose.material.TextFieldDefaults
+import androidx.compose.material3.ExtendedFloatingActionButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import data.FileTypes
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.unit.dp
 import viewmodel.FilesViewModel
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Editor(viewModel: FilesViewModel) {
-    var text by remember {
-        mutableStateOf(
-            "import java.lang.String;\n" +
-                "import java.lang.System;\n" +
-                "import java.io.PrintStream;\n" +
-                "version 12;\n" +
-                "public class MyClass {\n" +
-                "    public static void main(final String[] args) {\n" +
-                "        getstatic System#PrintStream out\n" +
-                "        ldc \"Hello World!\"\n" +
-                "        invokevirtual PrintStream#void println(String)\n" +
-                "        return\n" +
-                "    }\n" +
-                "}",
-        )
-    }
+    var text by remember { mutableStateOf("") }
 
-    Column {
-        Button(
-            onClick = {
-                viewModel.loadScratch(text, FileTypes.JBC)
-            },
-            modifier = Modifier.fillMaxWidth(),
-        ) {
-            Text("load it")
+    Box {
+        Column {
+            OutlinedTextField(
+                value = text,
+                onValueChange = { text = it },
+                textStyle = MaterialTheme.typography.bodySmall.copy(
+                    color = MaterialTheme.colorScheme.onSurface,
+                    fontFamily = FontFamily.Monospace,
+                ),
+                colors = TextFieldDefaults.textFieldColors(
+                    textColor = MaterialTheme.colorScheme.onSurface,
+                    backgroundColor = MaterialTheme.colorScheme.surface,
+                    focusedIndicatorColor = MaterialTheme.colorScheme.primary,
+                    cursorColor = MaterialTheme.colorScheme.primary,
+                ),
+                shape = MaterialTheme.shapes.medium,
+                modifier = Modifier.fillMaxSize(),
+            )
         }
-        TextField(
-            value = text,
-            onValueChange = { text = it },
-            modifier = Modifier.fillMaxSize(),
-        )
+
+        ExtendedFloatingActionButton(
+            containerColor = MaterialTheme.colorScheme.primary,
+            modifier = Modifier.padding(8.dp).align(Alignment.BottomEnd),
+            onClick = { viewModel.currentScratchFileType?.let { viewModel.loadScratch(text, it) } },
+        ) {
+            Text("Submit")
+        }
     }
 }
