@@ -33,6 +33,7 @@ kotlin {
                 implementation("com.github.Guardsquare.proguard-core:proguard-core:master-SNAPSHOT")
                 implementation(libs.proguard.core.android)
                 implementation("com.guardsquare:proguard-assembler:1.0.0")
+                implementation("com.github.tschuchortdev:kotlin-compile-testing:1.5.0")
             }
         }
     }

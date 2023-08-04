@@ -137,10 +137,25 @@ class LoadUtil {
             val jbcReader: DataEntryReader = JbcReader(
                 ClassPoolFiller(programClassPool),
             )
-            jbcReader.read(StreamingDataEntry("apples", jbcString.byteInputStream()))
+            jbcReader.read(StreamingDataEntry(name, jbcString.byteInputStream()))
 
             return programClassPool
         }
+
+        // fun parseKotlin() {
+        //     val compiler = KotlinCompilation()
+//
+        //     compiler.apply {
+        //         this.sources = source.filterNot { it is AssemblerSource }.map { it.asSourceFile() }
+        //         this.inheritClassPath = false
+        //         this.workingDir = Files.createTempDirectory("ClassPoolBuilder").toFile()
+        //         this.javacArguments = javacArguments.toMutableList()
+        //         this.kotlincArguments = kotlincArguments
+        //         this.verbose = false
+        //         this.jdkHome = jdkHome
+        //     }
+//
+        // }
 
         fun classMethodMap(classPool: ClassPool): Map<String, LoadedClass> {
             val classMap: MutableMap<String, MutableMap<String, CodeAttributeViewModel?>> = HashMap()
