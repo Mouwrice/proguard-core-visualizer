@@ -103,7 +103,7 @@ fun TreeView(viewModel: FilesViewModel, modifier: Modifier = Modifier) {
         }
 
         Box {
-            LazyColumn(state = verticalState, modifier = Modifier.horizontalScroll(horizontalState)) {
+            LazyColumn(state = verticalState, modifier = Modifier.horizontalScroll(horizontalState).padding(bottom = 16.dp)) {
                 // Display all non-scratch file branches
                 treeState.filter { !it.key.name.startsWith("scratch-file") }.forEach { (_, packageState) ->
                     val nodes = packageState.buildTreeBranch(viewModel, searchQuery, 4.dp) {
