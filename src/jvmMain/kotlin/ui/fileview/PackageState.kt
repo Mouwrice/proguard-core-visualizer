@@ -157,10 +157,9 @@ data class PackageState(
                                     viewModel.curMethod = method
                                     viewModel.currentScratchFileType = null
                                 },
-                            query = searchQuery.toRegex(),
+                                query = searchQuery.toRegex(),
                             ),
                         )
-
                     }
                 }
             }
