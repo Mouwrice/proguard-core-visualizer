@@ -48,6 +48,12 @@ class FilesViewModel {
     var scratchCount by mutableStateOf(0)
         private set
 
+    /**
+     * Whether the editor should be shown.
+     * The editor currently is a scratchpad for writing jbc code.
+     */
+    var showEditor by mutableStateOf(false)
+
     fun setEvalFactoryAndUpdate(evaluationMethod: LoadUtil.ValueFactoryOption) {
         this.valueFactoryOption = evaluationMethod
         reEvalCurMethod()

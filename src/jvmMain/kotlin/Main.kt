@@ -4,7 +4,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
@@ -30,7 +29,6 @@ import java.nio.file.Paths
 import kotlin.io.path.exists
 import kotlin.io.path.inputStream
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun App() {
     val viewModel = rememberSaveable { FilesViewModel() }
