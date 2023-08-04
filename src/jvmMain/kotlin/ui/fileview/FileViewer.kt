@@ -35,7 +35,7 @@ fun FileViewer(viewModel: FilesViewModel) {
             modifier = Modifier.fillMaxHeight().width(1.dp),
         )
 
-        Editor()
+        Editor(viewModel)
 
         // Column {
         //    viewModel.currentCodeAttributeViewModel?.let {
