@@ -1,4 +1,4 @@
-package viewmodel
+package data
 
 enum class FileTypes(val extension: String) {
     AAR("aar"),
@@ -8,4 +8,7 @@ enum class FileTypes(val extension: String) {
     JAR("jar"),
     JSON("json"),
     ZIP("zip"),
+
+    // Following specs: https://github.com/Guardsquare/proguard-assembler/blob/master/docs/md/specification.md
+    JBC("jbc"),
 }

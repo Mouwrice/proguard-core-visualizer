@@ -1,5 +1,6 @@
 package data
 
+import com.guardsquare.proguard.assembler.io.JbcReader
 import proguard.classfile.ClassPool
 import proguard.classfile.Clazz
 import proguard.classfile.Method
@@ -25,6 +26,7 @@ import proguard.evaluation.value.RangeValueFactory
 import proguard.evaluation.value.TypedReferenceValueFactory
 import proguard.evaluation.value.ValueFactory
 import proguard.io.ClassReader
+import proguard.io.DataEntry
 import proguard.io.DataEntryNameFilter
 import proguard.io.DataEntryReader
 import proguard.io.DataEntrySource
@@ -33,11 +35,14 @@ import proguard.io.FileSource
 import proguard.io.FilteredDataEntryReader
 import proguard.io.JarReader
 import proguard.io.NameFilteredDataEntryReader
+import proguard.io.StreamingDataEntry
 import proguard.util.ExtensionMatcher
 import proguard.util.OrMatcher
 import viewmodel.CodeAttributeViewModel
 import java.io.IOException
+import java.nio.file.Files
 import java.nio.file.Path
+import kotlin.io.path.name
 
 data class LoadedMethod(val name: String, val codeAttributeViewModel: CodeAttributeViewModel?)
 data class LoadedClass(val name: String, val methodMap: Map<String, LoadedMethod>)
@@ -45,6 +50,26 @@ data class LoadedPath(val path: Path, val classPool: ClassPool?, val classMap: M
 
 class LoadUtil {
     companion object {
+        fun loadJar(
+            path: Path,
+        ): ClassPool {
+            if (path.endsWith(".${FileTypes.JBC.extension}")) {
+                return parseJbcString(path.name, Files.readString(path))
+            }
+
+            return loadJar(FileSource(path.toFile()))
+        }
+
+        fun loadJar(
+            entry: DataEntry,
+        ): ClassPool {
+            return loadJar { reader ->
+                reader?.read(
+                    entry,
+                )
+            }
+        }
+
         /**
          * Reads the classes from the specified jar file and returns them as a class
          * pool.
@@ -54,14 +79,13 @@ class LoadUtil {
          * @return a new class pool with the read classes.
          */
         @Throws(IOException::class)
-        fun readFile(
-            path: Path,
+        fun loadJar(
+            source: DataEntrySource,
         ): ClassPool {
             val classPool = ClassPool()
 
             // Parse all classes from the input jar and
             // collect them in the class pool.
-            val source: DataEntrySource = FileSource(path.toFile())
             val classPoolFiller = ClassPoolFiller(classPool)
             var classReader: DataEntryReader = NameFilteredDataEntryReader(
                 "**.class",
@@ -105,6 +129,17 @@ class LoadUtil {
             )
             source.pumpDataEntries(classReader)
             return classPool
+        }
+
+        fun parseJbcString(name: String, jbcString: String): ClassPool {
+            val programClassPool = ClassPool()
+
+            val jbcReader: DataEntryReader = JbcReader(
+                ClassPoolFiller(programClassPool),
+            )
+            jbcReader.read(StreamingDataEntry("apples", jbcString.byteInputStream()))
+
+            return programClassPool
         }
 
         fun classMethodMap(classPool: ClassPool): Map<String, LoadedClass> {

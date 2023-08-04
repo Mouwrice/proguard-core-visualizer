@@ -13,14 +13,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import com.guardsquare.proguard.assembler.io.JbcReader
-import proguard.classfile.ClassPool
-import proguard.classfile.visitor.ClassPoolFiller
-import proguard.io.DataEntryNameFilter
-import proguard.io.DataEntryReader
-import proguard.io.FilteredDataEntryReader
-import proguard.io.StreamingDataEntry
-import proguard.util.ExtensionMatcher
+import data.FileTypes
 import viewmodel.FilesViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -46,19 +39,7 @@ fun Editor(viewModel: FilesViewModel) {
     Column {
         Button(
             onClick = {
-                val programClassPool = ClassPool()
-
-                val jbcReader: DataEntryReader = JbcReader(
-                    ClassPoolFiller(programClassPool),
-                )
-
-                val reader: DataEntryReader = FilteredDataEntryReader(
-                    DataEntryNameFilter(ExtensionMatcher(".jbc")),
-                    jbcReader,
-                )
-                jbcReader.read(StreamingDataEntry("apples", text.byteInputStream()))
-
-                programClassPool.classNames().forEach { println(it) }
+                viewModel.loadScratch(text, FileTypes.JBC)
             },
             modifier = Modifier.fillMaxWidth(),
         ) {

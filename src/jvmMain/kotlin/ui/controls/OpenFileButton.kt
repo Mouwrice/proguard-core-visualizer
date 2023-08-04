@@ -17,10 +17,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.AwtWindow
+import data.FileTypes
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import viewmodel.FileTypes
 import viewmodel.FilesViewModel
 import java.awt.FileDialog
 import java.awt.Frame
