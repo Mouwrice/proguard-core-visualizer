@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.0.0 (2023-08-06)
+
+## What's Changed
+* chore!: release 1.0 and archive notice by @Mouwrice in https://github.com/Mouwrice/proguard-core-visualizer/pull/107
+
+
+**Full Changelog**: https://github.com/Mouwrice/proguard-core-visualizer/compare/v0.7.0...v1.0.0
+
 ## 0.7.0 (2023-08-04)
 
 ## What's Changed
