@@ -11,9 +11,12 @@
 
 <h4 align="center">A desktop application to visualize evaluations from <a href="https://github.com/Guardsquare/proguard-core"> ProGuardCORE</a></h4>
 
-<!-- Badges -->
 <p align="center">
-  <!-- TODO -->
+  <b>We have moved. You can find the new location of this project at the following address:</b>
+  <br/>
+  <a href="https://github.com/Guardsquare/proguard-core-visualizer">
+    https://github.com/Guardsquare/proguard-core-visualizer
+  </a>
 </p>
 
 ## ❓ Getting Help
@@ -26,6 +29,16 @@ Please create an [Issue](https://github.com/Mouwrice/proguard-core-visualizer/is
 The latest release is available for download on the following page:
 
 📩 https://mouwrice.github.io/proguard-core-visualizer/download.html
+
+### Supported platforms
+#### Windows
+#### MacOS
+Works on both Intel and Apple silicon machines.
+#### Linux
+- `.deb` Debian package format supported
+- `.rpm`, Snap, FlatPak (Not yet supported: https://conveyor.hydraulic.dev/10.1/outputs/#other-linux-package-formats)
+- Generic tarball
+
 
 ## ✨ Features
 
