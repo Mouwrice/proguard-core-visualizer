@@ -12,7 +12,8 @@
 <h4 align="center">A desktop application to visualize evaluations from <a href="https://github.com/Guardsquare/proguard-core"> ProGuardCORE</a></h4>
 
 > [!IMPORTANT]
-> We have moved. You can find the new location of this project at the following address: https://github.com/Guardsquare/proguard-core-visualizer
+> We have moved. You can find the new location of this project at the following address:
+> https://github.com/Guardsquare/proguard-core-visualizer
 
 ## ❓ Getting Help
 If you have **usage or general questions**, do not hesitate to [make a discussion](https://github.com/Mouwrice/proguard-core-visualizer/discussions/new/choose).
